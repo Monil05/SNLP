@@ -1,0 +1,161 @@
+model,student_id,expected_category,job_id,category,job_title,match_score,skill_coverage,semantic_similarity,matched_skills,rank
+baseline_tfidf,student_01,INFORMATION-TECHNOLOGY,job_00089,FINANCE,data solutions analyst ii (managed care - finance focus) - r7269,24.84,29.41,14.19,communication; data analysis; power bi; python; sql,1
+baseline_tfidf,student_01,INFORMATION-TECHNOLOGY,job_00067,INFORMATION-TECHNOLOGY,information technology programmer,21.61,25.0,13.72,communication; data analysis; power bi; sql,2
+baseline_tfidf,student_01,INFORMATION-TECHNOLOGY,job_00085,HR,"data engineer - enterprise data and analytics, human resources stream",20.72,25.0,10.73,communication; data analysis; python; sql,3
+baseline_tfidf,student_01,INFORMATION-TECHNOLOGY,job_00051,FINANCE,finance - fp&a analyst,14.87,18.75,5.83,communication; power bi; sql,4
+baseline_tfidf,student_01,INFORMATION-TECHNOLOGY,job_00126,INFORMATION-TECHNOLOGY,information technology specialist,14.15,16.67,8.28,communication; python; sql,5
+baseline_tfidf,student_02,HR,job_00025,HR,human resource lead,18.05,21.05,11.05,communication; employee relations; payroll processing; recruitment,1
+baseline_tfidf,student_02,HR,job_00146,HR,vice president human resources,16.75,20.0,9.15,communication; employee relations; payroll; recruitment,2
+baseline_tfidf,student_02,HR,job_00064,HR,human resources generalist,13.58,15.38,9.36,communication; employee relations; onboarding; recruitment,3
+baseline_tfidf,student_02,HR,job_00075,HR,human resources manager,13.43,16.67,5.86,communication; onboarding; recruitment,4
+baseline_tfidf,student_02,HR,job_00152,HR,human resources generalist,13.14,14.29,10.46,communication; employee relations; recruitment,5
+baseline_tfidf,student_03,FINANCE,job_00143,FINANCE,finance analyst,19.04,22.22,11.63,budgeting; excel; financial analysis; forecasting,1
+baseline_tfidf,student_03,FINANCE,job_00211,FINANCE,finance manager,16.1,18.75,9.93,budgeting; financial analysis; forecasting,2
+baseline_tfidf,student_03,FINANCE,job_00155,FINANCE,"finance business partner, mep",16.04,20.0,6.79,financial analysis; forecasting; reporting; variance analysis,3
+baseline_tfidf,student_03,FINANCE,job_00141,FINANCE,director of finance,15.68,17.65,11.08,budgeting; financial analysis; forecasting,4
+baseline_tfidf,student_03,FINANCE,job_00226,FINANCE,"senior manager, digital & events finance - cnbc",14.61,17.65,7.51,budgeting; finance; financial analysis,5
+baseline_tfidf,student_04,SALES,job_00217,SALES,sales and marketing representative,30.75,40.0,9.18,customer service; negotiation; relationship building; sales,1
+baseline_tfidf,student_04,SALES,job_00019,SALES,sales district manager,30.6,33.33,24.23,cold calling; negotiation,2
+baseline_tfidf,student_04,SALES,job_00116,SALES,outside sales representative trainee,25.25,33.33,6.4,crm; customer service; negotiation; relationship building; sales,3
+baseline_tfidf,student_04,SALES,job_00232,SALES,event sales specialist,22.2,27.27,10.36,customer service; relationship building; sales,4
+baseline_tfidf,student_04,SALES,job_00017,SALES,sales associate sunglass hut,20.75,27.27,5.52,customer service; relationship building; sales,5
+baseline_tfidf,student_05,INFORMATION-TECHNOLOGY,job_00140,INFORMATION-TECHNOLOGY,information technology support analyst,18.96,21.43,13.2,communication; technical support; troubleshooting,1
+baseline_tfidf,student_05,INFORMATION-TECHNOLOGY,job_00107,INFORMATION-TECHNOLOGY,information technology support specialist,14.15,15.0,12.18,communication; technical support; troubleshooting,2
+baseline_tfidf,student_05,INFORMATION-TECHNOLOGY,job_00036,INFORMATION-TECHNOLOGY,lead information technology specialist,12.79,13.33,11.52,communication; microsoft windows,3
+baseline_tfidf,student_05,INFORMATION-TECHNOLOGY,job_00001,INFORMATION-TECHNOLOGY,information technology analyst,12.21,15.79,3.86,communication; technical support; troubleshooting,4
+baseline_tfidf,student_05,INFORMATION-TECHNOLOGY,job_00212,INFORMATION-TECHNOLOGY,information technology help desk,12.2,14.29,7.33,communication,5
+baseline_tfidf,student_06,BUSINESS-DEVELOPMENT,job_00121,BUSINESS-DEVELOPMENT,business development manager,18.47,20.0,14.89,business development; lead generation; market analysis; presentation skills,1
+baseline_tfidf,student_06,BUSINESS-DEVELOPMENT,job_00149,INFORMATION-TECHNOLOGY,information technology support specialist,17.55,22.22,6.64,lead generation; market analysis; negotiation; presentation,2
+baseline_tfidf,student_06,BUSINESS-DEVELOPMENT,job_00039,BUSINESS-DEVELOPMENT,business development manager,16.72,18.75,11.99,business development; negotiation; presentation skills,3
+baseline_tfidf,student_06,BUSINESS-DEVELOPMENT,job_00005,BUSINESS-DEVELOPMENT,business development & community relations manager,15.06,16.67,11.31,business development; market analysis,4
+baseline_tfidf,student_06,BUSINESS-DEVELOPMENT,job_00217,SALES,sales and marketing representative,15.01,20.0,3.36,negotiation; presentation,5
+baseline_tfidf,student_07,INFORMATION-TECHNOLOGY,job_00200,BUSINESS-DEVELOPMENT,business development representative,12.11,16.67,1.49,collaboration; problem solving,1
+baseline_tfidf,student_07,INFORMATION-TECHNOLOGY,job_00019,SALES,sales district manager,11.88,16.67,0.7,problem solving,2
+baseline_tfidf,student_07,INFORMATION-TECHNOLOGY,job_00057,INFORMATION-TECHNOLOGY,information technology product manager (15+ experience in pharma),11.11,15.38,1.14,collaboration; problem solving,3
+baseline_tfidf,student_07,INFORMATION-TECHNOLOGY,job_00140,INFORMATION-TECHNOLOGY,information technology support analyst,10.6,14.29,2.02,collaboration; problem solving,4
+baseline_tfidf,student_07,INFORMATION-TECHNOLOGY,job_00065,HR,"intern, talent management, human resources",10.39,14.29,1.3,collaboration; problem solving,5
+baseline_tfidf,student_08,FINANCE,job_00044,FINANCE,finance specialist - channel & customer marketing,17.64,23.08,4.96,accounting; attention to detail; excel,1
+baseline_tfidf,student_08,FINANCE,job_00196,FINANCE,2024 finance summer internship,16.3,20.0,7.67,accounting; attention to detail; reporting,2
+baseline_tfidf,student_08,FINANCE,job_00219,FINANCE,finance & accounting - staff accountant,15.21,18.18,8.26,attention to detail; excel,3
+baseline_tfidf,student_08,FINANCE,job_00118,FINANCE,finance manager,13.6,16.67,6.45,attention to detail; excel; financial reporting,4
+baseline_tfidf,student_08,FINANCE,job_00230,FINANCE,"coordinator, finance",12.75,16.67,3.6,accounting; attention to detail; excel,5
+baseline_tfidf,student_09,SALES,job_00217,SALES,sales and marketing representative,38.87,50.0,12.91,communication; marketing; presentation; sales; teamwork,1
+baseline_tfidf,student_09,SALES,job_00035,SALES,sales and marketing specialist,29.88,36.36,14.76,communication; marketing; sales; teamwork,2
+baseline_tfidf,student_09,SALES,job_00167,BUSINESS-DEVELOPMENT,business development representative,22.0,27.78,8.53,communication; customer relationship management; presentation skills; sales; teamwork,3
+baseline_tfidf,student_09,SALES,job_00212,INFORMATION-TECHNOLOGY,information technology help desk,21.77,28.57,5.89,communication; teamwork,4
+baseline_tfidf,student_09,SALES,job_00073,FINANCE,v.i.e. sustainable finance analyst,21.36,30.0,1.19,communication; presentation; teamwork,5
+baseline_tfidf,student_10,HR,job_00169,HR,director of human resources,13.39,12.5,15.46,confidentiality; performance management,1
+baseline_tfidf,student_10,HR,job_00078,HR,human resources director,11.45,8.7,17.89,performance management; training and development,2
+baseline_tfidf,student_10,HR,job_00091,HR,human resources generalist,11.42,13.04,7.62,compliance; performance management; training,3
+baseline_tfidf,student_10,HR,job_00229,HR,human resources manager,11.01,11.43,10.02,compliance; confidentiality; performance management; training and development,4
+baseline_tfidf,student_10,HR,job_00064,HR,human resources generalist,11.0,11.54,9.75,compliance; performance management; training and development,5
+baseline_tfidf,student_11,INFORMATION-TECHNOLOGY,job_00134,INFORMATION-TECHNOLOGY,information technology support specialist,12.35,16.67,2.28,networking; problem solving,1
+baseline_tfidf,student_11,INFORMATION-TECHNOLOGY,job_00005,BUSINESS-DEVELOPMENT,business development & community relations manager,12.3,16.67,2.11,networking; problem solving,2
+baseline_tfidf,student_11,INFORMATION-TECHNOLOGY,job_00161,SALES,sales account manager,12.13,16.67,1.53,networking; problem solving,3
+baseline_tfidf,student_11,INFORMATION-TECHNOLOGY,job_00019,SALES,sales district manager,11.85,16.67,0.63,problem solving,4
+baseline_tfidf,student_11,INFORMATION-TECHNOLOGY,job_00007,INFORMATION-TECHNOLOGY,information technology security administrator,10.87,11.76,8.77,cybersecurity; problem solving,5
+baseline_tfidf,student_12,SALES,job_00170,SALES,retail sales associate part time,24.56,33.33,4.1,communication; customer service; problem solving; relationship building,1
+baseline_tfidf,student_12,SALES,job_00068,SALES,seasonal sales associate - glendale galleria,24.33,33.33,3.33,communication; customer service; problem solving; relationship building,2
+baseline_tfidf,student_12,SALES,job_00019,SALES,sales district manager,24.02,33.33,2.29,communication; problem solving,3
+baseline_tfidf,student_12,SALES,job_00217,SALES,sales and marketing representative,23.17,30.0,7.25,communication; customer service; relationship building,4
+baseline_tfidf,student_12,SALES,job_00224,SALES,"sales associate / jewelry consultant - kay jewelers - westland mall - hialeah, fl",22.83,30.77,4.3,communication; customer service; problem solving; relationship building,5
+baseline_tfidf,student_13,FINANCE,job_00223,FINANCE,strategic finance manager,14.43,11.76,20.66,financial analysis; financial planning,1
+baseline_tfidf,student_13,FINANCE,job_00155,FINANCE,"finance business partner, mep",13.67,15.0,10.57,financial analysis; power bi; tableau,2
+baseline_tfidf,student_13,FINANCE,job_00051,FINANCE,finance - fp&a analyst,12.95,12.5,14.0,financial analysis; power bi,3
+baseline_tfidf,student_13,FINANCE,job_00172,FINANCE,head of corporate finance (senior director / director),12.14,13.04,10.03,financial analysis; financial planning; tableau,4
+baseline_tfidf,student_13,FINANCE,job_00089,FINANCE,data solutions analyst ii (managed care - finance focus) - r7269,9.88,11.76,5.5,power bi; tableau,5
+baseline_tfidf,student_14,INFORMATION-TECHNOLOGY,job_00191,INFORMATION-TECHNOLOGY,information technology technical services manager,13.46,13.04,14.44,collaboration; disaster recovery planning; project management,1
+baseline_tfidf,student_14,INFORMATION-TECHNOLOGY,job_00095,INFORMATION-TECHNOLOGY,director of information technology,13.11,12.0,15.71,collaboration; disaster recovery planning; project management,2
+baseline_tfidf,student_14,INFORMATION-TECHNOLOGY,job_00137,FINANCE,portfolio analyst-finance (indiana: hybrid/remote),10.34,13.33,3.37,collaboration; project management,3
+baseline_tfidf,student_14,INFORMATION-TECHNOLOGY,job_00221,INFORMATION-TECHNOLOGY,lead information technology specialist (systems administration),10.08,13.33,2.49,project management; system design,4
+baseline_tfidf,student_14,INFORMATION-TECHNOLOGY,job_00051,FINANCE,finance - fp&a analyst,9.41,12.5,2.21,collaboration; project management,5
+baseline_tfidf,student_15,HR,job_00157,HR,human resources manager,22.56,25.0,16.86,background checks; microsoft office; organizational skills; talent acquisition,1
+baseline_tfidf,student_15,HR,job_00177,HR,"senior human resources generalist - oklahoma city, ok",16.21,21.43,4.05,microsoft office; onboarding; organizational skills,2
+baseline_tfidf,student_15,HR,job_00064,HR,human resources generalist,13.89,15.38,10.4,background checks; onboarding; organizational skills; recruitment,3
+baseline_tfidf,student_15,HR,job_00204,HR,human resources specialist,9.88,10.53,8.37,background checks; onboarding,4
+baseline_tfidf,student_15,HR,job_00122,HR,human resources administrator,9.39,10.0,7.98,onboarding; organizational skills,5
+baseline_tfidf,student_16,SALES,job_00116,SALES,outside sales representative trainee,15.21,20.0,4.03,crm; networking; sales,1
+baseline_tfidf,student_16,SALES,job_00006,BUSINESS-DEVELOPMENT,business development manager - dallas/fort worth,12.96,13.33,12.1,forecasting; networking; persuasion; sales,2
+baseline_tfidf,student_16,SALES,job_00111,SALES,inside sales representative,11.97,15.38,4.0,crm; sales,3
+baseline_tfidf,student_16,SALES,job_00056,BUSINESS-DEVELOPMENT,business development manager,11.31,14.29,4.37,networking; sales,4
+baseline_tfidf,student_16,SALES,job_00125,SALES,area sales manager (chattanooga market),11.09,11.76,9.5,sales; territory management,5
+improved_sentence_transformer,student_01,INFORMATION-TECHNOLOGY,job_00089,FINANCE,data solutions analyst ii (managed care - finance focus) - r7269,30.17,29.41,31.93,communication; data analysis; power bi; python; sql,1
+improved_sentence_transformer,student_01,INFORMATION-TECHNOLOGY,job_00067,INFORMATION-TECHNOLOGY,information technology programmer,26.35,25.0,29.49,communication; data analysis; power bi; sql,2
+improved_sentence_transformer,student_01,INFORMATION-TECHNOLOGY,job_00219,FINANCE,finance & accounting - staff accountant,24.02,9.09,58.85,communication,3
+improved_sentence_transformer,student_01,INFORMATION-TECHNOLOGY,job_00085,HR,"data engineer - enterprise data and analytics, human resources stream",21.51,25.0,13.38,communication; data analysis; python; sql,4
+improved_sentence_transformer,student_01,INFORMATION-TECHNOLOGY,job_00207,BUSINESS-DEVELOPMENT,senior business development manager – contracted solutions strategy,20.21,10.53,42.8,communication; data analysis,5
+improved_sentence_transformer,student_02,HR,job_00025,HR,human resource lead,31.46,21.05,55.73,communication; employee relations; payroll processing; recruitment,1
+improved_sentence_transformer,student_02,HR,job_00146,HR,vice president human resources,27.2,20.0,44.0,communication; employee relations; payroll; recruitment,2
+improved_sentence_transformer,student_02,HR,job_00177,HR,"senior human resources generalist - oklahoma city, ok",25.63,14.29,52.09,communication; onboarding,3
+improved_sentence_transformer,student_02,HR,job_00075,HR,human resources manager,25.32,16.67,45.52,communication; onboarding; recruitment,4
+improved_sentence_transformer,student_02,HR,job_00064,HR,human resources generalist,25.07,15.38,47.68,communication; employee relations; onboarding; recruitment,5
+improved_sentence_transformer,student_03,FINANCE,job_00143,FINANCE,finance analyst,23.9,22.22,27.82,budgeting; excel; financial analysis; forecasting,1
+improved_sentence_transformer,student_03,FINANCE,job_00211,FINANCE,finance manager,18.51,18.75,17.94,budgeting; financial analysis; forecasting,2
+improved_sentence_transformer,student_03,FINANCE,job_00155,FINANCE,"finance business partner, mep",18.31,20.0,14.37,financial analysis; forecasting; reporting; variance analysis,3
+improved_sentence_transformer,student_03,FINANCE,job_00046,FINANCE,finance analyst,18.01,15.38,24.13,excel; finance,4
+improved_sentence_transformer,student_03,FINANCE,job_00219,FINANCE,finance & accounting - staff accountant,17.41,9.09,36.82,excel,5
+improved_sentence_transformer,student_04,SALES,job_00217,SALES,sales and marketing representative,38.85,40.0,36.16,customer service; negotiation; relationship building; sales,1
+improved_sentence_transformer,student_04,SALES,job_00019,SALES,sales district manager,32.23,33.33,29.67,cold calling; negotiation,2
+improved_sentence_transformer,student_04,SALES,job_00116,SALES,outside sales representative trainee,29.79,33.33,21.54,crm; customer service; negotiation; relationship building; sales,3
+improved_sentence_transformer,student_04,SALES,job_00017,SALES,sales associate sunglass hut,27.57,27.27,28.26,customer service; relationship building; sales,4
+improved_sentence_transformer,student_04,SALES,job_00232,SALES,event sales specialist,27.41,27.27,27.73,customer service; relationship building; sales,5
+improved_sentence_transformer,student_05,INFORMATION-TECHNOLOGY,job_00233,INFORMATION-TECHNOLOGY,"application analyst i, day shift, information technology",22.41,13.33,43.6,communication; troubleshooting,1
+improved_sentence_transformer,student_05,INFORMATION-TECHNOLOGY,job_00019,SALES,sales district manager,19.95,16.67,27.6,communication,2
+improved_sentence_transformer,student_05,INFORMATION-TECHNOLOGY,job_00223,FINANCE,strategic finance manager,18.52,5.88,48.0,communication,3
+improved_sentence_transformer,student_05,INFORMATION-TECHNOLOGY,job_00140,INFORMATION-TECHNOLOGY,information technology support analyst,18.52,21.43,11.73,communication; technical support; troubleshooting,4
+improved_sentence_transformer,student_05,INFORMATION-TECHNOLOGY,job_00219,FINANCE,finance & accounting - staff accountant,18.27,9.09,39.68,communication,5
+improved_sentence_transformer,student_06,BUSINESS-DEVELOPMENT,job_00039,BUSINESS-DEVELOPMENT,business development manager,22.29,18.75,30.54,business development; negotiation; presentation skills,1
+improved_sentence_transformer,student_06,BUSINESS-DEVELOPMENT,job_00217,SALES,sales and marketing representative,21.75,20.0,25.83,negotiation; presentation,2
+improved_sentence_transformer,student_06,BUSINESS-DEVELOPMENT,job_00154,BUSINESS-DEVELOPMENT,business development manager,21.73,15.0,37.45,market analysis; negotiation; presentation skills,3
+improved_sentence_transformer,student_06,BUSINESS-DEVELOPMENT,job_00019,SALES,sales district manager,21.57,16.67,33.0,negotiation,4
+improved_sentence_transformer,student_06,BUSINESS-DEVELOPMENT,job_00149,INFORMATION-TECHNOLOGY,information technology support specialist,20.75,22.22,17.32,lead generation; market analysis; negotiation; presentation,5
+improved_sentence_transformer,student_07,INFORMATION-TECHNOLOGY,job_00019,SALES,sales district manager,19.61,16.67,26.49,problem solving,1
+improved_sentence_transformer,student_07,INFORMATION-TECHNOLOGY,job_00200,BUSINESS-DEVELOPMENT,business development representative,19.31,16.67,25.49,collaboration; problem solving,2
+improved_sentence_transformer,student_07,INFORMATION-TECHNOLOGY,job_00008,HR,human resources assistant,18.31,14.29,27.68,collaboration; problem solving,3
+improved_sentence_transformer,student_07,INFORMATION-TECHNOLOGY,job_00143,FINANCE,finance analyst,18.09,11.11,34.38,collaboration; problem solving,4
+improved_sentence_transformer,student_07,INFORMATION-TECHNOLOGY,job_00223,FINANCE,strategic finance manager,17.48,11.76,30.82,collaboration; problem solving,5
+improved_sentence_transformer,student_08,FINANCE,job_00219,FINANCE,finance & accounting - staff accountant,22.43,18.18,32.33,attention to detail; excel,1
+improved_sentence_transformer,student_08,FINANCE,job_00196,FINANCE,2024 finance summer internship,20.81,20.0,22.7,accounting; attention to detail; reporting,2
+improved_sentence_transformer,student_08,FINANCE,job_00118,FINANCE,finance manager,20.44,16.67,29.26,attention to detail; excel; financial reporting,3
+improved_sentence_transformer,student_08,FINANCE,job_00046,FINANCE,finance analyst,18.23,15.38,24.88,accounting; excel,4
+improved_sentence_transformer,student_08,FINANCE,job_00044,FINANCE,finance specialist - channel & customer marketing,17.26,23.08,3.67,accounting; attention to detail; excel,5
+improved_sentence_transformer,student_09,SALES,job_00217,SALES,sales and marketing representative,45.54,50.0,35.14,communication; marketing; presentation; sales; teamwork,1
+improved_sentence_transformer,student_09,SALES,job_00035,SALES,sales and marketing specialist,33.0,36.36,25.14,communication; marketing; sales; teamwork,2
+improved_sentence_transformer,student_09,SALES,job_00073,FINANCE,v.i.e. sustainable finance analyst,32.21,30.0,37.37,communication; presentation; teamwork,3
+improved_sentence_transformer,student_09,SALES,job_00154,BUSINESS-DEVELOPMENT,business development manager,29.45,25.0,39.82,communication; customer relationship management; presentation skills; sales; teamwork,4
+improved_sentence_transformer,student_09,SALES,job_00167,BUSINESS-DEVELOPMENT,business development representative,29.45,27.78,33.36,communication; customer relationship management; presentation skills; sales; teamwork,5
+improved_sentence_transformer,student_10,HR,job_00050,HR,human resources generalist,23.02,8.0,58.07,compliance; training,1
+improved_sentence_transformer,student_10,HR,job_00169,HR,director of human resources,22.23,12.5,44.93,confidentiality; performance management,2
+improved_sentence_transformer,student_10,HR,job_00178,HR,human resources associate,21.96,4.35,63.05,confidentiality,3
+improved_sentence_transformer,student_10,HR,job_00064,HR,human resources generalist,21.45,11.54,44.58,compliance; performance management; training and development,4
+improved_sentence_transformer,student_10,HR,job_00030,HR,senior human resource generalist,21.25,7.41,53.56,confidentiality; performance management,5
+improved_sentence_transformer,student_11,INFORMATION-TECHNOLOGY,job_00221,INFORMATION-TECHNOLOGY,lead information technology specialist (systems administration),26.93,13.33,58.66,it security; problem solving,1
+improved_sentence_transformer,student_11,INFORMATION-TECHNOLOGY,job_00233,INFORMATION-TECHNOLOGY,"application analyst i, day shift, information technology",19.43,13.33,33.67,documentation; problem solving,2
+improved_sentence_transformer,student_11,INFORMATION-TECHNOLOGY,job_00191,INFORMATION-TECHNOLOGY,information technology technical services manager,18.96,17.39,22.62,documentation; networking; problem solving; security,3
+improved_sentence_transformer,student_11,INFORMATION-TECHNOLOGY,job_00019,SALES,sales district manager,18.68,16.67,23.39,problem solving,4
+improved_sentence_transformer,student_11,INFORMATION-TECHNOLOGY,job_00223,FINANCE,strategic finance manager,18.46,5.88,47.82,problem solving,5
+improved_sentence_transformer,student_12,SALES,job_00019,SALES,sales district manager,32.62,33.33,30.97,communication; problem solving,1
+improved_sentence_transformer,student_12,SALES,job_00170,SALES,retail sales associate part time,31.88,33.33,28.5,communication; customer service; problem solving; relationship building,2
+improved_sentence_transformer,student_12,SALES,job_00217,SALES,sales and marketing representative,30.33,30.0,31.11,communication; customer service; relationship building,3
+improved_sentence_transformer,student_12,SALES,job_00094,BUSINESS-DEVELOPMENT,business development (1+ years sales exp req),28.94,29.41,27.86,account management; communication; customer service; problem solving; relationship building,4
+improved_sentence_transformer,student_12,SALES,job_00068,SALES,seasonal sales associate - glendale galleria,28.16,33.33,16.08,communication; customer service; problem solving; relationship building,5
+improved_sentence_transformer,student_13,FINANCE,job_00155,FINANCE,"finance business partner, mep",17.94,15.0,24.81,financial analysis; power bi; tableau,1
+improved_sentence_transformer,student_13,FINANCE,job_00089,FINANCE,data solutions analyst ii (managed care - finance focus) - r7269,15.98,11.76,25.81,power bi; tableau,2
+improved_sentence_transformer,student_13,FINANCE,job_00051,FINANCE,finance - fp&a analyst,15.2,12.5,21.48,financial analysis; power bi,3
+improved_sentence_transformer,student_13,FINANCE,job_00223,FINANCE,strategic finance manager,15.12,11.76,22.94,financial analysis; financial planning,4
+improved_sentence_transformer,student_13,FINANCE,job_00220,FINANCE,"consultant, financial services, consumer finance l forensic and litigation consulting",14.55,5.56,35.55,financial analysis,5
+improved_sentence_transformer,student_14,INFORMATION-TECHNOLOGY,job_00221,INFORMATION-TECHNOLOGY,lead information technology specialist (systems administration),24.47,13.33,50.46,project management; system design,1
+improved_sentence_transformer,student_14,INFORMATION-TECHNOLOGY,job_00220,FINANCE,"consultant, financial services, consumer finance l forensic and litigation consulting",19.69,11.11,39.7,collaboration; project management,2
+improved_sentence_transformer,student_14,INFORMATION-TECHNOLOGY,job_00223,FINANCE,strategic finance manager,16.05,5.88,39.76,collaboration,3
+improved_sentence_transformer,student_14,INFORMATION-TECHNOLOGY,job_00137,FINANCE,portfolio analyst-finance (indiana: hybrid/remote),15.78,13.33,21.5,collaboration; project management,4
+improved_sentence_transformer,student_14,INFORMATION-TECHNOLOGY,job_00029,SALES,sales coordinator,15.39,6.25,36.73,collaboration,5
+improved_sentence_transformer,student_15,HR,job_00157,HR,human resources manager,27.36,25.0,32.87,background checks; microsoft office; organizational skills; talent acquisition,1
+improved_sentence_transformer,student_15,HR,job_00177,HR,"senior human resources generalist - oklahoma city, ok",26.79,21.43,39.29,microsoft office; onboarding; organizational skills,2
+improved_sentence_transformer,student_15,HR,job_00204,HR,human resources specialist,22.51,10.53,50.49,background checks; onboarding,3
+improved_sentence_transformer,student_15,HR,job_00064,HR,human resources generalist,21.45,15.38,35.62,background checks; onboarding; organizational skills; recruitment,4
+improved_sentence_transformer,student_15,HR,job_00025,HR,human resource lead,21.21,5.26,58.42,recruitment,5
+improved_sentence_transformer,student_16,SALES,job_00006,BUSINESS-DEVELOPMENT,business development manager - dallas/fort worth,21.18,16.67,31.71,forecasting; networking; persuasion; sales; strategic selling,1
+improved_sentence_transformer,student_16,SALES,job_00111,SALES,inside sales representative,20.57,15.38,32.67,crm; sales,2
+improved_sentence_transformer,student_16,SALES,job_00116,SALES,outside sales representative trainee,18.82,20.0,16.08,crm; networking; sales,3
+improved_sentence_transformer,student_16,SALES,job_00056,BUSINESS-DEVELOPMENT,business development manager,17.1,14.29,23.68,networking; sales,4
+improved_sentence_transformer,student_16,SALES,job_00029,SALES,sales coordinator,16.53,6.25,40.5,sales,5

@@ -1,0 +1,106 @@
+{
+  "recommended_job": {
+    "rank": 1,
+    "job_id": "job_00831",
+    "job_title": "data solutions analyst",
+    "category": "FINANCE",
+    "match_score": 37.24,
+    "matched_skills": [
+      "communication",
+      "data analysis",
+      "power bi",
+      "python",
+      "sql"
+    ],
+    "missing_weak_skills": [
+      "adaptability",
+      "attention to detail",
+      "azure",
+      "collaboration",
+      "data modeling",
+      "data security",
+      "data warehousing",
+      "databricks",
+      "etl",
+      "microsoft 365 suite",
+      "problem solving",
+      "tableau"
+    ],
+    "recommended_learning": [
+      "problem solving",
+      "adaptability",
+      "collaboration",
+      "attention to detail",
+      "azure",
+      "tableau",
+      "data security",
+      "data warehousing",
+      "etl",
+      "data modeling",
+      "microsoft 365 suite",
+      "databricks"
+    ]
+  },
+  "alternatives": [
+    {
+      "rank": 2,
+      "job_id": "job_00321",
+      "job_title": "information technology programmer",
+      "category": "INFORMATION-TECHNOLOGY",
+      "match_score": 33.06,
+      "matched_skills": [
+        "communication",
+        "data analysis",
+        "power bi",
+        "sql"
+      ],
+      "missing_weak_skills": [
+        "attention to detail",
+        "c#",
+        "critical thinking",
+        "dashboard development",
+        "database management",
+        "dax queries",
+        "excel",
+        "problem solving",
+        "report development",
+        "technical support",
+        "training skills",
+        "vba"
+      ],
+      "recommended_learning": [
+        "problem solving",
+        "attention to detail",
+        "excel",
+        "critical thinking",
+        "technical support",
+        "database management",
+        "c#",
+        "dashboard development",
+        "vba",
+        "report development",
+        "dax queries",
+        "training skills"
+      ]
+    }
+  ],
+  "confidence": {
+    "score": 0.39,
+    "level": "low",
+    "method": "evidence_heuristic_v1",
+    "calibrated": false
+  },
+  "meta": {
+    "asset_version": "1.0.0",
+    "schema_version": "1.0",
+    "model": {
+      "embedding_backend": "lsa",
+      "embedding_model": "lsa-256",
+      "jobs_indexed": 1167
+    },
+    "processing_ms": 40.9,
+    "warnings": [
+      "Low confidence: top results are close in score and/or span several job categories."
+    ]
+  }
+}

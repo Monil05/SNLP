@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "career-nlp"
+version = "1.0.0"
+description = "Reusable NLP asset for Placement & Career Intelligence: extraction, classification, matching, recommendation, retrieval - with structured output and confidence scores."
+requires-python = ">=3.10"
+dependencies = ["numpy", "pandas", "scikit-learn", "pydantic>=2"]
+
+[project.optional-dependencies]
+embeddings = ["sentence-transformers"]      # Week 3 core backend (all-MiniLM-L6-v2)
+api = ["fastapi", "uvicorn", "python-multipart"]
+cv = ["pypdf", "python-docx"]
+all = ["sentence-transformers", "fastapi", "uvicorn", "python-multipart", "pypdf", "python-docx"]
+dev = ["pytest", "httpx"]
+
+[project.scripts]
+career-nlp = "career_nlp.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["career_nlp*"]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]

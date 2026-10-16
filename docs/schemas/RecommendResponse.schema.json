@@ -1,0 +1,293 @@
+{
+  "$defs": {
+    "Confidence": {
+      "additionalProperties": false,
+      "description": "Confidence attached to a result.\n\n``score`` is in [0, 1]. For classification it is the model's predicted\nprobability. For matching/recommendation it is an *evidence-sufficiency*\nheuristic (how much signal the result rests on) - it is NOT a calibrated\nprobability that the answer is correct. ``calibrated`` says which it is.",
+      "properties": {
+        "score": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Score",
+          "type": "number"
+        },
+        "level": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Level",
+          "type": "string"
+        },
+        "method": {
+          "default": "evidence_heuristic_v1",
+          "title": "Method",
+          "type": "string"
+        },
+        "calibrated": {
+          "default": false,
+          "title": "Calibrated",
+          "type": "boolean"
+        },
+        "factors": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Per-factor breakdown. Only populated when include_details=true.",
+          "title": "Factors"
+        }
+      },
+      "required": [
+        "score",
+        "level"
+      ],
+      "title": "Confidence",
+      "type": "object"
+    },
+    "Meta": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_version": {
+          "default": "1.0.0",
+          "title": "Asset Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "model": {
+          "$ref": "#/$defs/ModelInfo"
+        },
+        "processing_ms": {
+          "title": "Processing Ms",
+          "type": "number"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "model",
+        "processing_ms"
+      ],
+      "title": "Meta",
+      "type": "object"
+    },
+    "ModelInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "embedding_backend": {
+          "title": "Embedding Backend",
+          "type": "string"
+        },
+        "embedding_model": {
+          "title": "Embedding Model",
+          "type": "string"
+        },
+        "jobs_indexed": {
+          "title": "Jobs Indexed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "embedding_backend",
+        "embedding_model",
+        "jobs_indexed"
+      ],
+      "title": "ModelInfo",
+      "type": "object"
+    },
+    "RecommendedJob": {
+      "additionalProperties": false,
+      "properties": {
+        "rank": {
+          "title": "Rank",
+          "type": "integer"
+        },
+        "job_id": {
+          "title": "Job Id",
+          "type": "string"
+        },
+        "job_title": {
+          "description": "Cleaned title (levels / req codes removed).",
+          "title": "Job Title",
+          "type": "string"
+        },
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "match_score": {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Match Score",
+          "type": "number"
+        },
+        "matched_skills": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Matched Skills",
+          "type": "array"
+        },
+        "missing_weak_skills": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Weak Skills",
+          "type": "array"
+        },
+        "recommended_learning": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Recommended Learning",
+          "type": "array"
+        },
+        "score_breakdown": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ScoreBreakdown"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "rank",
+        "job_id",
+        "job_title",
+        "category",
+        "match_score",
+        "matched_skills",
+        "missing_weak_skills",
+        "recommended_learning"
+      ],
+      "title": "RecommendedJob",
+      "type": "object"
+    },
+    "ScoreBreakdown": {
+      "additionalProperties": false,
+      "properties": {
+        "skill_match_percent": {
+          "title": "Skill Match Percent",
+          "type": "number"
+        },
+        "semantic_similarity_percent": {
+          "title": "Semantic Similarity Percent",
+          "type": "number"
+        },
+        "skill_weight": {
+          "title": "Skill Weight",
+          "type": "number"
+        },
+        "semantic_weight": {
+          "title": "Semantic Weight",
+          "type": "number"
+        },
+        "required_skills_detected": {
+          "title": "Required Skills Detected",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "skill_match_percent",
+        "semantic_similarity_percent",
+        "skill_weight",
+        "semantic_weight",
+        "required_skills_detected"
+      ],
+      "title": "ScoreBreakdown",
+      "type": "object"
+    },
+    "StudentProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "normalized_education": {
+          "title": "Normalized Education",
+          "type": "string"
+        },
+        "skills": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Skills",
+          "type": "array"
+        },
+        "experience": {
+          "title": "Experience",
+          "type": "string"
+        },
+        "profile_summary": {
+          "description": "The text actually embedded for semantic similarity.",
+          "title": "Profile Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "normalized_education",
+        "skills",
+        "experience",
+        "profile_summary"
+      ],
+      "title": "StudentProfile",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "recommended_job": {
+      "$ref": "#/$defs/RecommendedJob"
+    },
+    "alternatives": {
+      "items": {
+        "$ref": "#/$defs/RecommendedJob"
+      },
+      "title": "Alternatives",
+      "type": "array"
+    },
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "student_profile": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StudentProfile"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "meta": {
+      "$ref": "#/$defs/Meta"
+    }
+  },
+  "required": [
+    "recommended_job",
+    "alternatives",
+    "confidence",
+    "meta"
+  ],
+  "title": "RecommendResponse",
+  "type": "object"
+}

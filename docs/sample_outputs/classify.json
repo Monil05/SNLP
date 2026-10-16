@@ -1,0 +1,46 @@
+{
+  "predicted_category": "FINANCE",
+  "confidence": {
+    "score": 0.8403,
+    "level": "high",
+    "method": "classifier_probability",
+    "calibrated": false,
+    "factors": {
+      "top_probability": 0.8403,
+      "margin_to_runner_up": 0.7786
+    }
+  },
+  "top_categories": [
+    {
+      "category": "FINANCE",
+      "probability": 0.8403
+    },
+    {
+      "category": "INFORMATION-TECHNOLOGY",
+      "probability": 0.0617
+    },
+    {
+      "category": "SALES",
+      "probability": 0.0414
+    },
+    {
+      "category": "BUSINESS-DEVELOPMENT",
+      "probability": 0.0311
+    },
+    {
+      "category": "HR",
+      "probability": 0.0255
+    }
+  ],
+  "meta": {
+    "asset_version": "1.0.0",
+    "schema_version": "1.0",
+    "model": {
+      "embedding_backend": "lsa",
+      "embedding_model": "lsa-256",
+      "jobs_indexed": 1167
+    },
+    "processing_ms": 4.1,
+    "warnings": []
+  }
+}

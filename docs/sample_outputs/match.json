@@ -1,0 +1,34 @@
+{
+  "match_score": 70.06,
+  "matched_skills": [
+    "communication",
+    "power bi",
+    "python",
+    "sql"
+  ],
+  "missing_weak_skills": [
+    "communication skills",
+    "tableau"
+  ],
+  "recommended_learning": [
+    "communication skills",
+    "tableau"
+  ],
+  "confidence": {
+    "score": 1.0,
+    "level": "high",
+    "method": "evidence_heuristic_v1",
+    "calibrated": false
+  },
+  "meta": {
+    "asset_version": "1.0.0",
+    "schema_version": "1.0",
+    "model": {
+      "embedding_backend": "lsa",
+      "embedding_model": "lsa-256",
+      "jobs_indexed": 1167
+    },
+    "processing_ms": 88.4,
+    "warnings": []
+  }
+}

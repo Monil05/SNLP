@@ -1,0 +1,91 @@
+{
+  "recommended_job": {
+    "rank": 1,
+    "job_id": "job_00831",
+    "job_title": "data solutions analyst",
+    "category": "FINANCE",
+    "match_score": 37.24,
+    "matched_skills": [
+      "communication",
+      "data analysis",
+      "power bi",
+      "python",
+      "sql"
+    ],
+    "missing_weak_skills": [
+      "adaptability",
+      "attention to detail",
+      "azure",
+      "collaboration",
+      "data modeling",
+      "data security",
+      "data warehousing",
+      "databricks",
+      "etl",
+      "microsoft 365 suite",
+      "problem solving",
+      "tableau"
+    ],
+    "recommended_learning": [
+      "problem solving",
+      "adaptability",
+      "collaboration",
+      "attention to detail",
+      "azure",
+      "tableau",
+      "data security",
+      "data warehousing",
+      "etl",
+      "data modeling",
+      "microsoft 365 suite",
+      "databricks"
+    ],
+    "score_breakdown": {
+      "skill_match_percent": 29.41,
+      "semantic_similarity_percent": 55.52,
+      "skill_weight": 0.7,
+      "semantic_weight": 0.3,
+      "required_skills_detected": 17
+    }
+  },
+  "alternatives": [],
+  "confidence": {
+    "score": 0.39,
+    "level": "low",
+    "method": "evidence_heuristic_v1",
+    "calibrated": false,
+    "factors": {
+      "category_agreement_top5": 0.4,
+      "top_job_skill_coverage": 0.2941,
+      "profile_skill_evidence": 1.0,
+      "score_margin_to_second": 0.2787
+    }
+  },
+  "student_profile": {
+    "normalized_education": "B.Tech in Data Science",
+    "skills": [
+      "machine learning",
+      "data analysis",
+      "communication",
+      "data science",
+      "power bi",
+      "python",
+      "sql"
+    ],
+    "experience": "2 years",
+    "profile_summary": "Education: B.Tech in Data Science. Skills: machine learning; data analysis; communication; data science; power bi; python; sql. Experience: 2 years."
+  },
+  "meta": {
+    "asset_version": "1.0.0",
+    "schema_version": "1.0",
+    "model": {
+      "embedding_backend": "lsa",
+      "embedding_model": "lsa-256",
+      "jobs_indexed": 1167
+    },
+    "processing_ms": 45.8,
+    "warnings": [
+      "Low confidence: top results are close in score and/or span several job categories."
+    ]
+  }
+}

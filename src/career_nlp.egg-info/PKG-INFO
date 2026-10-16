@@ -1,0 +1,28 @@
+Metadata-Version: 2.4
+Name: career-nlp
+Version: 1.0.0
+Summary: Reusable NLP asset for Placement & Career Intelligence: extraction, classification, matching, recommendation, retrieval - with structured output and confidence scores.
+Requires-Python: >=3.10
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: scikit-learn
+Requires-Dist: pydantic>=2
+Provides-Extra: embeddings
+Requires-Dist: sentence-transformers; extra == "embeddings"
+Provides-Extra: api
+Requires-Dist: fastapi; extra == "api"
+Requires-Dist: uvicorn; extra == "api"
+Requires-Dist: python-multipart; extra == "api"
+Provides-Extra: cv
+Requires-Dist: pypdf; extra == "cv"
+Requires-Dist: python-docx; extra == "cv"
+Provides-Extra: all
+Requires-Dist: sentence-transformers; extra == "all"
+Requires-Dist: fastapi; extra == "all"
+Requires-Dist: uvicorn; extra == "all"
+Requires-Dist: python-multipart; extra == "all"
+Requires-Dist: pypdf; extra == "all"
+Requires-Dist: python-docx; extra == "all"
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: httpx; extra == "dev"

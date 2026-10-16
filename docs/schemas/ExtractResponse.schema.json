@@ -1,0 +1,219 @@
+{
+  "$defs": {
+    "ExtractedContact": {
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "title": "Value",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "value",
+        "confidence"
+      ],
+      "title": "ExtractedContact",
+      "type": "object"
+    },
+    "ExtractedDegree": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "description": "Normalised, e.g. 'B.Tech in Data Science'.",
+          "title": "Text",
+          "type": "string"
+        },
+        "degree": {
+          "title": "Degree",
+          "type": "string"
+        },
+        "specialization": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Specialization"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "text",
+        "degree",
+        "confidence"
+      ],
+      "title": "ExtractedDegree",
+      "type": "object"
+    },
+    "ExtractedSkill": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "mentions": {
+          "minimum": 1,
+          "title": "Mentions",
+          "type": "integer"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "mentions",
+        "confidence"
+      ],
+      "title": "ExtractedSkill",
+      "type": "object"
+    },
+    "Meta": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_version": {
+          "default": "1.0.0",
+          "title": "Asset Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "model": {
+          "$ref": "#/$defs/ModelInfo"
+        },
+        "processing_ms": {
+          "title": "Processing Ms",
+          "type": "number"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "model",
+        "processing_ms"
+      ],
+      "title": "Meta",
+      "type": "object"
+    },
+    "ModelInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "embedding_backend": {
+          "title": "Embedding Backend",
+          "type": "string"
+        },
+        "embedding_model": {
+          "title": "Embedding Model",
+          "type": "string"
+        },
+        "jobs_indexed": {
+          "title": "Jobs Indexed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "embedding_backend",
+        "embedding_model",
+        "jobs_indexed"
+      ],
+      "title": "ModelInfo",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "skills": {
+      "items": {
+        "$ref": "#/$defs/ExtractedSkill"
+      },
+      "title": "Skills",
+      "type": "array"
+    },
+    "degrees_or_certifications": {
+      "items": {
+        "$ref": "#/$defs/ExtractedDegree"
+      },
+      "title": "Degrees Or Certifications",
+      "type": "array"
+    },
+    "emails": {
+      "items": {
+        "$ref": "#/$defs/ExtractedContact"
+      },
+      "title": "Emails",
+      "type": "array"
+    },
+    "phone_numbers": {
+      "items": {
+        "$ref": "#/$defs/ExtractedContact"
+      },
+      "title": "Phone Numbers",
+      "type": "array"
+    },
+    "experience_mentions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Experience Mentions",
+      "type": "array"
+    },
+    "experience_years": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Largest explicit 'N years' mention, if any.",
+      "title": "Experience Years"
+    },
+    "entities_count": {
+      "title": "Entities Count",
+      "type": "integer"
+    },
+    "meta": {
+      "$ref": "#/$defs/Meta"
+    }
+  },
+  "required": [
+    "skills",
+    "degrees_or_certifications",
+    "emails",
+    "phone_numbers",
+    "experience_mentions",
+    "entities_count",
+    "meta"
+  ],
+  "title": "ExtractResponse",
+  "type": "object"
+}
