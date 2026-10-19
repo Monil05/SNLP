@@ -8,7 +8,6 @@ from baseline import (
     fit_tfidf,
     match_job_description,
     save_results,
-    split_jobs,
 )
 from prepare_data import main as prepare_data
 
@@ -18,7 +17,6 @@ DATA_DIR = BASE_DIR / "data"
 CV_DIR = BASE_DIR / "cv"
 RESULTS_DIR = BASE_DIR / "test"
 CLEANED_JOBS_PATH = DATA_DIR / "cleaned_jobs.csv"
-TRAIN_JOBS_PATH = DATA_DIR / "train_jobs.csv"
 
 
 def load_jobs():
@@ -121,11 +119,9 @@ def main():
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     jobs = load_jobs()
-    if TRAIN_JOBS_PATH.exists():
-        train_jobs = pd.read_csv(TRAIN_JOBS_PATH)
-    else:
-        train_jobs, _ = split_jobs(jobs)
-    vectorizer = fit_tfidf(train_jobs)
+    # Index the complete cleaned job corpus rather than an arbitrary sample.
+    # TF-IDF has no relevance-label fitting step in this baseline.
+    vectorizer = fit_tfidf(jobs)
     skill_vocabulary = build_skill_vocabulary(jobs)
 
     students = choose_students()

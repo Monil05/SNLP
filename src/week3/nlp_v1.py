@@ -6,11 +6,11 @@ it can be wrapped by a production API (see ``api.py`` in this same folder).
 It includes:
 - domain NER / information extraction for skills and profile fields
 - a genuinely derived student profile representation (education + skills +
-  experience), used as the embedding input instead of the raw input text
+  experience), combined with sanitised profile context for embedding
 - job-category classification (auxiliary component)
 - Sentence-Transformer semantic embeddings (the Week 3 embedding model)
-- the Week 3 core Match Score: 70% skill-match percentage + 30% semantic
-  similarity percentage, combined on a shared 0-100 scale
+- the Week 3 core Match Score: 63% skill-match percentage + 27% semantic
+  similarity percentage + 10% category compatibility, on a shared 0-100 scale
 - local semantic retrieval ("RAG" retrieval stage) over the FULL cleaned job
   dataset
 - extractive summarization (generic text utility)
@@ -166,6 +166,9 @@ class V1Config:
     embedding_model: str = "all-MiniLM-L6-v2"
     top_k: int = 5
     summary_sentences: int = 3
+    skill_weight: float = 0.63
+    semantic_weight: float = 0.27
+    category_weight: float = 0.10
 
 
 class V1NLP:
@@ -179,6 +182,13 @@ class V1NLP:
         config: V1Config | None = None,
     ):
         self.config = config or V1Config()
+        if abs(
+            self.config.skill_weight
+            + self.config.semantic_weight
+            + self.config.category_weight
+            - 1.0
+        ) > 1e-9:
+            raise ValueError("Week 3 score weights must sum to 1.0")
 
         # Week 3 searches the FULL cleaned job dataset. It must not be
         # restricted to the train split.
@@ -198,13 +208,19 @@ class V1NLP:
         # text representation for the generic embed()/similarity() utilities.
         self.vectorizer = fit_tfidf(self.train_jobs)
 
-        # Job-category classification is an auxiliary Week 3 component. Its
-        # TF-IDF representation is fit against the full cleaned dataset.
+        # Fit the category classifier only on the labelled training split.
+        # In particular, do not include category names in their own feature
+        # text: that would leak the target label into the classifier.
         self.category_vectorizer = TfidfVectorizer(stop_words="english", ngram_range=(1, 2), min_df=1)
         category_texts = self.jobs.apply(build_job_text, axis=1)
-        self.category_matrix = self.category_vectorizer.fit_transform(category_texts)
+        classifier_texts = (
+            self.train_jobs["job_title"].map(clean_description).str.lower()
+            + " "
+            + self.train_jobs["job_description"].map(clean_description).str.lower()
+        )
+        self.category_matrix = self.category_vectorizer.fit_transform(classifier_texts)
         self.category_classifier = LogisticRegression(max_iter=1000, random_state=42)
-        self.category_classifier.fit(self.category_matrix, self.jobs["category"].astype(str))
+        self.category_classifier.fit(self.category_matrix, self.train_jobs["category"].astype(str))
 
         # Fields needed for the Week 3 searchable job index (the full,
         # cleaned dataset — see "Dataset / embedding preparation").
@@ -239,13 +255,34 @@ class V1NLP:
                 "issue, not a model-code error."
             ) from exc
         # Keep the Sentence-Transformer model inside the project data folder.
-        # SentenceTransformer reuses this cache on subsequent runs, so the
-        # model weights are downloaded only on the first run.
+        # Prefer an explicit local snapshot when available. Passing the Hub
+        # name even with ``cache_folder`` can still trigger slow network/HF
+        # resolution before the local cache is consulted.
         SENTENCE_TRANSFORMER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        repo = (
+            self.config.embedding_model
+            if "/" in self.config.embedding_model
+            else f"sentence-transformers/{self.config.embedding_model}"
+        )
+        snapshots = SENTENCE_TRANSFORMER_CACHE_DIR / (
+            "models--" + repo.replace("/", "--")
+        ) / "snapshots"
+        local_snapshot = next(
+            (
+                path for path in sorted(snapshots.iterdir())
+                if (path / "config.json").exists()
+                and ((path / "model.safetensors").exists() or (path / "pytorch_model.bin").exists())
+            ),
+            None,
+        ) if snapshots.exists() else None
         try:
-            self._semantic_model = SentenceTransformer(
-                self.config.embedding_model,
-                cache_folder=str(SENTENCE_TRANSFORMER_CACHE_DIR),
+            self._semantic_model = (
+                SentenceTransformer(str(local_snapshot))
+                if local_snapshot is not None
+                else SentenceTransformer(
+                    self.config.embedding_model,
+                    cache_folder=str(SENTENCE_TRANSFORMER_CACHE_DIR),
+                )
             )
         except Exception as exc:
             raise RuntimeError(
@@ -275,6 +312,7 @@ class V1NLP:
             vectors = self._semantic_model.encode(
                 [clean_description(text) for text in self._job_texts],
                 normalize_embeddings=True,
+                batch_size=128,
                 show_progress_bar=False,
             )
             vectors = np.asarray(vectors, dtype=np.float32)
@@ -342,6 +380,14 @@ class V1NLP:
             "skills": skills,
             "experience": experience,
             "profile_summary": profile_summary,
+            # Keep useful professional context (for example, "Cybersecurity
+            # Student") that exact extraction does not model, while removing
+            # contact details before the text reaches the embedding model.
+            "semantic_text": clean_description(
+                PHONE_RE.sub(" ", EMAIL_RE.sub(" ", text))
+                + " "
+                + profile_summary
+            ).strip(),
         }
 
     # ------------------------------------------------------------------
@@ -420,13 +466,34 @@ class V1NLP:
         }
 
     # ------------------------------------------------------------------
-    # Week 3 core matching: skill-match % (70%) + semantic similarity % (30%)
+    # Week 3 core matching: skill (63%) + semantic (27%) + category (10%)
     # ------------------------------------------------------------------
     def _skill_match_percent(self, matched: Sequence[str], required: Sequence[str]) -> float:
         return (len(matched) / len(required)) * 100.0 if required else 0.0
 
-    def _combine_score(self, skill_match_percent: float, semantic_similarity_percent: float) -> float:
-        return (0.70 * skill_match_percent) + (0.30 * semantic_similarity_percent)
+    def _category_probability_percent(self, student_text: str, category: str) -> float:
+        """How compatible a student's profile is with a job category.
+
+        The classifier is trained only on the training split.  This is a small
+        reranking signal, not a replacement for skill evidence or semantic
+        similarity.
+        """
+        vector = self.category_vectorizer.transform([clean_description(student_text)])
+        probabilities = self.category_classifier.predict_proba(vector)[0]
+        probabilities_by_category = dict(zip(self.category_classifier.classes_, probabilities))
+        return float(probabilities_by_category.get(category, 0.0) * 100.0)
+
+    def _combine_score(
+        self,
+        skill_match_percent: float,
+        semantic_similarity_percent: float,
+        category_compatibility_percent: float,
+    ) -> float:
+        return (
+            self.config.skill_weight * skill_match_percent
+            + self.config.semantic_weight * semantic_similarity_percent
+            + self.config.category_weight * category_compatibility_percent
+        )
 
     def score_against_job_text(self, student_text: str, job_text: str) -> Dict[str, Any]:
         """Full Week 3 scoring detail for an ad-hoc job description (the JD
@@ -440,17 +507,27 @@ class V1NLP:
         missing = sorted(job_skills - student_skills)
         skill_match_percent = self._skill_match_percent(matched, job_skills)
 
-        student_vector = self._embed_texts([profile["profile_summary"]])
+        student_vector = self._embed_texts([profile["semantic_text"]])
         job_vector = self._embed_texts([clean_description(job_text)])
         semantic_similarity_percent = self._cosine_percent(student_vector, job_vector)
+        job_category = self.classify_job(job_text)["predicted_category"]
+        category_compatibility_percent = self._category_probability_percent(student_text, job_category)
 
-        match_score = round(self._combine_score(skill_match_percent, semantic_similarity_percent), 2)
+        match_score = round(
+            self._combine_score(
+                skill_match_percent,
+                semantic_similarity_percent,
+                category_compatibility_percent,
+            ),
+            2,
+        )
 
         return {
             "match_score": match_score,
             # Kept separate from the final Match Score, for internal use only.
             "skill_match_percent": round(skill_match_percent, 2),
             "semantic_similarity_percent": round(semantic_similarity_percent, 2),
+            "category_compatibility_percent": round(category_compatibility_percent, 2),
             "matched_skills": format_skills(matched),
             "missing_weak_skills": format_skills(missing),
             "recommended_learning": format_skills(missing),
@@ -477,9 +554,13 @@ class V1NLP:
         profile = self.derive_student_profile(student_text)
         student_skills = set(profile["skills"])
 
-        student_vector = self._embed_texts([profile["profile_summary"]])
+        student_vector = self._embed_texts([profile["semantic_text"]])
         semantic_scores = cosine_similarity(student_vector, self._job_index_vectors).ravel()
         semantic_percents = np.clip(semantic_scores * 100.0, 0.0, 100.0)
+        category_vector = self.category_vectorizer.transform([clean_description(student_text)])
+        category_probabilities = dict(
+            zip(self.category_classifier.classes_, self.category_classifier.predict_proba(category_vector)[0])
+        )
 
         results = []
         for idx, required in enumerate(self._job_required_skills):
@@ -487,7 +568,17 @@ class V1NLP:
             missing = sorted(required - student_skills)
             skill_match_percent = self._skill_match_percent(matched, required)
             semantic_similarity_percent = float(semantic_percents[idx])
-            match_score = round(self._combine_score(skill_match_percent, semantic_similarity_percent), 2)
+            category_compatibility_percent = float(
+                category_probabilities.get(self._job_categories[idx], 0.0) * 100.0
+            )
+            match_score = round(
+                self._combine_score(
+                    skill_match_percent,
+                    semantic_similarity_percent,
+                    category_compatibility_percent,
+                ),
+                2,
+            )
             results.append({
                 "job_id": self._job_ids[idx],
                 "job_title": self._job_titles[idx],
@@ -495,6 +586,7 @@ class V1NLP:
                 "match_score": match_score,
                 "skill_match_percent": round(skill_match_percent, 2),
                 "semantic_similarity_percent": round(semantic_similarity_percent, 2),
+                "category_compatibility_percent": round(category_compatibility_percent, 2),
                 "matched_skills": format_skills(matched),
                 "missing_weak_skills": format_skills(missing),
                 "recommended_learning": format_skills(missing),

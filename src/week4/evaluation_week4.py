@@ -1,12 +1,11 @@
 """Week 4 — Baseline vs Improved NLP model comparison.
 
 Baseline:
-    Week 2 TF-IDF + skill coverage
-    score = 70% skill coverage + 30% TF-IDF cosine similarity
+    Week 2 TF-IDF cosine similarity fitted on the training-job split
 
 Improved:
-    Week 3 Sentence-Transformer semantic representation
-    score = 70% skill coverage + 30% Sentence-Transformer semantic similarity
+    Week 3 hybrid: skill coverage + Sentence-Transformer semantic similarity
+    + category compatibility from a classifier trained on the train split
 
 Both models are evaluated on exactly the same synthetic students and the
 same held-out test job set. Relevance is defined by the student's expected
@@ -124,7 +123,7 @@ def evaluate_baseline(test_jobs, students, vectorizer, skill_vocabulary):
             matched = student_skills.intersection(required)
             skill_coverage = len(matched) / len(required) if required else 0.0
             semantic = float(cosine_scores[i])
-            score = (0.70 * skill_coverage) + (0.30 * semantic)
+            score = semantic
 
             rows.append({
                 "student_id": student_id,
@@ -139,7 +138,7 @@ def evaluate_baseline(test_jobs, students, vectorizer, skill_vocabulary):
             })
 
         ranked = pd.DataFrame(rows).sort_values(
-            ["match_score", "semantic_similarity", "skill_coverage"],
+            ["match_score", "semantic_similarity"],
             ascending=False,
             kind="mergesort",
         ).reset_index(drop=True)
@@ -206,69 +205,69 @@ def evaluate_improved(test_jobs, students):
     test_indices = [job_id_to_index[str(job_id)] for job_id in test_jobs["job_id"]]
     test_job_vectors = improved._job_index_vectors[test_indices]
 
+    raw_profiles = [
+        " ".join([str(s.degree), str(s.profession), str(s.skills)]).strip()
+        for s in students.itertuples()
+    ]
+    profiles = [improved.derive_student_profile(text) for text in raw_profiles]
+    # Batch encoding avoids repeatedly paying Sentence-Transformer overhead.
+    student_vectors = improved._embed_texts([p["semantic_text"] for p in profiles])
+    semantic_percents = np.clip(
+        cosine_similarity(student_vectors, test_job_vectors) * 100.0, 0.0, 100.0
+    )
+    classifier_vectors = improved.category_vectorizer.transform(raw_profiles)
+    category_probabilities = improved.category_classifier.predict_proba(classifier_vectors)
+    class_index = {label: i for i, label in enumerate(improved.category_classifier.classes_)}
+
     details = []
     summaries = []
-
-    for _, student in students.iterrows():
+    for student_index, (_, student) in enumerate(students.iterrows()):
         student_id = student["student_id"]
         expected = EXPECTED_CATEGORIES[student_id]
-
-        raw_profile = " ".join(
-            [str(student["degree"]), str(student["profession"]), str(student["skills"])]
-        ).strip()
-        profile = improved.derive_student_profile(raw_profile)
-        student_skills = set(profile["skills"])
-
-        student_vector = improved._embed_texts([profile["profile_summary"]])
-        semantic_scores = cosine_similarity(student_vector, test_job_vectors)[0]
-        semantic_percents = np.clip(semantic_scores * 100.0, 0.0, 100.0)
-
+        student_skills = set(profiles[student_index]["skills"])
         rows = []
-        for i, (_, job) in enumerate(test_jobs.iterrows()):
+        for job_index, (_, job) in enumerate(test_jobs.iterrows()):
             required = set(parse_saved_skills(job["job_skill_set"]))
             matched = student_skills.intersection(required)
             skill_coverage = len(matched) / len(required) if required else 0.0
-            semantic = float(semantic_percents[i])
-            score = (0.70 * (skill_coverage * 100.0)) + (0.30 * semantic)
-
+            semantic = float(semantic_percents[student_index, job_index])
+            category = str(job["category"])
+            category_compatibility = float(
+                category_probabilities[student_index, class_index[category]] * 100.0
+            )
+            score = improved._combine_score(
+                skill_coverage * 100.0, semantic, category_compatibility
+            )
             rows.append({
                 "student_id": student_id,
                 "expected_category": expected,
                 "job_id": str(job["job_id"]),
-                "category": str(job["category"]),
+                "category": category,
                 "job_title": str(job["job_title"]),
                 "match_score": round(score, 2),
                 "skill_coverage": round(skill_coverage * 100, 2),
                 "semantic_similarity": round(semantic, 2),
+                "category_compatibility": round(category_compatibility, 2),
                 "matched_skills": "; ".join(sorted(matched)),
             })
 
         ranked = pd.DataFrame(rows).sort_values(
             ["match_score", "semantic_similarity", "skill_coverage"],
-            ascending=False,
-            kind="mergesort",
+            ascending=False, kind="mergesort",
         ).reset_index(drop=True)
-
         ranked["rank"] = np.arange(1, len(ranked) + 1)
         top = ranked.head(K)
         relevant = ranked["category"].eq(expected)
         relevant_top = int(top["category"].eq(expected).sum())
         total_relevant = int(relevant.sum())
-
-        details.extend(
-            {"model": "improved_sentence_transformer", **row}
-            for row in ranked.head(K).to_dict("records")
-        )
+        details.extend({"model": "improved_sentence_transformer", **row}
+                       for row in ranked.head(K).to_dict("records"))
         summaries.append({
-            "model": "improved_sentence_transformer",
-            "student_id": student_id,
-            "expected_category": expected,
-            "precision_at_5": relevant_top / K,
+            "model": "improved_sentence_transformer", "student_id": student_id,
+            "expected_category": expected, "precision_at_5": relevant_top / K,
             "recall_at_5": relevant_top / total_relevant if total_relevant else 0.0,
             "mrr": reciprocal_rank(ranked["category"].tolist(), expected),
-            "first_relevant_rank": (
-                int(ranked.index[relevant][0] + 1) if relevant.any() else ""
-            ),
+            "first_relevant_rank": int(ranked.index[relevant][0] + 1) if relevant.any() else "",
             "top_1_category": ranked.iloc[0]["category"],
             "top_1_job_title": ranked.iloc[0]["job_title"],
         })
@@ -325,15 +324,18 @@ def main():
     students = pd.read_csv(STUDENTS_PATH).fillna("")
     validate_inputs(train_jobs, test_jobs, students)
 
-    # Baseline: fit only on training jobs, exactly as the existing evaluation.
+    # Fit the baseline only on training jobs.  Even though TF-IDF is
+    # unsupervised, fitting IDF weights or the vocabulary on held-out job
+    # descriptions would leak test-distribution information into the
+    # comparison.  The test set is used only for ranking and metrics.
     baseline_vectorizer = fit_tfidf(train_jobs)
     baseline_vocab = build_skill_vocabulary(train_jobs)
     baseline_details, baseline_summary = evaluate_baseline(
         test_jobs, students, baseline_vectorizer, baseline_vocab
     )
 
-    # Improved: Sentence-Transformer semantic representation + same skill
-    # coverage component and same 70/30 scoring rule.
+    # Improved: hybrid Sentence-Transformer, skill, and train-split category
+    # compatibility signals.
     improved_details, improved_summary = evaluate_improved(test_jobs, students)
 
     details = pd.concat([baseline_details, improved_details], ignore_index=True)

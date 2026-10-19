@@ -33,14 +33,14 @@
     }
   ],
   "meta": {
-    "asset_version": "1.0.0",
+    "asset_version": "1.1.0",
     "schema_version": "1.0",
     "model": {
       "embedding_backend": "lsa",
       "embedding_model": "lsa-256",
       "jobs_indexed": 1167
     },
-    "processing_ms": 4.1,
+    "processing_ms": 4.4,
     "warnings": []
   }
 }

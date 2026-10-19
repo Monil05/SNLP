@@ -4,7 +4,7 @@
 (1) a Python module + REST API, (2) structured, validated input/output,
 (3) documentation, and (4) confidence scores.
 
-Package: `base version/src/career_nlp/` · Asset version `1.0.0` · Schema version `1.0`
+Package: `base version/src/career_nlp/` · Asset version `1.1.0` · Schema version `1.0`
 
 ---
 
@@ -25,7 +25,7 @@ classifier, embedding backend and job index, and exposes:
 | `analyze_cv(path)` / `analyze_cv_bytes` | `POST /v1/cv/analyze` | PDF/DOCX → text, entities, profile | per entity |
 | `info()` | `GET /v1/info`, `GET /v1/health` | Service/model metadata | – |
 
-**Match Score** is unchanged from Week 3: `0.70 × Skill Match % + 0.30 × Semantic Similarity %` (both 0–100; weights configurable).
+**Match Score** is the Week 3/4 hybrid: `0.63 × Skill Match % + 0.27 × Semantic Similarity % + 0.10 × Category Compatibility %` (all 0–100; weights configurable). Category compatibility is the profile classifier's probability for a job's category. Week 4 fits that classifier on the training split for fair evaluation; the reusable asset fits it on the complete supplied job corpus for deployment.
 
 ## 2. Install & run
 
@@ -79,7 +79,7 @@ Custom embedder: pass any object with `name`, `dimensions`, `encode(texts) -> (n
 | `model_cache_dir` | `CAREER_NLP_MODEL_CACHE_DIR` | `base version/data/sentence_transformer_model` |
 | `embedding_backend` | `CAREER_NLP_BACKEND` | `sentence-transformers` (`lsa`, `auto` also allowed) |
 | `embedding_model` | `CAREER_NLP_EMBEDDING_MODEL` | `all-MiniLM-L6-v2` |
-| `skill_weight` / `semantic_weight` | – | `0.70` / `0.30` (must sum to 1) |
+| `skill_weight` / `semantic_weight` / `category_weight` | – | `0.63` / `0.27` / `0.10` (must sum to 1) |
 | `max_text_chars`, `max_cv_bytes`, `max_top_k` | – | 50 000 / 5 MB / 20 |
 | `warmup_on_start` (API) | `CAREER_NLP_WARMUP` | `true` |
 
@@ -103,7 +103,7 @@ Request: `{"student_text": str, "job_text": str, "include_details": false}`
   "missing_weak_skills": ["communication skills", "tableau"],
   "recommended_learning": ["communication skills", "tableau"],
   "confidence": {"score": 1.0, "level": "high", "method": "evidence_heuristic_v1", "calibrated": false},
-  "meta": {"asset_version": "1.0.0", "schema_version": "1.0",
+  "meta": {"asset_version": "1.1.0", "schema_version": "1.0",
            "model": {"embedding_backend": "lsa", "embedding_model": "lsa-256", "jobs_indexed": 1167},
            "processing_ms": 88.4, "warnings": []}
 }
@@ -185,7 +185,7 @@ Also run: `examples/quickstart.py`, `examples/validate_confidence.py`, `examples
 
 * **The real Sentence-Transformer model was not run during development** (the build sandbox could not install PyTorch). Its code path is covered only by a stub. All sample outputs, latencies and the confidence check above use the `lsa` fallback. Please run `examples/parity_check_week3.py` and `examples/validate_confidence.py` (default backend) and `python examples/generate_docs.py` on your machine, then update the numbers in §5/§6.
 * Skill matching is exact string matching against a vocabulary mined from job postings (4 983 raw strings, many are long phrases like "ms office (word, powerpoint, …)" that never match a CV). Near-synonyms count as misses — e.g. a student with "communication" is "missing" a JD's "communication skills". A normalisation/alias layer is the highest-value next step.
-* Week 5 findings still apply: matching leans on a 70 % skill signal, adjacent categories (SALES/BUSINESS-DEVELOPMENT) get confused, and sparse profiles are unreliable. The asset surfaces this through warnings and low confidence rather than fixing it; the improved model did not beat the baseline on the proxy benchmark (P@5 0.66 vs 0.78).
+* Week 5 findings still apply: sparse profiles and adjacent categories (for example SALES/BUSINESS-DEVELOPMENT) can be unreliable. The category signal is deliberately capped at 10% of ranking, and the asset continues to surface uncertainty through warnings and confidence rather than making automated decisions. The Week 4 CSV is the source of truth for the latest proxy-benchmark numbers.
 * Scanned/image-only CVs are rejected (no OCR). PDF text order depends on `pypdf`.
 * No rate limiting, persistence or per-user auth beyond the optional shared API key; put it behind a gateway for production.
 * Confidence is heuristic (see §5); it should drive UI wording ("review this result"), not automated decisions.

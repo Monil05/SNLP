@@ -41,8 +41,11 @@ class AssetConfig:
     lsa_dimensions: int = 256
 
     # --- scoring ------------------------------------------------------------
-    skill_weight: float = 0.70
-    semantic_weight: float = 0.30
+    # The core ranker is a hybrid: exact skill evidence, dense semantic
+    # similarity, and a small classifier-based category compatibility signal.
+    skill_weight: float = 0.63
+    semantic_weight: float = 0.27
+    category_weight: float = 0.10
 
     # --- limits / behaviour -------------------------------------------------
     default_top_k: int = 5
@@ -57,8 +60,8 @@ class AssetConfig:
             raise ValueError(
                 "embedding_backend must be 'sentence-transformers', 'lsa' or 'auto'"
             )
-        if abs((self.skill_weight + self.semantic_weight) - 1.0) > 1e-9:
-            raise ValueError("skill_weight + semantic_weight must equal 1.0")
+        if abs((self.skill_weight + self.semantic_weight + self.category_weight) - 1.0) > 1e-9:
+            raise ValueError("skill_weight + semantic_weight + category_weight must equal 1.0")
         if self.max_text_chars < 1 or self.default_top_k < 1:
             raise ValueError("max_text_chars and default_top_k must be >= 1")
 

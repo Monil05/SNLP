@@ -72,7 +72,7 @@ python "base version/src/prepare_data.py"
 
 The original `job_id` is preserved so evaluation can identify individual jobs.
 
-The job split uses `random_state=42` and stratifies by category. The TF-IDF vectorizer and skill vocabulary used by the evaluation are fitted from the training jobs only.
+The job split uses `random_state=42` and stratifies by category. For the held-out evaluation, the Week 2 lexical baseline fits its unsupervised TF-IDF vocabulary and IDF weights on the training jobs only; no test-job text or relevance label is used to fit either model. The deployed search index may use the complete supplied corpus, because it is not a held-out evaluation.
 
 ## Run the interactive baseline
 
@@ -113,12 +113,7 @@ The expected categories are proxy labels for the synthetic student profiles and 
 
 ## Baseline scoring
 
-The baseline combines:
-
-- 70% skill coverage
-- 30% TF-IDF cosine similarity
-
-The final score is therefore a heuristic ranking score, not a trained supervised classifier.
+The baseline ranks by **TF-IDF cosine similarity** only. Exact skill overlap is returned as an explanation, not mixed into the baseline score. It is therefore a simple lexical ranking baseline, not a trained supervised classifier.
 
 ## Git hygiene
 
@@ -135,7 +130,7 @@ The project now includes the Week 3 core NLP pipeline and FastAPI interface, in 
 - A genuinely derived student profile representation (normalized education + skills + experience), used as the embedding input
 - Job-category classification (auxiliary component)
 - Sentence-Transformer semantic embeddings (the Week 3 embedding model), generated and stored for every job in the full cleaned dataset
-- The Week 3 core Match Score: `0.70 × Skill Match % + 0.30 × Semantic Similarity %`
+- The Week 3 core Match Score: `0.63 × Skill Match % + 0.27 × Sentence-Transformer Similarity % + 0.10 × train-split Category Compatibility %`
 - Semantic ("RAG"-style) job retrieval over the full cleaned job dataset
 - Extractive summarization (generic utility)
 - PDF/DOCX CV processing

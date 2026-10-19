@@ -109,8 +109,13 @@ def test_match_structure_and_default_hides_internals(nlp):
 def test_match_details_opt_in(nlp):
     r = nlp.match(IT_STUDENT, IT_JD, include_details=True)
     b = r.score_breakdown
-    assert b.skill_weight == 0.7 and b.semantic_weight == 0.3
-    assert r.match_score == pytest.approx(0.7 * b.skill_match_percent + 0.3 * b.semantic_similarity_percent, abs=0.02)
+    assert (b.skill_weight, b.semantic_weight, b.category_weight) == (0.63, 0.27, 0.10)
+    assert r.match_score == pytest.approx(
+        0.63 * b.skill_match_percent
+        + 0.27 * b.semantic_similarity_percent
+        + 0.10 * b.category_compatibility_percent,
+        abs=0.02,
+    )
     assert r.confidence.factors and r.student_profile.skills
 
 
@@ -386,7 +391,7 @@ def test_api_health_info(client):
     h = client.get("/v1/health").json()
     assert h["status"] == "ok" and h["ready"] and h["jobs_indexed"] == 48
     i = client.get("/v1/info").json()
-    assert i["scoring"] == {"skill_weight": 0.7, "semantic_weight": 0.3} and "HR" in i["categories"]
+    assert i["scoring"] == {"skill_weight": 0.63, "semantic_weight": 0.27, "category_weight": 0.1} and "HR" in i["categories"]
 
 
 def test_api_match_and_recommend(client):
@@ -395,7 +400,7 @@ def test_api_match_and_recommend(client):
     body = r.json()
     assert "score_breakdown" not in body and body["confidence"]["level"]
     d = client.post("/v1/match", json={"student_text": IT_STUDENT, "job_text": IT_JD, "include_details": True}).json()
-    assert d["score_breakdown"]["skill_weight"] == 0.7
+    assert d["score_breakdown"]["skill_weight"] == 0.63
     rec = client.post("/v1/recommend", json={"student_text": IT_STUDENT, "top_k": 2}).json()
     assert rec["recommended_job"]["category"] == "INFORMATION-TECHNOLOGY" and len(rec["alternatives"]) == 1
     both = client.post("/v1/analyze", json={"student_text": IT_STUDENT}).json()

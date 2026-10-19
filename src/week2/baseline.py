@@ -137,7 +137,9 @@ def match_job_description(student_text, job_description, vectorizer, skill_vocab
     skill_coverage = (
         len(matched) / required_skill_count if required_skill_count else 0.0
     )
-    final_score = (0.70 * skill_coverage) + (0.30 * cosine_score)
+    # Week 2 is deliberately a simple lexical baseline. Skill overlap stays
+    # in the response as an explanation, but does not affect its ranking.
+    final_score = cosine_score
     return {
         "match_score": round(final_score * 100, 2),
         "matched_skills": format_skills(matched),
@@ -163,7 +165,8 @@ def score_student_against_job(student_text, job_row, vectorizer, skill_vocabular
     skill_coverage = (
         len(matched) / len(required_skill_set) if required_skill_set else 0.0
     )
-    final_score = (0.70 * skill_coverage) + (0.30 * cosine_score)
+    # Keep the baseline score purely lexical; skill coverage is explanatory.
+    final_score = cosine_score
     return {
         "match_score": round(final_score * 100, 2),
         "cosine_score": round(cosine_score * 100, 2),

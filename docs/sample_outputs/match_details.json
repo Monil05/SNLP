@@ -1,5 +1,5 @@
 {
-  "match_score": 70.06,
+  "match_score": 67.37,
   "matched_skills": [
     "communication",
     "power bi",
@@ -26,34 +26,36 @@
   },
   "score_breakdown": {
     "skill_match_percent": 66.67,
-    "semantic_similarity_percent": 77.99,
-    "skill_weight": 0.7,
-    "semantic_weight": 0.3,
+    "semantic_similarity_percent": 80.36,
+    "category_compatibility_percent": 36.76,
+    "skill_weight": 0.63,
+    "semantic_weight": 0.27,
+    "category_weight": 0.1,
     "required_skills_detected": 6
   },
   "student_profile": {
     "normalized_education": "B.Tech in Data Science",
     "skills": [
       "machine learning",
-      "data analysis",
       "communication",
+      "data analysis",
       "data science",
       "power bi",
       "python",
       "sql"
     ],
     "experience": "2 years",
-    "profile_summary": "Education: B.Tech in Data Science. Skills: machine learning; data analysis; communication; data science; power bi; python; sql. Experience: 2 years."
+    "profile_summary": "Education: B.Tech in Data Science. Skills: machine learning; communication; data analysis; data science; power bi; python; sql. Experience: 2 years."
   },
   "meta": {
-    "asset_version": "1.0.0",
+    "asset_version": "1.1.0",
     "schema_version": "1.0",
     "model": {
       "embedding_backend": "lsa",
       "embedding_model": "lsa-256",
       "jobs_indexed": 1167
     },
-    "processing_ms": 77.5,
+    "processing_ms": 82.1,
     "warnings": []
   }
 }

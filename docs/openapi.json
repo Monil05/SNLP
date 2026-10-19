@@ -3,7 +3,7 @@
   "info": {
     "title": "Career NLP Asset",
     "description": "Reusable NLP component for Placement & Career Intelligence: extraction, classification, embeddings, matching, recommendation and retrieval - with structured output and confidence scores.",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "paths": {
     "/v1/health": {
@@ -973,7 +973,7 @@
         "properties": {
           "file": {
             "type": "string",
-            "contentMediaType": "application/octet-stream",
+            "format": "binary",
             "title": "File"
           }
         },
@@ -1625,7 +1625,7 @@
           "asset_version": {
             "type": "string",
             "title": "Asset Version",
-            "default": "1.0.0"
+            "default": "1.1.0"
           },
           "schema_version": {
             "type": "string",
@@ -1928,6 +1928,10 @@
             "type": "number",
             "title": "Semantic Similarity Percent"
           },
+          "category_compatibility_percent": {
+            "type": "number",
+            "title": "Category Compatibility Percent"
+          },
           "skill_weight": {
             "type": "number",
             "title": "Skill Weight"
@@ -1935,6 +1939,10 @@
           "semantic_weight": {
             "type": "number",
             "title": "Semantic Weight"
+          },
+          "category_weight": {
+            "type": "number",
+            "title": "Category Weight"
           },
           "required_skills_detected": {
             "type": "integer",
@@ -1946,8 +1954,10 @@
         "required": [
           "skill_match_percent",
           "semantic_similarity_percent",
+          "category_compatibility_percent",
           "skill_weight",
           "semantic_weight",
+          "category_weight",
           "required_skills_detected"
         ],
         "title": "ScoreBreakdown"

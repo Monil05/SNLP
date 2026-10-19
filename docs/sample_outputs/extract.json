@@ -6,14 +6,14 @@
       "confidence": 0.95
     },
     {
-      "name": "data analysis",
-      "mentions": 1,
-      "confidence": 0.95
-    },
-    {
       "name": "communication",
       "mentions": 1,
       "confidence": 0.9
+    },
+    {
+      "name": "data analysis",
+      "mentions": 1,
+      "confidence": 0.95
     },
     {
       "name": "data science",
@@ -62,14 +62,14 @@
   "experience_years": 2.0,
   "entities_count": 11,
   "meta": {
-    "asset_version": "1.0.0",
+    "asset_version": "1.1.0",
     "schema_version": "1.0",
     "model": {
       "embedding_backend": "lsa",
       "embedding_model": "lsa-256",
       "jobs_indexed": 1167
     },
-    "processing_ms": 5.1,
+    "processing_ms": 6.7,
     "warnings": []
   }
 }

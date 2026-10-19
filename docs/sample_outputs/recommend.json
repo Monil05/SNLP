@@ -4,7 +4,7 @@
     "job_id": "job_00831",
     "job_title": "data solutions analyst",
     "category": "FINANCE",
-    "match_score": 37.24,
+    "match_score": 36.29,
     "matched_skills": [
       "communication",
       "data analysis",
@@ -47,7 +47,7 @@
       "job_id": "job_00321",
       "job_title": "information technology programmer",
       "category": "INFORMATION-TECHNOLOGY",
-      "match_score": 33.06,
+      "match_score": 33.62,
       "matched_skills": [
         "communication",
         "data analysis",
@@ -91,14 +91,14 @@
     "calibrated": false
   },
   "meta": {
-    "asset_version": "1.0.0",
+    "asset_version": "1.1.0",
     "schema_version": "1.0",
     "model": {
       "embedding_backend": "lsa",
       "embedding_model": "lsa-256",
       "jobs_indexed": 1167
     },
-    "processing_ms": 40.9,
+    "processing_ms": 43.3,
     "warnings": [
       "Low confidence: top results are close in score and/or span several job categories."
     ]

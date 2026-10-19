@@ -57,7 +57,7 @@
       "additionalProperties": false,
       "properties": {
         "asset_version": {
-          "default": "1.0.0",
+          "default": "1.1.0",
           "title": "Asset Version",
           "type": "string"
         },
@@ -195,12 +195,20 @@
           "title": "Semantic Similarity Percent",
           "type": "number"
         },
+        "category_compatibility_percent": {
+          "title": "Category Compatibility Percent",
+          "type": "number"
+        },
         "skill_weight": {
           "title": "Skill Weight",
           "type": "number"
         },
         "semantic_weight": {
           "title": "Semantic Weight",
+          "type": "number"
+        },
+        "category_weight": {
+          "title": "Category Weight",
           "type": "number"
         },
         "required_skills_detected": {
@@ -211,8 +219,10 @@
       "required": [
         "skill_match_percent",
         "semantic_similarity_percent",
+        "category_compatibility_percent",
         "skill_weight",
         "semantic_weight",
+        "category_weight",
         "required_skills_detected"
       ],
       "title": "ScoreBreakdown",

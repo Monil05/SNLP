@@ -218,8 +218,10 @@ class MatchRequest(_Request):
 class ScoreBreakdown(_Model):
     skill_match_percent: float
     semantic_similarity_percent: float
+    category_compatibility_percent: float
     skill_weight: float
     semantic_weight: float
+    category_weight: float
     required_skills_detected: int
 
 

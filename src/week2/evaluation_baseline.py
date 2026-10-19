@@ -87,7 +87,8 @@ def evaluate_student(student, test_jobs, vectorizer, skill_vocabulary, job_vecto
         matched = sorted(student_skills.intersection(required_skills))
         missing = sorted(required_skills.difference(student_skills))
         skill_coverage = len(matched) / len(required_skills) if required_skills else 0.0
-        final_score = (0.70 * skill_coverage) + (0.30 * float(cosine_scores[i]))
+        # Week 2 baseline ranking is TF-IDF cosine similarity only.
+        final_score = float(cosine_scores[i])
         rows.append({
             "student_id": student["student_id"],
             "expected_category": expected_category,
@@ -103,7 +104,7 @@ def evaluate_student(student, test_jobs, vectorizer, skill_vocabulary, job_vecto
         })
 
     return pd.DataFrame(rows).sort_values(
-        ["match_score", "cosine_score", "skill_coverage"],
+        ["match_score", "cosine_score"],
         ascending=False,
         kind="mergesort",
     ).reset_index(drop=True)
@@ -121,8 +122,10 @@ def main():
     students = pd.read_csv(STUDENTS_PATH).fillna("")
     validate_inputs(train_jobs, test_jobs, students)
 
+    # Fit TF-IDF on training jobs only.  Although it is unsupervised, fitting
+    # vocabulary or IDF statistics on held-out job descriptions would leak
+    # test-distribution information into this Week 2 evaluation.
     vectorizer = fit_tfidf(train_jobs)
-    # Prevent test-set skill vocabulary leakage.
     skill_vocabulary = build_skill_vocabulary(train_jobs)
     job_texts = test_jobs.apply(build_job_text, axis=1)
     job_vectors = vectorizer.transform(job_texts)

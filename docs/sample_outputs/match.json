@@ -1,5 +1,5 @@
 {
-  "match_score": 70.06,
+  "match_score": 67.37,
   "matched_skills": [
     "communication",
     "power bi",
@@ -21,14 +21,14 @@
     "calibrated": false
   },
   "meta": {
-    "asset_version": "1.0.0",
+    "asset_version": "1.1.0",
     "schema_version": "1.0",
     "model": {
       "embedding_backend": "lsa",
       "embedding_model": "lsa-256",
       "jobs_indexed": 1167
     },
-    "processing_ms": 88.4,
+    "processing_ms": 84.2,
     "warnings": []
   }
 }

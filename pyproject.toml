@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "career-nlp"
-version = "1.0.0"
+version = "1.1.0"
 description = "Reusable NLP asset for Placement & Career Intelligence: extraction, classification, matching, recommendation, retrieval - with structured output and confidence scores."
 requires-python = ">=3.10"
 dependencies = ["numpy", "pandas", "scikit-learn", "pydantic>=2"]

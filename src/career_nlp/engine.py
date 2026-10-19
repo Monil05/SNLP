@@ -2,8 +2,7 @@
 
 One object, lazily initialised, thread-safe after warm-up, returning validated
 Pydantic results. It owns: job dataset + skill vocabulary, category classifier,
-embedding backend + job index (cached on disk), and the match/recommend logic
-(Match Score = 0.70 x Skill Match % + 0.30 x Semantic Similarity %).
+embedding backend + job index (cached on disk), and the match/recommend logic.
 """
 
 from __future__ import annotations
@@ -271,17 +270,38 @@ class CareerNLP:
         """Most in-demand (across the job dataset) first, then alphabetical."""
         return sorted(missing, key=lambda s: (-st.skill_demand.get(s, 0), s))
 
-    def _combine(self, skill_pct: float, sem_pct: float) -> float:
-        return self.config.skill_weight * skill_pct + self.config.semantic_weight * sem_pct
+    def _combine(self, skill_pct: float, sem_pct: float, category_pct: float) -> float:
+        return (
+            self.config.skill_weight * skill_pct
+            + self.config.semantic_weight * sem_pct
+            + self.config.category_weight * category_pct
+        )
 
-    def _breakdown(self, skill_pct: float, sem_pct: float, n_required: int) -> ScoreBreakdown:
+    def _breakdown(
+        self, skill_pct: float, sem_pct: float, category_pct: float, n_required: int
+    ) -> ScoreBreakdown:
         return ScoreBreakdown(
             skill_match_percent=round(skill_pct, 2),
             semantic_similarity_percent=round(sem_pct, 2),
+            category_compatibility_percent=round(category_pct, 2),
             skill_weight=self.config.skill_weight,
             semantic_weight=self.config.semantic_weight,
+            category_weight=self.config.category_weight,
             required_skills_detected=n_required,
         )
+
+    @staticmethod
+    def _category_probability_percent(st: _State, student_text: str, category: str) -> float:
+        """Return the profile classifier's probability for ``category`` on 0-100.
+
+        It is deliberately a modest reranking signal: exact skill evidence and
+        semantic similarity remain the dominant parts of each match score.
+        """
+        proba = st.classifier.predict_proba(
+            st.classifier_vectorizer.transform([clean_text(student_text)])
+        )[0]
+        by_category = dict(zip(st.classifier.classes_, proba))
+        return float(by_category.get(category, 0.0) * 100.0)
 
     # ------------------------------------------------------------------
     # information extraction
@@ -417,14 +437,21 @@ class CareerNLP:
         missing = sorted(job_skills - student_skills)
         skill_pct = (len(matched) / len(job_skills) * 100.0) if job_skills else 0.0
 
-        sv, jv = self._embed(st, [profile.profile_summary]), self._embed(st, [job_text])
+        # Embed the original profile text as well as the extracted summary so
+        # professional context (e.g. "Cybersecurity Student") is retained.
+        semantic_profile = f"{clean_text(student_text)} {profile.profile_summary}"
+        sv, jv = self._embed(st, [semantic_profile]), self._embed(st, [job_text])
         sem_pct = float(self._cos_percent(sv, jv)[0])
-        score = round(self._combine(skill_pct, sem_pct), 2)
+        job_category = str(st.classifier.predict(
+            st.classifier_vectorizer.transform([clean_text(job_text)])
+        )[0])
+        category_pct = self._category_probability_percent(st, student_text, job_category)
+        score = round(self._combine(skill_pct, sem_pct, category_pct), 2)
 
         warnings: List[str] = []
         if not job_skills:
             warnings.append("No known skills were recognised in the job description, so Skill Match is 0 and "
-                            f"the score reflects semantic similarity only (max {self.config.semantic_weight * 100:.0f}).")
+                            "the score relies only on semantic and category signals.")
         if not student_skills:
             warnings.append("No known skills were recognised in the student text; Skill Match is 0.")
 
@@ -432,7 +459,10 @@ class CareerNLP:
         return MatchResponse(
             match_score=score, matched_skills=matched, missing_weak_skills=missing,
             recommended_learning=self._order_learning(st, missing), confidence=confidence,
-            score_breakdown=self._breakdown(skill_pct, sem_pct, len(job_skills)) if include_details else None,
+            score_breakdown=(
+                self._breakdown(skill_pct, sem_pct, category_pct, len(job_skills))
+                if include_details else None
+            ),
             student_profile=profile if include_details else None,
             meta=self._meta(st, t0, warnings),
         )
@@ -441,17 +471,20 @@ class CareerNLP:
     # recommendation - JD not provided
     # ------------------------------------------------------------------
     def _job_record(self, st: _State, i: int, rank: int, student_skills: set,
-                    sem_pct: float, details: bool) -> Tuple[RecommendedJob, float]:
+                    sem_pct: float, category_pct: float, details: bool) -> Tuple[RecommendedJob, float]:
         required = st.job_skill_sets[i]
         matched = sorted(student_skills & required)
         missing = sorted(required - student_skills)
         skill_pct = (len(matched) / len(required) * 100.0) if required else 0.0
-        score = round(self._combine(skill_pct, sem_pct), 2)
+        score = round(self._combine(skill_pct, sem_pct, category_pct), 2)
         rec = RecommendedJob(
             rank=rank, job_id=st.job_ids[i], job_title=clean_job_title(st.job_titles[i]),
             category=st.job_categories[i], match_score=score, matched_skills=matched,
             missing_weak_skills=missing, recommended_learning=self._order_learning(st, missing),
-            score_breakdown=self._breakdown(skill_pct, sem_pct, len(required)) if details else None,
+            score_breakdown=(
+                self._breakdown(skill_pct, sem_pct, category_pct, len(required))
+                if details else None
+            ),
         )
         return rec, skill_pct
 
@@ -463,12 +496,25 @@ class CareerNLP:
 
         profile = self._profile_from_fields(self._extract_fields(st, student_text))
         student_skills = set(profile.skills)
-        sem = self._cos_percent(self._embed(st, [profile.profile_summary]), st.index_vectors)
+        semantic_profile = f"{clean_text(student_text)} {profile.profile_summary}"
+        sem = self._cos_percent(self._embed(st, [semantic_profile]), st.index_vectors)
 
         n_matched = np.array([len(student_skills & r) for r in st.job_skill_sets], dtype=np.float64)
         n_req = np.array([len(r) for r in st.job_skill_sets], dtype=np.float64)
         skill = np.divide(n_matched, n_req, out=np.zeros_like(n_matched), where=n_req > 0) * 100.0
-        scores = np.round(self.config.skill_weight * skill + self.config.semantic_weight * sem, 2)
+        category_proba = st.classifier.predict_proba(
+            st.classifier_vectorizer.transform([clean_text(student_text)])
+        )[0]
+        category_lookup = dict(zip(st.classifier.classes_, category_proba))
+        category = np.array(
+            [category_lookup.get(job_category, 0.0) * 100.0 for job_category in st.job_categories]
+        )
+        scores = np.round(
+            self.config.skill_weight * skill
+            + self.config.semantic_weight * sem
+            + self.config.category_weight * category,
+            2,
+        )
         order = np.argsort(-scores, kind="stable")
 
         # alternatives: next-best jobs whose cleaned title differs from those already shown
@@ -484,7 +530,9 @@ class CareerNLP:
 
         records, top_skill_pct = [], 0.0
         for rank, i in enumerate(picked, start=1):
-            rec, skill_pct = self._job_record(st, i, rank, student_skills, float(sem[i]), include_details)
+            rec, skill_pct = self._job_record(
+                st, i, rank, student_skills, float(sem[i]), float(category[i]), include_details
+            )
             records.append(rec)
             if rank == 1:
                 top_skill_pct = skill_pct
@@ -577,7 +625,11 @@ class CareerNLP:
             asset_version=ASSET_VERSION, schema_version=SCHEMA_VERSION, confidence_method=CONFIDENCE_METHOD,
             embedding_backend=st.backend, embedding_model=st.embedder.name, jobs_indexed=len(st.job_ids),
             categories=sorted(set(st.job_categories)), skill_vocabulary_size=len(st.skill_extractor),
-            scoring={"skill_weight": self.config.skill_weight, "semantic_weight": self.config.semantic_weight},
+            scoring={
+                "skill_weight": self.config.skill_weight,
+                "semantic_weight": self.config.semantic_weight,
+                "category_weight": self.config.category_weight,
+            },
             limits={"max_text_chars": self.config.max_text_chars, "max_cv_bytes": self.config.max_cv_bytes,
                     "max_top_k": self.config.max_top_k},
         )

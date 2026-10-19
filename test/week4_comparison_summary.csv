@@ -1,35 +1,35 @@
 model,student_id,expected_category,precision_at_5,recall_at_5,mrr,first_relevant_rank,top_1_category,top_1_job_title
 baseline_tfidf,student_01,INFORMATION-TECHNOLOGY,0.4,0.041666666666666664,0.5,2.0,FINANCE,data solutions analyst ii (managed care - finance focus) - r7269
-baseline_tfidf,student_02,HR,1.0,0.11363636363636363,1.0,1.0,HR,human resource lead
-baseline_tfidf,student_03,FINANCE,1.0,0.10638297872340426,1.0,1.0,FINANCE,finance analyst
-baseline_tfidf,student_04,SALES,1.0,0.10638297872340426,1.0,1.0,SALES,sales and marketing representative
+baseline_tfidf,student_02,HR,1.0,0.11363636363636363,1.0,1.0,HR,senior human resource generalist
+baseline_tfidf,student_03,FINANCE,1.0,0.10638297872340426,1.0,1.0,FINANCE,"finance analyst (job #247) ($77,056 - $85,028)"
+baseline_tfidf,student_04,SALES,0.8,0.0851063829787234,1.0,1.0,SALES,sales district manager
 baseline_tfidf,student_05,INFORMATION-TECHNOLOGY,1.0,0.10416666666666667,1.0,1.0,INFORMATION-TECHNOLOGY,information technology support analyst
-baseline_tfidf,student_06,BUSINESS-DEVELOPMENT,0.6,0.0625,1.0,1.0,BUSINESS-DEVELOPMENT,business development manager
-baseline_tfidf,student_07,INFORMATION-TECHNOLOGY,0.4,0.041666666666666664,0.3333333333333333,3.0,BUSINESS-DEVELOPMENT,business development representative
-baseline_tfidf,student_08,FINANCE,1.0,0.10638297872340426,1.0,1.0,FINANCE,finance specialist - channel & customer marketing
-baseline_tfidf,student_09,SALES,0.4,0.0425531914893617,1.0,1.0,SALES,sales and marketing representative
-baseline_tfidf,student_10,HR,1.0,0.11363636363636363,1.0,1.0,HR,director of human resources
-baseline_tfidf,student_11,INFORMATION-TECHNOLOGY,0.4,0.041666666666666664,1.0,1.0,INFORMATION-TECHNOLOGY,information technology support specialist
-baseline_tfidf,student_12,SALES,1.0,0.10638297872340426,1.0,1.0,SALES,retail sales associate part time
+baseline_tfidf,student_06,BUSINESS-DEVELOPMENT,1.0,0.10416666666666667,1.0,1.0,BUSINESS-DEVELOPMENT,business development intern
+baseline_tfidf,student_07,INFORMATION-TECHNOLOGY,0.6,0.0625,0.5,2.0,FINANCE,finance manager
+baseline_tfidf,student_08,FINANCE,1.0,0.10638297872340426,1.0,1.0,FINANCE,senior director of finance or controller
+baseline_tfidf,student_09,SALES,1.0,0.10638297872340426,1.0,1.0,SALES,sales and marketing specialist
+baseline_tfidf,student_10,HR,1.0,0.11363636363636363,1.0,1.0,HR,human resources director
+baseline_tfidf,student_11,INFORMATION-TECHNOLOGY,0.8,0.08333333333333333,1.0,1.0,INFORMATION-TECHNOLOGY,senior information technology security analyst
+baseline_tfidf,student_12,SALES,0.4,0.0425531914893617,0.25,4.0,INFORMATION-TECHNOLOGY,information technology help desk
 baseline_tfidf,student_13,FINANCE,1.0,0.10638297872340426,1.0,1.0,FINANCE,strategic finance manager
-baseline_tfidf,student_14,INFORMATION-TECHNOLOGY,0.6,0.0625,1.0,1.0,INFORMATION-TECHNOLOGY,information technology technical services manager
+baseline_tfidf,student_14,INFORMATION-TECHNOLOGY,1.0,0.10416666666666667,1.0,1.0,INFORMATION-TECHNOLOGY,director of information technology
 baseline_tfidf,student_15,HR,1.0,0.11363636363636363,1.0,1.0,HR,human resources manager
-baseline_tfidf,student_16,SALES,0.6,0.06382978723404255,1.0,1.0,SALES,outside sales representative trainee
-improved_sentence_transformer,student_01,INFORMATION-TECHNOLOGY,0.2,0.020833333333333332,0.5,2.0,FINANCE,data solutions analyst ii (managed care - finance focus) - r7269
+baseline_tfidf,student_16,SALES,0.8,0.0851063829787234,1.0,1.0,SALES,"territory sales executive - orlando, fl"
+improved_sentence_transformer,student_01,INFORMATION-TECHNOLOGY,0.4,0.041666666666666664,0.5,2.0,FINANCE,data solutions analyst ii (managed care - finance focus) - r7269
 improved_sentence_transformer,student_02,HR,1.0,0.11363636363636363,1.0,1.0,HR,human resource lead
 improved_sentence_transformer,student_03,FINANCE,1.0,0.10638297872340426,1.0,1.0,FINANCE,finance analyst
 improved_sentence_transformer,student_04,SALES,1.0,0.10638297872340426,1.0,1.0,SALES,sales and marketing representative
-improved_sentence_transformer,student_05,INFORMATION-TECHNOLOGY,0.4,0.041666666666666664,1.0,1.0,INFORMATION-TECHNOLOGY,"application analyst i, day shift, information technology"
-improved_sentence_transformer,student_06,BUSINESS-DEVELOPMENT,0.4,0.041666666666666664,1.0,1.0,BUSINESS-DEVELOPMENT,business development manager
-improved_sentence_transformer,student_07,INFORMATION-TECHNOLOGY,0.0,0.0,0.16666666666666666,6.0,SALES,sales district manager
+improved_sentence_transformer,student_05,INFORMATION-TECHNOLOGY,1.0,0.10416666666666667,1.0,1.0,INFORMATION-TECHNOLOGY,"application analyst i, day shift, information technology"
+improved_sentence_transformer,student_06,BUSINESS-DEVELOPMENT,1.0,0.10416666666666667,1.0,1.0,BUSINESS-DEVELOPMENT,business development manager
+improved_sentence_transformer,student_07,INFORMATION-TECHNOLOGY,0.4,0.041666666666666664,1.0,1.0,INFORMATION-TECHNOLOGY,information technology product manager (15+ experience in pharma)
 improved_sentence_transformer,student_08,FINANCE,1.0,0.10638297872340426,1.0,1.0,FINANCE,finance & accounting - staff accountant
-improved_sentence_transformer,student_09,SALES,0.4,0.0425531914893617,1.0,1.0,SALES,sales and marketing representative
+improved_sentence_transformer,student_09,SALES,0.8,0.0851063829787234,1.0,1.0,SALES,sales and marketing representative
 improved_sentence_transformer,student_10,HR,1.0,0.11363636363636363,1.0,1.0,HR,human resources generalist
-improved_sentence_transformer,student_11,INFORMATION-TECHNOLOGY,0.6,0.0625,1.0,1.0,INFORMATION-TECHNOLOGY,lead information technology specialist (systems administration)
+improved_sentence_transformer,student_11,INFORMATION-TECHNOLOGY,1.0,0.10416666666666667,1.0,1.0,INFORMATION-TECHNOLOGY,lead information technology specialist (systems administration)
 improved_sentence_transformer,student_12,SALES,0.8,0.0851063829787234,1.0,1.0,SALES,sales district manager
 improved_sentence_transformer,student_13,FINANCE,1.0,0.10638297872340426,1.0,1.0,FINANCE,"finance business partner, mep"
-improved_sentence_transformer,student_14,INFORMATION-TECHNOLOGY,0.2,0.020833333333333332,1.0,1.0,INFORMATION-TECHNOLOGY,lead information technology specialist (systems administration)
-improved_sentence_transformer,student_15,HR,1.0,0.11363636363636363,1.0,1.0,HR,human resources manager
-improved_sentence_transformer,student_16,SALES,0.6,0.06382978723404255,0.5,2.0,BUSINESS-DEVELOPMENT,business development manager - dallas/fort worth
-baseline_tfidf,OVERALL,,0.7749999999999999,0.08333585186976145,0.9270833333333333,1.1875,,
-improved_sentence_transformer,OVERALL,,0.6625,0.07158939796905223,0.8854166666666667,1.4375,,
+improved_sentence_transformer,student_14,INFORMATION-TECHNOLOGY,0.8,0.08333333333333333,1.0,1.0,INFORMATION-TECHNOLOGY,lead information technology specialist (systems administration)
+improved_sentence_transformer,student_15,HR,1.0,0.11363636363636363,1.0,1.0,HR,"senior human resources generalist - oklahoma city, ok"
+improved_sentence_transformer,student_16,SALES,0.8,0.0851063829787234,1.0,1.0,SALES,inside sales representative
+baseline_tfidf,OVERALL,,0.8625,0.09245043520309479,0.890625,1.3125,,
+improved_sentence_transformer,OVERALL,,0.875,0.09380792633784656,0.96875,1.0625,,
