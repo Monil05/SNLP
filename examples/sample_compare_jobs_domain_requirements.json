@@ -1,0 +1,21 @@
+{
+  "student_text": "B.Tech in Data Science. Skills: Python, SQL, pandas. Projects: Built reporting dashboards and cleaned business datasets. Academic record: NLP: 35%; Chemistry: 35%.",
+  "job_descriptions": [
+    {
+      "job_id": "TITLE_MISMATCH_CORE_NLP",
+      "job_title": "Business Intelligence Analyst",
+      "job_text": "Despite the title, the central technical domain of this role is Natural Language Processing (NLP). The work is built around RAG systems and NLP model evaluation. Deep expertise in NLP is required. Strong knowledge of RAG is mandatory. Candidates use Python, pandas, and SQL to process data. Knowledge of Chemistry is nice to have."
+    },
+    {
+      "job_id": "TITLE_MISMATCH_NOT_CORE",
+      "job_title": "NLP Research Engineer",
+      "job_text": "This is a business intelligence role focused on Power BI dashboards, SQL reporting, and sales trends. NLP expertise is not required. Knowledge of Chemistry is not required but good to have."
+    },
+    {
+      "job_id": "DATA_OPS",
+      "job_title": "Data Operations Analyst",
+      "job_text": "Clean, validate, transform, and maintain datasets using Python, pandas, and SQL. Data-quality checks and processing automation are required. Knowledge of Chemistry is not required."
+    }
+  ],
+  "include_details": true
+}

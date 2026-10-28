@@ -1,0 +1,529 @@
+{
+  "$defs": {
+    "AcademicAdjustment": {
+      "additionalProperties": false,
+      "description": "A score adjustment when a JD strongly requires a subject with poor grades.",
+      "properties": {
+        "subject": {
+          "title": "Subject",
+          "type": "string"
+        },
+        "grade": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Grade"
+        },
+        "score_percent": {
+          "anyOf": [
+            {
+              "maximum": 100.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score Percent"
+        },
+        "scale_max": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scale Max"
+        },
+        "domain_relevance_percent": {
+          "default": 0.0,
+          "description": "Estimated relevance of the weak subject to the role's core domain.",
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Domain Relevance Percent",
+          "type": "number"
+        },
+        "penalty_percent": {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Penalty Percent",
+          "type": "number"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "subject",
+        "penalty_percent",
+        "reason"
+      ],
+      "title": "AcademicAdjustment",
+      "type": "object"
+    },
+    "AcademicRecord": {
+      "additionalProperties": false,
+      "description": "An explicitly stated subject grade or overall GPA from student text.",
+      "properties": {
+        "subject": {
+          "description": "Subject name, or 'Overall GPA' when the score is not subject-specific.",
+          "title": "Subject",
+          "type": "string"
+        },
+        "scope": {
+          "default": "subject",
+          "description": "Overall GPA records are reported but never matched to a JD subject.",
+          "enum": [
+            "subject",
+            "overall"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "grade": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Grade"
+        },
+        "score_percent": {
+          "anyOf": [
+            {
+              "maximum": 100.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A numeric grade normalised to a 0-100 scale. GPA is converted using its scale.",
+          "title": "Score Percent"
+        },
+        "scale_max": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Original denominator for a GPA or fraction, such as 4 or 10.",
+          "title": "Scale Max"
+        },
+        "is_poor": {
+          "title": "Is Poor",
+          "type": "boolean"
+        },
+        "evidence": {
+          "title": "Evidence",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "subject",
+        "is_poor",
+        "evidence",
+        "confidence"
+      ],
+      "title": "AcademicRecord",
+      "type": "object"
+    },
+    "CompetencyRequirement": {
+      "additionalProperties": false,
+      "description": "A job competency with its priority and evidence from the JD/profile.\n\n``kind`` separates practical skills from broader knowledge areas without\nrequiring a fixed vocabulary of subjects or technology names.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "skill",
+            "knowledge_area"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "required",
+            "preferred",
+            "not_required"
+          ],
+          "title": "Priority",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "matched",
+            "missing",
+            "not_evaluated"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "evidence": {
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "kind",
+        "priority",
+        "status",
+        "evidence"
+      ],
+      "title": "CompetencyRequirement",
+      "type": "object"
+    },
+    "Confidence": {
+      "additionalProperties": false,
+      "description": "Confidence attached to a result.\n\n``score`` is in [0, 1]. For classification it is the model's predicted\nprobability. For matching/recommendation it is an *evidence-sufficiency*\nheuristic (how much signal the result rests on) - it is NOT a calibrated\nprobability that the answer is correct. ``calibrated`` says which it is.",
+      "properties": {
+        "score": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Score",
+          "type": "number"
+        },
+        "level": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Level",
+          "type": "string"
+        },
+        "method": {
+          "default": "evidence_heuristic_v1",
+          "title": "Method",
+          "type": "string"
+        },
+        "calibrated": {
+          "default": false,
+          "title": "Calibrated",
+          "type": "boolean"
+        },
+        "factors": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Per-factor breakdown. Only populated when include_details=true.",
+          "title": "Factors"
+        }
+      },
+      "required": [
+        "score",
+        "level"
+      ],
+      "title": "Confidence",
+      "type": "object"
+    },
+    "Meta": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_version": {
+          "default": "1.4.5",
+          "title": "Asset Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "model": {
+          "$ref": "#/$defs/ModelInfo"
+        },
+        "processing_ms": {
+          "title": "Processing Ms",
+          "type": "number"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "model",
+        "processing_ms"
+      ],
+      "title": "Meta",
+      "type": "object"
+    },
+    "ModelInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "embedding_backend": {
+          "title": "Embedding Backend",
+          "type": "string"
+        },
+        "embedding_model": {
+          "title": "Embedding Model",
+          "type": "string"
+        },
+        "jobs_indexed": {
+          "title": "Jobs Indexed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "embedding_backend",
+        "embedding_model",
+        "jobs_indexed"
+      ],
+      "title": "ModelInfo",
+      "type": "object"
+    },
+    "ScoreBreakdown": {
+      "additionalProperties": false,
+      "properties": {
+        "skill_match_percent": {
+          "description": "Coverage of required skills/knowledge areas, with preferred items weighted less.",
+          "title": "Skill Match Percent",
+          "type": "number"
+        },
+        "semantic_similarity_percent": {
+          "title": "Semantic Similarity Percent",
+          "type": "number"
+        },
+        "category_compatibility_percent": {
+          "title": "Category Compatibility Percent",
+          "type": "number"
+        },
+        "skill_weight": {
+          "title": "Skill Weight",
+          "type": "number"
+        },
+        "semantic_weight": {
+          "title": "Semantic Weight",
+          "type": "number"
+        },
+        "category_weight": {
+          "title": "Category Weight",
+          "type": "number"
+        },
+        "required_skills_detected": {
+          "description": "Number of required competency requirements detected in the JD.",
+          "title": "Required Skills Detected",
+          "type": "integer"
+        },
+        "base_match_score": {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Base Match Score",
+          "type": "number"
+        },
+        "academic_penalty_percent": {
+          "default": 0.0,
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Academic Penalty Percent",
+          "type": "number"
+        }
+      },
+      "required": [
+        "skill_match_percent",
+        "semantic_similarity_percent",
+        "category_compatibility_percent",
+        "skill_weight",
+        "semantic_weight",
+        "category_weight",
+        "required_skills_detected",
+        "base_match_score"
+      ],
+      "title": "ScoreBreakdown",
+      "type": "object"
+    },
+    "StudentProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "normalized_education": {
+          "title": "Normalized Education",
+          "type": "string"
+        },
+        "skills": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Skills",
+          "type": "array"
+        },
+        "experience": {
+          "title": "Experience",
+          "type": "string"
+        },
+        "academic_records": {
+          "items": {
+            "$ref": "#/$defs/AcademicRecord"
+          },
+          "title": "Academic Records",
+          "type": "array"
+        },
+        "profile_summary": {
+          "description": "The text actually embedded for semantic similarity.",
+          "title": "Profile Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "normalized_education",
+        "skills",
+        "experience",
+        "profile_summary"
+      ],
+      "title": "StudentProfile",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "match_score": {
+      "description": "Final score after any academic adjustment.",
+      "maximum": 100.0,
+      "minimum": 0.0,
+      "title": "Match Score",
+      "type": "number"
+    },
+    "base_match_score": {
+      "description": "Hybrid skill/semantic/category score before academic adjustment.",
+      "maximum": 100.0,
+      "minimum": 0.0,
+      "title": "Base Match Score",
+      "type": "number"
+    },
+    "academic_penalty_percent": {
+      "default": 0.0,
+      "maximum": 100.0,
+      "minimum": 0.0,
+      "title": "Academic Penalty Percent",
+      "type": "number"
+    },
+    "academic_adjustments": {
+      "items": {
+        "$ref": "#/$defs/AcademicAdjustment"
+      },
+      "title": "Academic Adjustments",
+      "type": "array"
+    },
+    "academic_records": {
+      "items": {
+        "$ref": "#/$defs/AcademicRecord"
+      },
+      "title": "Academic Records",
+      "type": "array"
+    },
+    "competency_requirements": {
+      "description": "Competencies extracted from the JD, including skills and broader knowledge areas. Preferred competencies can be missing without being treated as mandatory.",
+      "items": {
+        "$ref": "#/$defs/CompetencyRequirement"
+      },
+      "title": "Competency Requirements",
+      "type": "array"
+    },
+    "matched_skills": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Matched Skills",
+      "type": "array"
+    },
+    "missing_weak_skills": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Weak Skills",
+      "type": "array"
+    },
+    "recommended_learning": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Recommended Learning",
+      "type": "array"
+    },
+    "confidence": {
+      "$ref": "#/$defs/Confidence"
+    },
+    "score_breakdown": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ScoreBreakdown"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "student_profile": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StudentProfile"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "meta": {
+      "$ref": "#/$defs/Meta"
+    }
+  },
+  "required": [
+    "match_score",
+    "base_match_score",
+    "matched_skills",
+    "missing_weak_skills",
+    "recommended_learning",
+    "confidence",
+    "meta"
+  ],
+  "title": "MatchResponse",
+  "type": "object"
+}

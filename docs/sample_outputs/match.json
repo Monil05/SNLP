@@ -1,0 +1,82 @@
+{
+  "match_score": 67.15,
+  "base_match_score": 67.15,
+  "academic_penalty_percent": 0.0,
+  "academic_adjustments": [],
+  "academic_records": [],
+  "competency_requirements": [
+    {
+      "name": "communication",
+      "kind": "skill",
+      "priority": "required",
+      "status": "matched",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    },
+    {
+      "name": "communication skills",
+      "kind": "skill",
+      "priority": "required",
+      "status": "missing",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    },
+    {
+      "name": "power bi",
+      "kind": "skill",
+      "priority": "required",
+      "status": "matched",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    },
+    {
+      "name": "python",
+      "kind": "skill",
+      "priority": "required",
+      "status": "matched",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    },
+    {
+      "name": "sql",
+      "kind": "skill",
+      "priority": "required",
+      "status": "matched",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    },
+    {
+      "name": "tableau",
+      "kind": "skill",
+      "priority": "required",
+      "status": "missing",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    }
+  ],
+  "matched_skills": [
+    "communication",
+    "power bi",
+    "python",
+    "sql"
+  ],
+  "missing_weak_skills": [
+    "communication skills",
+    "tableau"
+  ],
+  "recommended_learning": [
+    "communication skills",
+    "tableau"
+  ],
+  "confidence": {
+    "score": 1.0,
+    "level": "high",
+    "method": "evidence_heuristic_v1",
+    "calibrated": false
+  },
+  "meta": {
+    "asset_version": "1.4.5",
+    "schema_version": "1.0",
+    "model": {
+      "embedding_backend": "lsa",
+      "embedding_model": "lsa-256",
+      "jobs_indexed": 1167
+    },
+    "processing_ms": 366.4,
+    "warnings": []
+  }
+}

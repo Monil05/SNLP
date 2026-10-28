@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8fa">
+  <title>CareerMatch</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="CareerMatch home">
+      <span class="brand-mark">CM</span>
+      <span class="brand-copy"><strong>CareerMatch</strong><small>Student–role matching</small></span>
+    </a>
+  </header>
+
+  <main id="top" class="page-shell">
+    <section class="intro">
+      <p class="eyebrow">CAREER PLANNING</p>
+      <h1>Find roles that fit your profile.</h1>
+      <p class="intro-copy">Add a student profile to get started. You can leave job descriptions empty to discover suitable roles, add one to get a match score, or add several to compare them.</p>
+    </section>
+
+    <form id="analysisForm" novalidate>
+      <section class="panel form-panel">
+        <div class="section-heading">
+          <div class="heading-number">1</div>
+          <div class="heading-copy">
+            <h2>Student profile</h2>
+            <p class="section-subtitle">Paste a CV, resume, or short description of the student's education, skills, projects, and experience. Grades can be included too.</p>
+          </div>
+          <button type="button" class="button button-quiet button-small" id="loadExampleButton">Load example</button>
+        </div>
+        <label class="field" for="studentText">
+          <span>Student text <b class="required-mark">*</b></span>
+          <textarea id="studentText" rows="7" placeholder="B.Tech in Data Science. Skills: Python, SQL, pandas. Projects: Built reporting dashboards…" required></textarea>
+          <small class="field-hint">Only this field is required.</small>
+        </label>
+      </section>
+
+      <section class="panel form-panel jobs-panel">
+        <div class="section-heading">
+          <div class="heading-number">2</div>
+          <div class="heading-copy">
+            <h2>Job descriptions <span class="optional-tag">Optional</span></h2>
+            <p id="jobModeHint" class="section-subtitle">No jobs added. We'll recommend suitable roles from the job dataset.</p>
+          </div>
+          <button type="button" class="button button-secondary button-small" id="addJobButton"><span aria-hidden="true">＋</span> Add job</button>
+        </div>
+        <div id="jobsList" class="jobs-list"></div>
+        <div id="emptyJobsNote" class="empty-jobs-note">You don't need to paste a job description to get recommendations.</div>
+        <div class="jobs-footer">
+          <span id="jobCount">No job descriptions added</span>
+          <span>Up to 20 jobs</span>
+        </div>
+      </section>
+
+      <div class="run-row">
+        <button class="button button-primary run-button" id="runButton" type="submit">
+          <span id="runButtonLabel">Recommend jobs</span><span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <p id="formError" class="form-error" role="alert" hidden></p>
+    </form>
+
+    <section id="loadingState" class="panel loading-panel" hidden aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <div><strong id="loadingTitle">Working on it…</strong><p id="loadingDescription">The profile is being analysed.</p></div>
+    </section>
+
+    <section id="resultsSection" class="results-section" hidden aria-live="polite">
+      <div class="results-heading">
+        <div><p class="eyebrow">RESULTS</p><h2 id="resultsTitle">Recommended roles</h2><p id="resultsSummary" class="section-subtitle"></p></div>
+        <button type="button" class="button button-quiet button-small" id="clearResultsButton">Clear results</button>
+      </div>
+      <div id="resultsList" class="results-list"></div>
+    </section>
+
+    <footer class="page-footer"><span>CareerMatch · SNLP Capstone</span><span>Student profile matching and job recommendations</span></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

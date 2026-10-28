@@ -1,0 +1,27 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "student_text": {
+      "minLength": 1,
+      "title": "Student Text",
+      "type": "string"
+    },
+    "job_text": {
+      "minLength": 1,
+      "title": "Job Text",
+      "type": "string"
+    },
+    "include_details": {
+      "default": false,
+      "description": "Add score_breakdown, student_profile and confidence factors.",
+      "title": "Include Details",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "student_text",
+    "job_text"
+  ],
+  "title": "MatchRequest",
+  "type": "object"
+}

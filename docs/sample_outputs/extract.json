@@ -1,0 +1,86 @@
+{
+  "skills": [
+    {
+      "name": "machine learning",
+      "mentions": 1,
+      "confidence": 0.95
+    },
+    {
+      "name": "data analysis",
+      "mentions": 1,
+      "confidence": 0.95
+    },
+    {
+      "name": "communication",
+      "mentions": 1,
+      "confidence": 0.9
+    },
+    {
+      "name": "data science",
+      "mentions": 1,
+      "confidence": 0.95
+    },
+    {
+      "name": "power bi",
+      "mentions": 1,
+      "confidence": 0.95
+    },
+    {
+      "name": "python",
+      "mentions": 1,
+      "confidence": 0.9
+    },
+    {
+      "name": "sql",
+      "mentions": 1,
+      "confidence": 0.85
+    }
+  ],
+  "degrees_or_certifications": [
+    {
+      "text": "B.Tech in Data Science",
+      "degree": "B.Tech",
+      "specialization": "Data Science",
+      "confidence": 0.95
+    }
+  ],
+  "emails": [
+    {
+      "value": "jane@example.com",
+      "confidence": 0.98
+    }
+  ],
+  "phone_numbers": [
+    {
+      "value": "+91 98765 43210",
+      "confidence": 0.9
+    }
+  ],
+  "experience_mentions": [
+    "2 years"
+  ],
+  "experience_years": 2.0,
+  "academic_records": [
+    {
+      "subject": "Physics",
+      "scope": "subject",
+      "grade": "35%",
+      "score_percent": 35.0,
+      "is_poor": true,
+      "evidence": "Physics: 35%.",
+      "confidence": 0.94
+    }
+  ],
+  "entities_count": 12,
+  "meta": {
+    "asset_version": "1.4.5",
+    "schema_version": "1.0",
+    "model": {
+      "embedding_backend": "lsa",
+      "embedding_model": "lsa-256",
+      "jobs_indexed": 1167
+    },
+    "processing_ms": 9.4,
+    "warnings": []
+  }
+}

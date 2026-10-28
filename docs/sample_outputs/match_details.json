@@ -1,0 +1,112 @@
+{
+  "match_score": 67.15,
+  "base_match_score": 67.15,
+  "academic_penalty_percent": 0.0,
+  "academic_adjustments": [],
+  "academic_records": [],
+  "competency_requirements": [
+    {
+      "name": "communication",
+      "kind": "skill",
+      "priority": "required",
+      "status": "matched",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    },
+    {
+      "name": "communication skills",
+      "kind": "skill",
+      "priority": "required",
+      "status": "missing",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    },
+    {
+      "name": "power bi",
+      "kind": "skill",
+      "priority": "required",
+      "status": "matched",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    },
+    {
+      "name": "python",
+      "kind": "skill",
+      "priority": "required",
+      "status": "matched",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    },
+    {
+      "name": "sql",
+      "kind": "skill",
+      "priority": "required",
+      "status": "matched",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    },
+    {
+      "name": "tableau",
+      "kind": "skill",
+      "priority": "required",
+      "status": "missing",
+      "evidence": "Data analyst needed: python, sql, power bi, tableau and strong communication skills."
+    }
+  ],
+  "matched_skills": [
+    "communication",
+    "power bi",
+    "python",
+    "sql"
+  ],
+  "missing_weak_skills": [
+    "communication skills",
+    "tableau"
+  ],
+  "recommended_learning": [
+    "communication skills",
+    "tableau"
+  ],
+  "confidence": {
+    "score": 1.0,
+    "level": "high",
+    "method": "evidence_heuristic_v1",
+    "calibrated": false,
+    "factors": {
+      "jd_skill_evidence": 1.0,
+      "profile_skill_evidence": 1.0
+    }
+  },
+  "score_breakdown": {
+    "skill_match_percent": 66.67,
+    "semantic_similarity_percent": 79.52,
+    "category_compatibility_percent": 36.76,
+    "skill_weight": 0.63,
+    "semantic_weight": 0.27,
+    "category_weight": 0.1,
+    "required_skills_detected": 6,
+    "base_match_score": 67.15,
+    "academic_penalty_percent": 0.0
+  },
+  "student_profile": {
+    "normalized_education": "B.Tech in Data Science",
+    "skills": [
+      "machine learning",
+      "data analysis",
+      "communication",
+      "data science",
+      "power bi",
+      "python",
+      "sql"
+    ],
+    "experience": "2 years",
+    "academic_records": [],
+    "profile_summary": "Education: B.Tech in Data Science. Skills: machine learning; data analysis; communication; data science; power bi; python; sql. Experience: 2 years."
+  },
+  "meta": {
+    "asset_version": "1.4.5",
+    "schema_version": "1.0",
+    "model": {
+      "embedding_backend": "lsa",
+      "embedding_model": "lsa-256",
+      "jobs_indexed": 1167
+    },
+    "processing_ms": 53.3,
+    "warnings": []
+  }
+}

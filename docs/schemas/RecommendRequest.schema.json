@@ -1,0 +1,28 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "student_text": {
+      "minLength": 1,
+      "title": "Student Text",
+      "type": "string"
+    },
+    "top_k": {
+      "default": 3,
+      "description": "Best job + (top_k-1) alternatives.",
+      "maximum": 10,
+      "minimum": 1,
+      "title": "Top K",
+      "type": "integer"
+    },
+    "include_details": {
+      "default": false,
+      "title": "Include Details",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "student_text"
+  ],
+  "title": "RecommendRequest",
+  "type": "object"
+}

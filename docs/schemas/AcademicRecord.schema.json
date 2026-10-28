@@ -1,0 +1,84 @@
+{
+  "additionalProperties": false,
+  "description": "An explicitly stated subject grade or overall GPA from student text.",
+  "properties": {
+    "subject": {
+      "description": "Subject name, or 'Overall GPA' when the score is not subject-specific.",
+      "title": "Subject",
+      "type": "string"
+    },
+    "scope": {
+      "default": "subject",
+      "description": "Overall GPA records are reported but never matched to a JD subject.",
+      "enum": [
+        "subject",
+        "overall"
+      ],
+      "title": "Scope",
+      "type": "string"
+    },
+    "grade": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Grade"
+    },
+    "score_percent": {
+      "anyOf": [
+        {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "A numeric grade normalised to a 0-100 scale. GPA is converted using its scale.",
+      "title": "Score Percent"
+    },
+    "scale_max": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Original denominator for a GPA or fraction, such as 4 or 10.",
+      "title": "Scale Max"
+    },
+    "is_poor": {
+      "title": "Is Poor",
+      "type": "boolean"
+    },
+    "evidence": {
+      "title": "Evidence",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    }
+  },
+  "required": [
+    "subject",
+    "is_poor",
+    "evidence",
+    "confidence"
+  ],
+  "title": "AcademicRecord",
+  "type": "object"
+}

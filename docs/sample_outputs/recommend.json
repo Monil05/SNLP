@@ -1,0 +1,545 @@
+{
+  "recommended_job": {
+    "rank": 1,
+    "job_id": "job_00321",
+    "job_title": "information technology programmer",
+    "category": "INFORMATION-TECHNOLOGY",
+    "match_score": 29.71,
+    "base_match_score": 29.71,
+    "academic_penalty_percent": 0.0,
+    "academic_adjustments": [],
+    "competency_requirements": [
+      {
+        "name": "attention to detail",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "c#",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "communication",
+        "kind": "skill",
+        "priority": "required",
+        "status": "matched",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "CREATING",
+        "kind": "skill",
+        "priority": "preferred",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "critical thinking",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "dashboard development",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "DASHBOARDS",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "data analysis",
+        "kind": "skill",
+        "priority": "required",
+        "status": "matched",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "database management",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "dax queries",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "DAX QUERIESABILITY",
+        "kind": "knowledge_area",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "DEPLOYING REPORTS",
+        "kind": "skill",
+        "priority": "preferred",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "excel",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "MAINTAINING POWER BIEXTENSIVE EXPERIENCE DEVELOPING",
+        "kind": "skill",
+        "priority": "preferred",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "power bi",
+        "kind": "skill",
+        "priority": "required",
+        "status": "matched",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "problem solving",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "report development",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "sql",
+        "kind": "skill",
+        "priority": "required",
+        "status": "matched",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "SQL (INCLUDING ABILITY",
+        "kind": "knowledge_area",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "SQL DATABASE",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PRIMARY RESPONSIBILITIES:CODE, TEST AND DOCUMENT ALL NEW OR MODIFIED BI AND REPORTING NEED, APPLICATIONS AND PROGRAMS.DEVELOP GRAPHS AND PORTAL INTERFACES.LEVERAGE SQL DATABASE TO DESIGN, DEVELOP, AND MAINTAIN SCALABLE REPORTS, DASHBOARDS, "
+      },
+      {
+        "name": "technical support",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "training skills",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "vba",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      }
+    ],
+    "matched_skills": [
+      "communication",
+      "data analysis",
+      "power bi",
+      "sql"
+    ],
+    "missing_weak_skills": [
+      "attention to detail",
+      "c#",
+      "creating",
+      "critical thinking",
+      "dashboard development",
+      "dashboards",
+      "database management",
+      "dax queries",
+      "dax queriesability",
+      "deploying reports",
+      "excel",
+      "maintaining power biextensive experience developing",
+      "problem solving",
+      "report development",
+      "sql (including ability",
+      "sql database",
+      "technical support",
+      "training skills",
+      "vba"
+    ],
+    "recommended_learning": [
+      "problem solving",
+      "attention to detail",
+      "excel",
+      "critical thinking",
+      "technical support",
+      "database management",
+      "c#",
+      "dashboards",
+      "dashboard development",
+      "vba",
+      "report development",
+      "dax queries",
+      "training skills",
+      "creating",
+      "dax queriesability",
+      "deploying reports",
+      "maintaining power biextensive experience developing",
+      "sql (including ability",
+      "sql database"
+    ]
+  },
+  "alternatives": [
+    {
+      "rank": 2,
+      "job_id": "job_00293",
+      "job_title": "information technology specialist",
+      "category": "INFORMATION-TECHNOLOGY",
+      "match_score": 25.53,
+      "base_match_score": 25.53,
+      "academic_penalty_percent": 0.0,
+      "academic_adjustments": [],
+      "competency_requirements": [
+        {
+          "name": "adaptability",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "ai tools",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "ANY EXPERIENCE WITH EXTREME NETWORKS IS PREFERRED.KNOWLEDGE OF DATA SCIENCE, MACHINE LEARNING, AND AI TOOLS."
+        },
+        {
+          "name": "compliance knowledge",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "confidentiality",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "PROFICIENCY WITH POWERBI AND PYTHON IS PREFERRED.ANY EXPERIENCE THE FOLLOWING IS A PLUS:ELLUCIAN BANNER SYSTEMSALESFORCE,JAVA, PEARL, R, PYTHONORACLE DATABASE AND SERVER ADMINISTRATIONORACLE DATABASE AND SERVER ADMINISTRATIONSSL CERTIFICATE"
+        },
+        {
+          "name": "cultural sensitivity",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "customer service",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "PROFICIENCY WITH POWERBI AND PYTHON IS PREFERRED.ANY EXPERIENCE THE FOLLOWING IS A PLUS:ELLUCIAN BANNER SYSTEMSALESFORCE,JAVA, PEARL, R, PYTHONORACLE DATABASE AND SERVER ADMINISTRATIONORACLE DATABASE AND SERVER ADMINISTRATIONSSL CERTIFICATE"
+        },
+        {
+          "name": "data science",
+          "kind": "skill",
+          "priority": "preferred",
+          "status": "matched",
+          "evidence": "ANY EXPERIENCE WITH EXTREME NETWORKS IS PREFERRED.KNOWLEDGE OF DATA SCIENCE, MACHINE LEARNING, AND AI TOOLS."
+        },
+        {
+          "name": "dns administration",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "ellucian banner",
+          "kind": "skill",
+          "priority": "preferred",
+          "status": "missing",
+          "evidence": "PROFICIENCY WITH POWERBI AND PYTHON IS PREFERRED.ANY EXPERIENCE THE FOLLOWING IS A PLUS:ELLUCIAN BANNER SYSTEMSALESFORCE,JAVA, PEARL, R, PYTHONORACLE DATABASE AND SERVER ADMINISTRATIONORACLE DATABASE AND SERVER ADMINISTRATIONSSL CERTIFICATE"
+        },
+        {
+          "name": "EXTREME NETWORKS",
+          "kind": "skill",
+          "priority": "preferred",
+          "status": "missing",
+          "evidence": "ANY EXPERIENCE WITH EXTREME NETWORKS IS PREFERRED.KNOWLEDGE OF DATA SCIENCE, MACHINE LEARNING, AND AI TOOLS."
+        },
+        {
+          "name": "help desk support",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "SKILLS & ABILITIES:PROFICIENCY IN PROGRAMMING LANGUAGES AND SOFTWARE DEVELOPMENT.EXPERIENCE IN HELP DESK SUPPORT AND CUSTOMER SERVICE.STRONG UNDERSTANDING OF NETWORKING PRINCIPLES AND SYSTEMS."
+        },
+        {
+          "name": "java",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "PROFICIENCY WITH POWERBI AND PYTHON IS PREFERRED.ANY EXPERIENCE THE FOLLOWING IS A PLUS:ELLUCIAN BANNER SYSTEMSALESFORCE,JAVA, PEARL, R, PYTHONORACLE DATABASE AND SERVER ADMINISTRATIONORACLE DATABASE AND SERVER ADMINISTRATIONSSL CERTIFICATE"
+        },
+        {
+          "name": "linux system administration",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "machine learning",
+          "kind": "skill",
+          "priority": "required",
+          "status": "matched",
+          "evidence": "ANY EXPERIENCE WITH EXTREME NETWORKS IS PREFERRED.KNOWLEDGE OF DATA SCIENCE, MACHINE LEARNING, AND AI TOOLS."
+        },
+        {
+          "name": "multi-tasking",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "networking principles",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "SKILLS & ABILITIES:PROFICIENCY IN PROGRAMMING LANGUAGES AND SOFTWARE DEVELOPMENT.EXPERIENCE IN HELP DESK SUPPORT AND CUSTOMER SERVICE.STRONG UNDERSTANDING OF NETWORKING PRINCIPLES AND SYSTEMS."
+        },
+        {
+          "name": "oracle database",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "oral communication",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "organizational skills",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "perl",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "power bi",
+          "kind": "skill",
+          "priority": "required",
+          "status": "matched",
+          "evidence": "PROFICIENCY WITH POWERBI AND PYTHON IS PREFERRED.ANY EXPERIENCE THE FOLLOWING IS A PLUS:ELLUCIAN BANNER SYSTEMSALESFORCE,JAVA, PEARL, R, PYTHONORACLE DATABASE AND SERVER ADMINISTRATIONORACLE DATABASE AND SERVER ADMINISTRATIONSSL CERTIFICATE"
+        },
+        {
+          "name": "programming languages",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "SKILLS & ABILITIES:PROFICIENCY IN PROGRAMMING LANGUAGES AND SOFTWARE DEVELOPMENT.EXPERIENCE IN HELP DESK SUPPORT AND CUSTOMER SERVICE.STRONG UNDERSTANDING OF NETWORKING PRINCIPLES AND SYSTEMS."
+        },
+        {
+          "name": "python",
+          "kind": "skill",
+          "priority": "preferred",
+          "status": "matched",
+          "evidence": "PROFICIENCY WITH POWERBI AND PYTHON IS PREFERRED.ANY EXPERIENCE THE FOLLOWING IS A PLUS:ELLUCIAN BANNER SYSTEMSALESFORCE,JAVA, PEARL, R, PYTHONORACLE DATABASE AND SERVER ADMINISTRATIONORACLE DATABASE AND SERVER ADMINISTRATIONSSL CERTIFICATE"
+        },
+        {
+          "name": "salesforce",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "server administration",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "software development",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "SKILLS & ABILITIES:PROFICIENCY IN PROGRAMMING LANGUAGES AND SOFTWARE DEVELOPMENT.EXPERIENCE IN HELP DESK SUPPORT AND CUSTOMER SERVICE.STRONG UNDERSTANDING OF NETWORKING PRINCIPLES AND SYSTEMS."
+        },
+        {
+          "name": "ssl certificate maintenance",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "SYSTEMS",
+          "kind": "knowledge_area",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "SKILLS & ABILITIES:PROFICIENCY IN PROGRAMMING LANGUAGES AND SOFTWARE DEVELOPMENT.EXPERIENCE IN HELP DESK SUPPORT AND CUSTOMER SERVICE.STRONG UNDERSTANDING OF NETWORKING PRINCIPLES AND SYSTEMS."
+        },
+        {
+          "name": "systems engineering software tools",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "PROFICIENCY WITH POWERBI AND PYTHON IS PREFERRED.ANY EXPERIENCE THE FOLLOWING IS A PLUS:ELLUCIAN BANNER SYSTEMSALESFORCE,JAVA, PEARL, R, PYTHONORACLE DATABASE AND SERVER ADMINISTRATIONORACLE DATABASE AND SERVER ADMINISTRATIONSSL CERTIFICATE"
+        },
+        {
+          "name": "teamwork",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "Curated job skill metadata."
+        },
+        {
+          "name": "TODAY!SPECIAL NOTE",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "APPLY TODAY!SPECIAL NOTE: THIS JOB POSTING SERVES AS A PIPELINE/REPOSITORY FOR POTENTIAL IT EMPLOYEES FOR THE UNIVERSITY."
+        },
+        {
+          "name": "written communication",
+          "kind": "skill",
+          "priority": "required",
+          "status": "missing",
+          "evidence": "PROFICIENCY WITH POWERBI AND PYTHON IS PREFERRED.ANY EXPERIENCE THE FOLLOWING IS A PLUS:ELLUCIAN BANNER SYSTEMSALESFORCE,JAVA, PEARL, R, PYTHONORACLE DATABASE AND SERVER ADMINISTRATIONORACLE DATABASE AND SERVER ADMINISTRATIONSSL CERTIFICATE"
+        }
+      ],
+      "matched_skills": [
+        "data science",
+        "machine learning",
+        "power bi",
+        "python"
+      ],
+      "missing_weak_skills": [
+        "adaptability",
+        "ai tools",
+        "compliance knowledge",
+        "confidentiality",
+        "cultural sensitivity",
+        "customer service",
+        "dns administration",
+        "ellucian banner",
+        "extreme networks",
+        "help desk support",
+        "java",
+        "linux system administration",
+        "multi-tasking",
+        "networking principles",
+        "oracle database",
+        "oral communication",
+        "organizational skills",
+        "perl",
+        "programming languages",
+        "salesforce",
+        "server administration",
+        "software development",
+        "ssl certificate maintenance",
+        "systems",
+        "systems engineering software tools",
+        "teamwork",
+        "today!special note",
+        "written communication"
+      ],
+      "recommended_learning": [
+        "adaptability",
+        "teamwork",
+        "customer service",
+        "organizational skills",
+        "confidentiality",
+        "multi-tasking",
+        "salesforce",
+        "written communication",
+        "java",
+        "compliance knowledge",
+        "help desk support",
+        "oral communication",
+        "cultural sensitivity",
+        "server administration",
+        "software development",
+        "networking principles",
+        "ai tools",
+        "dns administration",
+        "ellucian banner",
+        "linux system administration",
+        "oracle database",
+        "perl",
+        "programming languages",
+        "ssl certificate maintenance",
+        "systems engineering software tools",
+        "extreme networks",
+        "systems",
+        "today!special note"
+      ]
+    }
+  ],
+  "confidence": {
+    "score": 0.5332,
+    "level": "medium",
+    "method": "evidence_heuristic_v1",
+    "calibrated": false
+  },
+  "academic_records": [],
+  "meta": {
+    "asset_version": "1.4.5",
+    "schema_version": "1.0",
+    "model": {
+      "embedding_backend": "lsa",
+      "embedding_model": "lsa-256",
+      "jobs_indexed": 1167
+    },
+    "processing_ms": 2506.9,
+    "warnings": []
+  }
+}
