@@ -4,7 +4,7 @@
 (1) a Python module + REST API, (2) structured, validated input/output,
 (3) documentation, and (4) confidence scores.
 
-Package: `src/career_nlp/` · Asset version `1.4.5` · Schema version `1.0`
+Package: `src/career_nlp/` · Asset version `1.4.6` · Schema version `1.0`
 
 ---
 
@@ -113,7 +113,7 @@ Request: `{"student_text": str, "job_text": str, "include_details": false}`
   "missing_weak_skills": ["communication skills", "tableau"],
   "recommended_learning": ["communication skills", "tableau"],
   "confidence": {"score": 1.0, "level": "high", "method": "evidence_heuristic_v1", "calibrated": false},
-  "meta": {"asset_version": "1.4.5", "schema_version": "1.0",
+  "meta": {"asset_version": "1.4.6", "schema_version": "1.0",
            "model": {"embedding_backend": "lsa", "embedding_model": "lsa-256", "jobs_indexed": 1167},
            "processing_ms": 88.4, "warnings": []}
 }
@@ -218,7 +218,7 @@ Run `PYTHONPATH=src pytest -q test/test_career_nlp.py`. The Week 6 suite has **9
 * No rate limiting, persistence or per-user auth beyond the optional shared API key; put it behind a gateway for production.
 * Confidence is heuristic (see §5); it should drive UI wording ("review this result"), not automated decisions.
 
-## Week 6 competency extraction and grade separation (asset 1.4.5)
+## Week 6 competency extraction and grade separation (asset 1.4.6)
 
 - Added the structured `CompetencyRequirement` output (`kind`, `priority`, `status`, `evidence`) to the existing match/recommendation response shapes. This is additive; schema version remains `1.0`.
 - Combined the existing dataset skill vocabulary with generic competency-language patterns. The extraction has no list of hard-coded subject or technology names; the same cues can surface academic subjects, specialist topics, tools and techniques when the JD states them.
@@ -242,7 +242,7 @@ Run `PYTHONPATH=src pytest -q test/test_career_nlp.py`. The Week 6 suite has **9
 - Verification: all 97 `test/test_career_nlp.py` tests pass. Legacy Week 3 tests could not complete in this environment because `sentence-transformers` is not installed.
 
 
-## Week 6 requirement classification and scoring cleanup (asset 1.4.5)
+## Week 6 requirement classification and scoring cleanup (asset 1.4.6)
 
 - Preferred competencies remain visible in `competency_requirements` and can appear in `recommended_learning`, but they are excluded from `missing_weak_skills`, which is reserved for required gaps.
 - `required_skills_detected` counts only required competency requirements.

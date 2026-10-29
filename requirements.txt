@@ -1,0 +1,16 @@
+pandas
+pyarrow
+scikit-learn
+pypdf
+python-docx
+fastapi
+uvicorn
+python-multipart
+# Required for the Week 3 semantic representation (Sentence-Transformer
+# embeddings). The first run downloads the "all-MiniLM-L6-v2" model, so an
+# internet connection is needed the first time the Week 3 pipeline starts.
+sentence-transformers
+pydantic>=2
+numpy
+httpx  # only for tests (FastAPI TestClient)
+pytest

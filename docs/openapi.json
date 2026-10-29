@@ -3,7 +3,7 @@
   "info": {
     "title": "Career NLP Asset",
     "description": "Reusable NLP component for Placement & Career Intelligence: extraction, classification, embeddings, matching, recommendation and retrieval - with structured output and confidence scores.",
-    "version": "1.4.5"
+    "version": "1.4.6"
   },
   "paths": {
     "/v1/health": {
@@ -2083,7 +2083,7 @@
           "asset_version": {
             "type": "string",
             "title": "Asset Version",
-            "default": "1.4.5"
+            "default": "1.4.6"
           },
           "schema_version": {
             "type": "string",

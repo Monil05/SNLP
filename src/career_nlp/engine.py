@@ -9,12 +9,14 @@ from __future__ import annotations
 
 import hashlib
 import io
+import json
 import logging
 import re
 import threading
 import time
 from collections import Counter
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -83,6 +85,155 @@ ACADEMIC_DOMAIN_MIN_SIMILARITY = 0.36
 ACADEMIC_DOMAIN_MIN_MARGIN = 0.02
 ACADEMIC_DOMAIN_MARGIN_RANGE = 0.18
 COMPETENCY_SEMANTIC_MATCH_THRESHOLD = 0.62
+COMPETENCY_LOGIC_VERSION = "6"
+NEAR_DUPLICATE_COSINE = 0.97
+NEAR_DUPLICATE_SKILL_JACCARD = 0.90
+SECTION_WINDOW = 70
+
+# Canonical skill plus paraphrases. Used for matching and for collapsing
+# wording variants into one competency. Heads are the stored vocabulary form.
+_ALIAS_GROUPS = (
+    ("sql", (
+        "sql", "structured query language", "relational database", "relational databases",
+        "relational database querying", "relational database concepts", "sql querying",
+        "sql queries", "writing queries",
+    )),
+    ("python", (
+        "python", "python programming", "python development", "python scripting", "python script",
+    )),
+    ("etl", (
+        "etl", "extract transform load", "data pipeline", "data pipelines",
+        "data pipeline development", "data ingestion",
+    )),
+    ("data warehousing", (
+        "data warehousing", "data warehouse", "data warehouses", "warehouse modelling",
+        "warehouse modeling", "data warehouse modelling", "data warehouse modeling",
+    )),
+    ("data visualization", (
+        "data visualization", "data visualisation", "data visualisations", "data visualizations",
+    )),
+    ("data analysis", (
+        "data analysis", "data analytics",
+    )),
+    ("machine learning", (
+        "machine learning",
+    )),
+    ("nlp", (
+        "nlp", "natural language processing",
+    )),
+    ("power bi", (
+        "power bi", "powerbi",
+    )),
+)
+
+_SECTION_PATTERNS = (
+    ("preferred", re.compile(
+        r"skills that will help you stand out|preferred qualifications|preferred skills|"
+        r"nice[- ]to[- ]have|good to have|desired qualifications|bonus qualifications|"
+        r"qualifications that (?:will|would) set you apart|stand[- ]out skills",
+        re.I,
+    )),
+    ("required", re.compile(
+        r"\b(?:minimum|basic)\s+qualifications\b|\brequired qualifications\b|\brequired skills\b|"
+        r"\bwho you are\b|\bwhat you(?:'|’)ll need\b|\bmust[- ]have skills\b",
+        re.I,
+    )),
+    ("responsibilities", re.compile(
+        r"\bwhat you(?:'|’)ll do\b|\bresponsibilities\b|\bjob purpose\b",
+        re.I,
+    )),
+    ("other", re.compile(
+        r"\bsalary\b|\bbenefits\b|\babout (?:us|the company)\b|\badditional information\b|"
+        r"\bequal opportunity\b|\bour culture\b|\bhow to apply\b|\bwe offer\b",
+        re.I,
+    )),
+)
+_HARD_REQUIRED_RE = re.compile(
+    r"\b(?:must(?:\s+have)?|requires|required|require|mandatory|essential|necessary)\b",
+    re.I,
+)
+_EXPERIENCE_REQUIRED_RE = re.compile(
+    r"\b(?:proficient|skilled)\s+in\b|\bexperience\s+(?:with|in|writing|using|developing)\b|"
+    r"\bexperienced\s+in\b|"
+    r"\byou\s+have\s+experience\b|\bexpertise\s+in\b|\bknowledge\s+of\b|"
+    r"\bstrong\s+(?:knowledge|expertise|skills?)\s+(?:of|in|with)\b|"
+    r"\bproficient\s+understanding\s+of\b",
+    re.I,
+)
+# "Required to work/collaborate" describes a duty, not a competency the candidate must already have.
+_DUTY_REQUIRED_RE = re.compile(
+    r"\brequired\s+to\s+(?:work|collaborate|partner|assist|support|perform|complete|"
+    r"attend|travel|participate|contribute|report|operate|maintain|provide|deliver|"
+    r"coordinate|liaise|interface)\b",
+    re.I,
+)
+_CUE_PROXIMITY = 90
+# Last tokens that are too broad to stand in for a multi-word competency.
+_VENDOR_PREFIXES = frozenset({
+    "microsoft", "ms", "google", "amazon", "aws", "apache", "ibm", "oracle", "adobe",
+})
+_TRAILING_TOKEN_STOP = frozenset({
+    "ability", "abilities", "administration", "analysis", "applications", "concepts",
+    "design", "development", "engineering", "experience", "fundamentals", "knowledge",
+    "learning", "management", "methods", "modelling", "modeling", "operations",
+    "planning", "principles", "processing", "reporting", "research", "services",
+    "service", "skill", "skills", "software", "support", "system", "systems",
+    "technology", "testing", "tools", "training", "communication", "collaboration",
+    "leadership", "teamwork",
+})
+_METADATA_EVIDENCE = (
+    "Listed in the job skill metadata without an explicit requirement statement in the description."
+)
+_STUDENT_NEGATIVE_RE = re.compile(
+    r"\b(?:no|without|lacking|zero)\b(?:\s+\w+){0,3}\s*$|"
+    r"\b(?:no|without|lack(?:ing)?(?:\s+of)?|zero)\s+(?:any\s+|prior\s+|previous\s+)?"
+    r"(?:experience|knowledge|skills?|background|familiarity|proficiency)\s+(?:with|in|of)\s*$|"
+    r"\b(?:never\s+(?:used|worked\s+with)|do\s+not\s+know|don't\s+know|not\s+familiar\s+with|"
+    r"not\s+(?:yet\s+)?(?:experienced|proficient|skilled)\s+(?:with|in))\s*$",
+    re.I,
+)
+_STUDENT_ASPIRATIONAL_RE = re.compile(
+    r"\b(?:interested\s+in|curious\s+about|want(?:s)?\s+to\s+learn|"
+    r"hope(?:s)?\s+to\s+learn|plan(?:s)?\s+to\s+learn|aim(?:s)?\s+to\s+learn|"
+    r"would\s+like\s+to\s+learn|looking\s+to\s+learn|aspire(?:s)?\s+to|"
+    r"wish(?:es)?\s+to\s+learn)\b",
+    re.I,
+)
+_STUDENT_DEMONSTRATED_RE = re.compile(
+    r"\b(?:skills?|tools?|technologies|competenc(?:y|ies)|proficien\w*|experienced|"
+    r"experience|knowledge|expertise|understanding|familiarity|familiar|worked|used|built|"
+    r"implemented|developed|applied|created|evaluated|deployed|analysed|analyzed|designed|"
+    r"maintained|automated|trained|studied|coursework|certification|certified|internship|"
+    r"project|projects|hands[- ]on|practical|demonstrated|programmed|learned|learnt|mastery)\b",
+    re.I,
+)
+_STUDENT_CONTRAST_RE = re.compile(r"\b(?:but|however|although|whereas|yet)\b", re.I)
+_STUDENT_LIST_RE = re.compile(r",|;|\band\b|/|\|")
+_ALIAS_LIST_CACHE: Dict[str, Tuple[str, ...]] = {}
+
+
+def _cached_competency_aliases(name: str) -> Tuple[str, ...]:
+    found = _ALIAS_LIST_CACHE.get(name)
+    if found is None:
+        found = tuple(CareerNLP._competency_aliases(name))
+        _ALIAS_LIST_CACHE[name] = found
+    return found
+
+
+@lru_cache(maxsize=16384)
+def _soft_norm(value: str) -> str:
+    text = normalize_skill(value).replace("-", " ").replace("/", " ")
+    return re.sub(r"\s+", " ", text).strip()
+
+
+_ALIAS_LOOKUP: Dict[str, str] = {}
+_ALIAS_PHRASES: Dict[str, Tuple[str, ...]] = {}
+for _head, _phrases in _ALIAS_GROUPS:
+    _canonical = _soft_norm(_head)
+    _normalised_phrases = tuple(dict.fromkeys(_soft_norm(phrase) for phrase in _phrases if _soft_norm(phrase)))
+    _ALIAS_PHRASES[_canonical] = _normalised_phrases
+    for _phrase in _normalised_phrases:
+        _ALIAS_LOOKUP[_phrase] = _canonical
 
 
 @dataclass(frozen=True)
@@ -91,9 +242,10 @@ class _Competency:
     kind: str
     priority: str
     evidence: str
+    generic: bool = False
 
 
-@dataclass(frozen=True)
+@dataclass
 class _CompetencyAssessment:
     requirements: List[CompetencyRequirement]
     matched: List[str]
@@ -102,6 +254,7 @@ class _CompetencyAssessment:
     skill_match_percent: float
     matched_aliases: set
     evaluated_count: int
+    learning_tiers: Dict[str, int] = field(default_factory=dict)
 
 
 @dataclass
@@ -120,6 +273,14 @@ class _State:
     backend: str
     index_vectors: np.ndarray
     job_competencies: List[List[_Competency]] = field(default_factory=list)
+    job_canonical_skills: List[set] = field(default_factory=list)
+    canonical_postings: Dict[str, np.ndarray] = field(default_factory=dict)
+    nongeneric_postings: Dict[str, np.ndarray] = field(default_factory=dict)
+    # Canonical competency names split the same way _skill_match_percent does,
+    # so retrieval can rank jobs by that score without assessing every posting.
+    required_terms: List[frozenset] = field(default_factory=list)
+    preferred_terms: List[frozenset] = field(default_factory=list)
+    generic_terms: List[frozenset] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
 
 
@@ -150,6 +311,9 @@ class CareerNLP:
         self._lock = threading.Lock()
         self._academic_template_lock = threading.Lock()
         self._academic_template_cache: Dict[Tuple[str, str, str], Tuple[np.ndarray, np.ndarray]] = {}
+        self._alias_patterns: Dict[str, re.Pattern] = {}
+        self._generic_keys = frozenset(_soft_norm(item) for item in self.config.generic_competencies)
+        self.last_recommendation_stats: Dict[str, Any] = {}
 
     # ------------------------------------------------------------------
     # lifecycle
@@ -266,10 +430,8 @@ class CareerNLP:
             classifier_vectorizer=vec, classifier=classifier,
             embedder=embedder, backend=backend, index_vectors=index, warnings=warnings,
         )
-        state.job_competencies = [
-            self._extract_competencies(state, description, baseline_skills=sorted(skills))
-            for description, skills in zip(state.job_descriptions, state.job_skill_sets)
-        ]
+        state.job_competencies = self._load_or_extract_competencies(state)
+        self._index_job_skills(state)
         return state
 
     # ------------------------------------------------------------------
@@ -307,9 +469,20 @@ class CareerNLP:
     def _cos_percent(a: np.ndarray, b: np.ndarray) -> np.ndarray:
         return np.clip(cosine_similarity(a, b).ravel() * 100.0, 0.0, 100.0)
 
-    def _order_learning(self, st: _State, missing: Sequence[str]) -> List[str]:
-        """Most in-demand (across the job dataset) first, then alphabetical."""
-        return sorted(missing, key=lambda s: (-st.skill_demand.get(s, 0), s))
+    def _order_learning(
+        self,
+        st: _State,
+        missing: Sequence[str],
+        tiers: Optional[Dict[str, int]] = None,
+    ) -> List[str]:
+        """Required gaps first, then preferred, then generic; demand breaks ties.
+
+        ``tiers`` maps a normalised skill to 0 (required), 1 (preferred) or
+        2 (generic). Missing tiers share one band so older callers keep
+        demand order.
+        """
+        bands = tiers or {}
+        return sorted(missing, key=lambda s: (bands.get(s, 1), -st.skill_demand.get(s, 0), s))
 
     def _combine(self, skill_pct: float, sem_pct: float, category_pct: float) -> float:
         return (
@@ -464,15 +637,519 @@ class CareerNLP:
         return "not_required"
 
     @staticmethod
+    @staticmethod
+    def _canonical_skill(name: str) -> str:
+        key = _soft_norm(name)
+        mapped = _ALIAS_LOOKUP.get(key)
+        if mapped:
+            return mapped
+        tokens = key.split()
+        if len(tokens) >= 2 and tokens[0] in _VENDOR_PREFIXES:
+            tail = tokens[-1]
+            if len(tail) >= 4 and tail not in _TRAILING_TOKEN_STOP:
+                return _ALIAS_LOOKUP.get(tail, tail)
+        return key
+
+    def _alias_pattern(self, alias: str) -> "re.Pattern[str]":
+        pattern = self._alias_patterns.get(alias)
+        if pattern is None:
+            pattern = re.compile(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", re.I)
+            self._alias_patterns[alias] = pattern
+        return pattern
+
+    @staticmethod
     def _competency_aliases(name: str) -> List[str]:
-        """Return phrase/acronym aliases inferred from the phrase itself."""
-        aliases = {normalize_skill(name)}
+        """Return phrase/acronym aliases inferred from the phrase and known paraphrases."""
+        aliases = {normalize_skill(name), _soft_norm(name)}
         without_parentheses = re.sub(r"\s*\([^)]*\)", "", name).strip()
         if without_parentheses:
             aliases.add(normalize_skill(without_parentheses))
+            aliases.add(_soft_norm(without_parentheses))
         for acronym in re.findall(r"\(([A-Z][A-Z0-9+#.-]{1,9})\)", name):
             aliases.add(normalize_skill(acronym))
-        return sorted((alias for alias in aliases if alias), key=len, reverse=True)
+        tokens = _soft_norm(name).split()
+        # Only a vendor prefix is safe to drop: "microsoft excel" is "excel".
+        # A trailing word such as "datasets" is too broad and creates false matches.
+        if len(tokens) >= 2 and tokens[0] in _VENDOR_PREFIXES:
+            tail = tokens[-1]
+            if len(tail) >= 4 and tail not in _TRAILING_TOKEN_STOP:
+                aliases.add(tail)
+        canonical = _ALIAS_LOOKUP.get(_soft_norm(name))
+        if canonical:
+            aliases.update(_ALIAS_PHRASES.get(canonical, ()))
+        return sorted((alias for alias in aliases if alias and len(alias) >= 2), key=len, reverse=True)
+
+    def _is_generic_name(self, name: str) -> bool:
+        key = _soft_norm(name)
+        return key in self._generic_keys or _ALIAS_LOOKUP.get(key, key) in self._generic_keys
+
+    @staticmethod
+    def _incidental_skill_tail(text: str, end: int) -> bool:
+        """Ignore a skill token that only names a cycle, such as 'reporting cycle'."""
+        return re.match(r"\s*cycles?(?![a-z])", text[end:end + 16], re.I) is not None or (
+            re.match(r"\s*cycle", text[end:end + 12], re.I) is not None
+        )
+
+    def _has_substantive_mention(self, name: str, text: str) -> bool:
+        for alias in self._competency_aliases(name):
+            for match in self._alias_pattern(alias).finditer(text):
+                if not self._incidental_skill_tail(text, match.end()):
+                    return True
+        return False
+
+    def _mention_spans(self, name: str, text: str) -> List[Tuple[int, int, str]]:
+        spans: List[Tuple[int, int, str]] = []
+        seen = set()
+        for alias in self._competency_aliases(name):
+            for match in self._alias_pattern(alias).finditer(text):
+                key = (match.start(), match.end())
+                if key in seen or self._incidental_skill_tail(text, match.end()):
+                    continue
+                seen.add(key)
+                spans.append((match.start(), match.end(), alias))
+        spans.sort()
+        return spans
+
+    @staticmethod
+    def _section_spans(text: str) -> List[Tuple[int, str]]:
+        found: List[Tuple[int, str]] = []
+        for label, pattern in _SECTION_PATTERNS:
+            for match in pattern.finditer(text):
+                found.append((match.start(), label))
+        found.sort()
+        return found
+
+    @staticmethod
+    def _section_at(spans: Sequence[Tuple[int, str]], position: int) -> str:
+        current = "unknown"
+        for start, label in spans:
+            if start <= position:
+                current = label
+            else:
+                break
+        return current
+
+    @staticmethod
+    def _sentence_covering(text: str, start: int, end: int) -> str:
+        left_breaks = [text.rfind(mark, 0, start) for mark in (".", "!", "?", "\n", ";")]
+        left = max(left_breaks)
+        right_breaks = [text.find(mark, end) for mark in (".", "!", "?", "\n", ";")]
+        right_breaks = [index for index in right_breaks if index >= 0]
+        right = min(right_breaks) if right_breaks else len(text) - 1
+        return text[left + 1:right + 1].strip() or text[max(0, start - SECTION_WINDOW):min(len(text), end + SECTION_WINDOW)]
+
+    def _cue_near_skill(
+        self,
+        pattern: "re.Pattern[str]",
+        clause: str,
+        alias: str,
+        reject_duty: bool = False,
+    ) -> bool:
+        """A requirement cue counts only when it governs this skill, not a distant clause-mate."""
+        for match in self._alias_pattern(alias).finditer(clause):
+            start = max(0, match.start() - _CUE_PROXIMITY)
+            end = min(len(clause), match.end() + 40)
+            window = clause[start:end]
+            if reject_duty:
+                window = _DUTY_REQUIRED_RE.sub(" ", window)
+            if pattern.search(window):
+                return True
+        return False
+
+    def _clauses_mentioning(self, alias: str, sentence: str) -> List[str]:
+        clauses = [
+            clause.strip()
+            for clause in re.split(r",|;|\bbut\b|\bhowever\b|\balthough\b|\bwhereas\b|\byet\b", sentence, flags=re.I)
+            if clause.strip()
+        ] or [sentence]
+        relevant = [clause for clause in clauses if self._alias_pattern(alias).search(clause)]
+        return relevant or clauses[:1]
+
+    def _classify_mentioned_skill(
+        self,
+        name: str,
+        job_text: str,
+        section_spans: Optional[Sequence[Tuple[int, str]]] = None,
+    ) -> Optional[Tuple[str, str]]:
+        """Classify a skill from local JD evidence. None when the text never mentions it."""
+        mentions = self._mention_spans(name, job_text)
+        if not mentions:
+            return None
+        spans = list(section_spans) if section_spans is not None else self._section_spans(job_text)
+        priorities: List[str] = []
+        evidence_for: List[Tuple[str, str]] = []
+        generic = self._is_generic_name(name)
+        for start, end, alias in mentions:
+            sentence = self._sentence_covering(job_text, start, end)
+            section = self._section_at(spans, start)
+            local = self._requirement_priority(alias, sentence)
+            relevant = self._clauses_mentioning(alias, sentence)
+            hard = local != "not_required" and any(
+                self._cue_near_skill(_HARD_REQUIRED_RE, clause, alias, reject_duty=True)
+                for clause in relevant
+            )
+            experience = local != "not_required" and any(
+                self._cue_near_skill(_EXPERIENCE_REQUIRED_RE, clause, alias)
+                for clause in relevant
+            )
+            if local == "not_required":
+                chosen = "not_required"
+            elif local == "preferred":
+                chosen = "preferred"
+            elif section == "preferred" and not hard:
+                chosen = "preferred"
+            elif generic and not hard:
+                chosen = "preferred"
+            elif section in {"other", "responsibilities"} and not (hard or experience):
+                chosen = "preferred"
+            elif hard or experience or section == "required":
+                chosen = "required"
+            else:
+                chosen = "required" if local == "required" and not generic else local
+            priorities.append(chosen)
+            evidence_for.append((chosen, re.sub(r"\s+", " ", sentence).strip()[:240]))
+        if "required" in priorities:
+            final = "required"
+        elif "preferred" in priorities:
+            final = "preferred"
+        else:
+            final = "not_required"
+        evidence = next(window for chosen, window in evidence_for if chosen == final)
+        return final, evidence[:240]
+
+    def _student_canonical_skills(self, student_text: str, extracted: Sequence[str]) -> set:
+        found = {self._canonical_skill(skill) for skill in extracted}
+        normalised = _soft_norm(student_text)
+        for phrase, canonical in sorted(_ALIAS_LOOKUP.items(), key=lambda item: len(item[0]), reverse=True):
+            if len(phrase) < 3 or phrase not in normalised:
+                continue
+            if self._alias_pattern(phrase).search(normalised):
+                found.add(canonical)
+        return {skill for skill in found if skill}
+
+    def _skill_match_percent(self, requirements: Sequence[CompetencyRequirement]) -> float:
+        """Blend required, preferred and generic coverage so list length cannot dominate.
+
+        Each present tier is normalised on its own. Tier weights then combine
+        those coverages: a full preferred tier is worth
+        ``preferred_requirement_weight`` relative to a full required tier, and a
+        full generic tier is worth ``generic_requirement_weight``. Empty tiers
+        drop out and the remaining weights are rescaled, so the result stays
+        on 0-100. Explicitly non-required competencies are excluded.
+        """
+        counts = {"required": [0, 0], "preferred": [0, 0], "generic": [0, 0]}
+        for item in requirements:
+            if item.priority == "not_required" or item.status == "not_evaluated":
+                continue
+            if item.priority == "required":
+                tier = "required"
+            elif self._is_generic_name(item.name):
+                tier = "generic"
+            else:
+                tier = "preferred"
+            counts[tier][1] += 1
+            if item.status == "matched":
+                counts[tier][0] += 1
+        weights = {
+            "required": 1.0,
+            "preferred": self.config.preferred_requirement_weight,
+            "generic": self.config.generic_requirement_weight,
+        }
+        active = {tier: weight for tier, weight in weights.items() if counts[tier][1] > 0}
+        if not active:
+            return 0.0
+        scale = sum(active.values())
+        score = 0.0
+        for tier, weight in active.items():
+            covered, total = counts[tier]
+            score += (weight / scale) * (covered / total)
+        return max(0.0, min(100.0, score * 100.0))
+
+    def _refresh_assessment(self, st: _State, assessment: _CompetencyAssessment) -> None:
+        matched: List[str] = []
+        missing: List[str] = []
+        learning: List[str] = []
+        tiers: Dict[str, int] = {}
+        matched_aliases = set()
+        for item in assessment.requirements:
+            if item.priority == "not_required":
+                continue
+            name = normalize_skill(item.name)
+            if item.status == "matched":
+                if name not in matched:
+                    matched.append(name)
+                matched_aliases.update(self._competency_aliases(item.name))
+                continue
+            if item.status != "missing":
+                continue
+            if item.priority == "required":
+                tier = 0
+                if name not in missing:
+                    missing.append(name)
+            elif self._is_generic_name(item.name):
+                tier = 2
+            else:
+                tier = 1
+            if name not in learning:
+                learning.append(name)
+                tiers[name] = tier
+            else:
+                tiers[name] = min(tiers.get(name, tier), tier)
+        assessment.requirements.sort(key=lambda item: (item.priority == "not_required", item.name.casefold()))
+        assessment.matched = sorted(set(matched), key=str.casefold)
+        assessment.missing = sorted(set(missing), key=str.casefold)
+        assessment.learning_tiers = tiers
+        assessment.learning = self._order_learning(st, learning, tiers)
+        assessment.skill_match_percent = self._skill_match_percent(assessment.requirements)
+        assessment.matched_aliases = matched_aliases
+        assessment.evaluated_count = sum(item.priority == "required" for item in assessment.requirements)
+
+    def _load_or_extract_competencies(self, st: _State) -> List[List[_Competency]]:
+        cache = self._competency_cache_file(st)
+        if cache.exists():
+            try:
+                payload = json.loads(cache.read_text(encoding="utf-8"))
+                items = payload.get("jobs")
+                if isinstance(items, list) and len(items) == len(st.job_ids):
+                    return [
+                        [
+                            _Competency(
+                                name=entry["name"],
+                                kind=entry["kind"],
+                                priority=entry["priority"],
+                                evidence=entry["evidence"],
+                                generic=bool(entry.get("generic", False)),
+                            )
+                            for entry in job_entries
+                        ]
+                        for job_entries in items
+                    ]
+            except Exception:
+                log.warning("Ignoring unreadable competency cache %s", cache)
+        extracted = [
+            self._extract_competencies(st, description, baseline_skills=sorted(skills))
+            for description, skills in zip(st.job_descriptions, st.job_skill_sets)
+        ]
+        try:
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            cache.write_text(json.dumps({
+                "version": COMPETENCY_LOGIC_VERSION,
+                "jobs": [
+                    [
+                        {
+                            "name": item.name,
+                            "kind": item.kind,
+                            "priority": item.priority,
+                            "evidence": item.evidence,
+                            "generic": item.generic,
+                        }
+                        for item in job_entries
+                    ]
+                    for job_entries in extracted
+                ],
+            }, ensure_ascii=False), encoding="utf-8")
+        except OSError:
+            log.warning("Could not write competency cache %s (continuing without it)", cache)
+        return extracted
+
+    def _competency_cache_file(self, st: _State) -> Path:
+        digest = hashlib.sha256()
+        digest.update(COMPETENCY_LOGIC_VERSION.encode())
+        digest.update("\n".join(sorted(_soft_norm(item) for item in self.config.generic_competencies)).encode())
+        digest.update(repr(_ALIAS_GROUPS).encode())
+        for job_id, description, skills in zip(st.job_ids, st.job_descriptions, st.job_skill_sets):
+            digest.update(str(job_id).encode())
+            digest.update(b"\0")
+            digest.update(description.encode())
+            digest.update(b"\0")
+            digest.update("\n".join(sorted(skills)).encode())
+            digest.update(b"\1")
+        return Path(self.config.cache_dir) / f"job_competencies_{digest.hexdigest()[:20]}.json"
+
+    def _index_job_skills(self, st: _State) -> None:
+        postings: Dict[str, List[int]] = {}
+        nongeneric: Dict[str, List[int]] = {}
+        canonical_sets: List[set] = []
+        for index, (skills, competencies) in enumerate(zip(st.job_skill_sets, st.job_competencies)):
+            canonical = {self._canonical_skill(skill) for skill in skills}
+            canonical.update(self._canonical_skill(item.name) for item in competencies)
+            canonical.discard("")
+            canonical_sets.append(canonical)
+            for skill in canonical:
+                postings.setdefault(skill, []).append(index)
+                if not self._is_generic_name(skill):
+                    nongeneric.setdefault(skill, []).append(index)
+        st.job_canonical_skills = canonical_sets
+        st.canonical_postings = {
+            key: np.asarray(value, dtype=np.int32) for key, value in postings.items()
+        }
+        st.nongeneric_postings = {
+            key: np.asarray(value, dtype=np.int32) for key, value in nongeneric.items()
+        }
+        required_terms: List[frozenset] = []
+        preferred_terms: List[frozenset] = []
+        generic_terms: List[frozenset] = []
+        for competencies in st.job_competencies:
+            required: set = set()
+            preferred: set = set()
+            generic: set = set()
+            for item in competencies:
+                if item.priority == "not_required":
+                    continue
+                key = self._canonical_skill(item.name)
+                if not key:
+                    continue
+                if item.priority == "required":
+                    required.add(key)
+                    preferred.discard(key)
+                    generic.discard(key)
+                elif key in required:
+                    continue
+                elif item.generic or self._is_generic_name(item.name):
+                    generic.add(key)
+                    preferred.discard(key)
+                else:
+                    preferred.add(key)
+                    generic.discard(key)
+            required_terms.append(frozenset(required))
+            preferred_terms.append(frozenset(preferred))
+            generic_terms.append(frozenset(generic))
+        st.required_terms = required_terms
+        st.preferred_terms = preferred_terms
+        st.generic_terms = generic_terms
+
+    def _lexical_skill_percents(self, st: _State, student_skills: set) -> np.ndarray:
+        """Same tier blend as ``_skill_match_percent``, using canonical overlap only."""
+        total = len(st.job_ids)
+        scores = np.zeros(total, dtype=np.float64)
+        weights = (
+            ("required", 1.0, st.required_terms),
+            ("preferred", self.config.preferred_requirement_weight, st.preferred_terms),
+            ("generic", self.config.generic_requirement_weight, st.generic_terms),
+        )
+        for index in range(total):
+            active_weight = 0.0
+            blended = 0.0
+            for _name, weight, tiers in weights:
+                terms = tiers[index] if index < len(tiers) else frozenset()
+                if not terms:
+                    continue
+                active_weight += weight
+                blended += weight * (len(terms & student_skills) / len(terms))
+            if active_weight:
+                scores[index] = (blended / active_weight) * 100.0
+        return scores
+
+    def _select_candidates(
+        self,
+        st: _State,
+        student_skills: set,
+        sem: np.ndarray,
+        category: np.ndarray,
+        full_ranking: bool,
+    ) -> List[int]:
+        """Retrieve a shortlist without dropping jobs solely for a similarity cutoff."""
+        total = len(st.job_ids)
+        limit = total if full_ranking else min(self.config.candidate_shortlist_size, total)
+        if limit >= total:
+            return list(range(total))
+
+        lexical = self._lexical_skill_percents(st, student_skills)
+        retrieval = (
+            self.config.skill_weight * lexical
+            + self.config.semantic_weight * sem
+            + self.config.category_weight * category
+        )
+        nongeneric_hits = np.zeros(total, dtype=np.int16)
+        for skill in student_skills:
+            if self._is_generic_name(skill):
+                continue
+            indexes = st.nongeneric_postings.get(skill)
+            if indexes is not None and len(indexes):
+                nongeneric_hits[indexes] += 1
+        skill_slots = min(self.config.retrieval_skill_slots, limit)
+        # Role-specific overlaps keep a reserved slice even when semantic
+        # similarity is low. Generic-only profiles are ranked by the same
+        # hybrid score the final matcher uses, so a matched essential soft
+        # skill is not crowded out by a longer metadata list.
+        skill_rank = np.argsort(
+            -(nongeneric_hits.astype(np.float64) * 1000.0 + lexical),
+            kind="stable",
+        )
+        strong = [int(index) for index in skill_rank if nongeneric_hits[int(index)] > 0][:skill_slots]
+        chosen = set(strong)
+        selected = list(strong)
+        for index in map(int, np.argsort(-retrieval, kind="stable")):
+            if index in chosen:
+                continue
+            selected.append(index)
+            chosen.add(index)
+            if len(selected) >= limit:
+                break
+        return selected
+
+    def _is_near_duplicate(self, st: _State, left: int, right: int) -> bool:
+        """Collapse near-identical listings without merging different opportunities.
+
+        The same cleaned title is not enough. Category, description and skill
+        requirements must also agree before one listing suppresses another.
+        """
+        if clean_job_title(st.job_titles[left]).lower() != clean_job_title(st.job_titles[right]).lower():
+            return False
+        if st.job_categories[left] != st.job_categories[right]:
+            return False
+        if clean_text(st.job_descriptions[left]).lower() == clean_text(st.job_descriptions[right]).lower():
+            return True
+        cosine = float(np.dot(st.index_vectors[left], st.index_vectors[right]))
+        if cosine >= NEAR_DUPLICATE_COSINE:
+            return True
+        left_skills = st.job_canonical_skills[left] if left < len(st.job_canonical_skills) else set()
+        right_skills = st.job_canonical_skills[right] if right < len(st.job_canonical_skills) else set()
+        union = len(left_skills | right_skills)
+        overlap = len(left_skills & right_skills) / union if union else 1.0
+        return overlap >= NEAR_DUPLICATE_SKILL_JACCARD and cosine >= 0.90
+
+    def _apply_batch_semantic_fallback(
+        self,
+        st: _State,
+        assessments: Dict[int, _CompetencyAssessment],
+        evidence_vectors: Optional[np.ndarray],
+    ) -> None:
+        """Paraphrase fallback for the shortlist, in one encoder batch."""
+        if (
+            st.backend != "sentence-transformers"
+            or evidence_vectors is None
+            or len(evidence_vectors) == 0
+            or self.config.semantic_fallback_max_prompts <= 0
+        ):
+            return
+        pending: List[Tuple[int, int, int, CompetencyRequirement]] = []
+        for job_index, assessment in assessments.items():
+            for result_index, item in enumerate(assessment.requirements):
+                if item.status != "missing" or item.priority == "not_required":
+                    continue
+                if item.priority != "required" and self._is_generic_name(item.name):
+                    continue
+                rank = 0 if item.priority == "required" else 1
+                pending.append((rank, job_index, result_index, item))
+        pending.sort(key=lambda row: (row[0], row[1], row[2]))
+        pending = pending[: self.config.semantic_fallback_max_prompts]
+        if not pending:
+            return
+        prompts = [
+            f"The candidate has practical knowledge or experience with {item.name}."
+            for _, _, _, item in pending
+        ]
+        similarities = cosine_similarity(self._embed(st, prompts), evidence_vectors)
+        changed = set()
+        for row, (_, job_index, result_index, _item) in enumerate(pending):
+            if float(similarities[row].max()) < COMPETENCY_SEMANTIC_MATCH_THRESHOLD:
+                continue
+            current = assessments[job_index].requirements[result_index]
+            assessments[job_index].requirements[result_index] = current.model_copy(update={"status": "matched"})
+            changed.add(job_index)
+        for job_index in changed:
+            self._refresh_assessment(st, assessments[job_index])
 
     @staticmethod
     def _is_role_description_mention(skill: str, sentence: str) -> bool:
@@ -509,44 +1186,62 @@ class CareerNLP:
         """
         candidates: Dict[str, Dict[str, Any]] = {}
         sentences = self._requirement_sentences(job_text)
+        section_spans = self._section_spans(job_text)
+        baseline_set = set(baseline_skills or [])
 
-        def add(name: str, kind: str, evidence: str, from_metadata: bool = False) -> None:
+        def add(name: str, kind: str, evidence: str, priority: Optional[str] = None) -> None:
             normalized = normalize_skill(name).strip(" .,:;-")
             if not normalized or len(normalized) < 2:
                 return
-            priority = "required" if from_metadata else self._requirement_priority(normalized, evidence)
-            current = candidates.get(normalized)
+            if priority is None:
+                classified = self._classify_mentioned_skill(name, job_text, section_spans)
+                if classified is None:
+                    priority = self._requirement_priority(normalized, evidence)
+                    if self._is_generic_name(name) and priority == "required" and _HARD_REQUIRED_RE.search(evidence) is None:
+                        priority = "preferred"
+                else:
+                    priority, local_evidence = classified
+                    evidence = local_evidence or evidence
+            canonical = self._canonical_skill(name)
+            if not canonical:
+                return
+            display = name.strip()
+            if len(canonical) < len(_soft_norm(display)):
+                display = canonical
+            current = candidates.get(canonical)
+            generic = self._is_generic_name(canonical) or self._is_generic_name(display)
             if current is None:
-                candidates[normalized] = {
-                    "name": name.strip(),
+                candidates[canonical] = {
+                    "name": display,
                     "kind": kind,
                     "priorities": [priority],
                     "evidence": evidence[:240],
+                    "generic": generic,
                 }
                 return
             current["priorities"].append(priority)
             if kind == "skill":
                 current["kind"] = "skill"
+            if len(_soft_norm(display)) < len(_soft_norm(current["name"])):
+                current["name"] = display
             if len(evidence) > len(current["evidence"]):
                 current["evidence"] = evidence[:240]
+            current["generic"] = current["generic"] or generic
 
-        # When using the bundled job dataset, its explicit skill-set column is
-        # already curated. For user-supplied JDs, discover terms from the text.
+        # Metadata skills are candidates. Requirement strength comes from the
+        # description, not from the fact that a skill was listed in metadata.
+        # User-supplied JDs still discover terms from the text.
         text_skills = [] if baseline_skills is not None else st.skill_extractor.extract(job_text)
         for skill in dict.fromkeys(list(baseline_skills or []) + text_skills):
             matches = [
                 sentence for sentence in sentences
                 if (baseline_skills is not None or not self._is_role_description_mention(skill, sentence))
-                and any(
-                    re.search(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", sentence, re.I)
-                    for alias in self._competency_aliases(skill)
-                )
+                and self._has_substantive_mention(skill, sentence)
             ]
-            if not matches and baseline_skills and skill in baseline_skills:
-                add(skill, "skill", "Curated job skill metadata.", from_metadata=True)
-            else:
-                for evidence in matches or [job_text]:
-                    add(skill, "skill", evidence)
+            if not matches and skill in baseline_set:
+                add(skill, "skill", _METADATA_EVIDENCE, priority="preferred")
+            elif matches:
+                add(skill, "skill", matches[0])
 
         knowledge_cues = re.compile(
             r"\b(?:knowledge|expertise|understanding|proficiency|familiarity|command|grasp|"
@@ -605,6 +1300,7 @@ class CareerNLP:
                 kind=item["kind"],
                 priority=priority,
                 evidence=item["evidence"],
+                generic=bool(item.get("generic", False)),
             ))
         return result
 
@@ -632,35 +1328,20 @@ class CareerNLP:
         name: str,
         evidence_sentences: Sequence[str],
         student_skills: Optional[set] = None,
+        evidence_blob: Optional[str] = None,
     ) -> bool:
         """Require evidence of a competency, not merely an aspirational mention."""
-        aliases = CareerNLP._competency_aliases(name)
+        aliases = _cached_competency_aliases(name)
+        if evidence_blob is None:
+            evidence_blob = "\n".join(evidence_sentences).lower()
+        aliases = [alias for alias in aliases if alias in evidence_blob]
+        if not aliases:
+            return False
         known_skills = {normalize_skill(skill) for skill in (student_skills or set())}
-        negative = re.compile(
-            r"\b(?:no\s+(?:prior\s+)?(?:knowledge|experience|familiarity|proficiency|skills?)|"
-            r"lack(?:s|ing)?\s+(?:of\s+)?(?:knowledge|experience|familiarity|proficiency|skills?)|"
-            r"not\s+(?:familiar|experienced|proficient|skilled|knowledgeable)\s+(?:with|in|about)|"
-            r"never\s+used|haven't\s+used|have\s+not\s+used|don't\s+know|do\s+not\s+know|"
-            r"not\s+yet\s+(?:used|learned|learnt|studied|worked\s+with))\b",
-            re.I,
-        )
-        aspirational = re.compile(
-            r"\b(?:interested\s+in|curious\s+about|want(?:s)?\s+to\s+learn|"
-            r"hope(?:s)?\s+to\s+learn|plan(?:s)?\s+to\s+learn|aim(?:s)?\s+to\s+learn|"
-            r"would\s+like\s+to\s+learn|looking\s+to\s+learn|aspire(?:s)?\s+to|"
-            r"wish(?:es)?\s+to\s+learn)\b",
-            re.I,
-        )
-        demonstrated = re.compile(
-            r"\b(?:skills?|tools?|technologies|competenc(?:y|ies)|proficien\w*|experienced|"
-            r"experience|knowledge|expertise|understanding|familiarity|familiar|worked|used|built|"
-            r"implemented|developed|applied|created|evaluated|deployed|analysed|analyzed|designed|"
-            r"maintained|automated|trained|studied|coursework|certification|certified|internship|"
-            r"project|projects|hands[- ]on|practical|demonstrated|programmed|learned|learnt|mastery)\b",
-            re.I,
-        )
-        contrast = re.compile(r"\b(?:but|however|although|whereas|yet)\b", re.I)
-        list_separator = re.compile(r",|;|\band\b|/|\|")
+        aspirational = _STUDENT_ASPIRATIONAL_RE
+        demonstrated = _STUDENT_DEMONSTRATED_RE
+        contrast = _STUDENT_CONTRAST_RE
+        list_separator = _STUDENT_LIST_RE
 
         for sentence in evidence_sentences:
             for clause in contrast.split(sentence):
@@ -674,7 +1355,7 @@ class CareerNLP:
                     start = max(0, match.start() - 55)
                     end = min(len(clause), match.end() + 35)
                     context = clause[start:end]
-                    if negative.search(context) or aspirational.search(context):
+                    if CareerNLP._span_is_negated(clause, match.start(), match.end()) or aspirational.search(context):
                         continue
                     if demonstrated.search(context):
                         return True
@@ -690,6 +1371,28 @@ class CareerNLP:
                     ):
                         return True
         return False
+
+    @staticmethod
+    def _span_is_negated(text: str, start: int, end: int) -> bool:
+        """True when a skill mention is inside a negation such as 'no programming experience'."""
+        left_breaks = [text.rfind(mark, 0, start) for mark in (".", "!", "?", "\n", ";")]
+        sentence_start = max(left_breaks) + 1
+        before = text[max(sentence_start, start - 48):start]
+        return _STUDENT_NEGATIVE_RE.search(before) is not None
+
+    def _without_negated_skills(self, text: str, skills: Sequence) -> List:
+        """Drop a vocabulary hit when every mention is negated."""
+        kept = []
+        for skill in skills:
+            pattern = re.compile(
+                r"(?<!\w)" + re.escape(normalize_skill(skill.name)) + r"(?!\w)",
+                re.I,
+            )
+            spans = list(pattern.finditer(text))
+            if spans and all(self._span_is_negated(text, match.start(), match.end()) for match in spans):
+                continue
+            kept.append(skill)
+        return kept
 
     @staticmethod
     def _semantic_evidence_sentences(sentences: Sequence[str]) -> List[str]:
@@ -741,14 +1444,8 @@ class CareerNLP:
             self._extract_competencies(st, job_text, baseline_skills)
         )
         known_student_skills = {normalize_skill(skill) for skill in student_skills}
+        evidence_blob = "\n".join(student_evidence_sentences).lower()
         results: List[CompetencyRequirement] = []
-        matched: List[str] = []
-        missing: List[str] = []
-        learning: List[str] = []
-        matched_aliases = set()
-        weights = {"required": 1.0, "preferred": self.config.preferred_requirement_weight}
-        total_weight = 0.0
-        covered_weight = 0.0
         unresolved: List[Tuple[int, _Competency]] = []
 
         for competency in competencies:
@@ -761,22 +1458,16 @@ class CareerNLP:
                     evidence=competency.evidence,
                 ))
                 continue
-            total_weight += weights[competency.priority]
-            aliases = self._competency_aliases(competency.name)
             present = self._student_mentions_competency(
-                competency.name, student_evidence_sentences, known_student_skills
+                competency.name,
+                student_evidence_sentences,
+                known_student_skills,
+                evidence_blob,
             )
-            if present:
-                status = "matched"
-                covered_weight += weights[competency.priority]
-                matched.append(normalize_skill(competency.name))
-                matched_aliases.update(aliases)
-            else:
-                status = "missing"
-                normalized_name = normalize_skill(competency.name)
-                if competency.priority == "required":
-                    missing.append(normalized_name)
-                learning.append(normalized_name)
+            status = "matched" if present else "missing"
+            if status == "missing" and (
+                competency.priority == "required" or not self._is_generic_name(competency.name)
+            ):
                 unresolved.append((len(results), competency))
             results.append(CompetencyRequirement(
                 name=competency.name,
@@ -789,6 +1480,8 @@ class CareerNLP:
         # For paraphrases and acronyms, use the existing Sentence Transformer
         # as a conservative fallback. Explicitly recorded grade fragments were
         # removed from profile evidence, so a low grade cannot count as skill.
+        # Generic competencies stay lexical so a broad embedding match cannot
+        # turn a soft skill into evidence.
         if (
             unresolved
             and semantic_fallback
@@ -796,38 +1489,31 @@ class CareerNLP:
             and student_evidence_vectors is not None
             and len(student_evidence_vectors) > 0
         ):
-            prompts = [
-                f"The candidate has practical knowledge or experience with {item.name}."
-                for _, item in unresolved
-            ]
-            query_vectors = self._embed(st, prompts)
-            similarities = cosine_similarity(query_vectors, student_evidence_vectors)
-            for row, (result_index, competency) in enumerate(unresolved):
-                if float(similarities[row].max()) < COMPETENCY_SEMANTIC_MATCH_THRESHOLD:
-                    continue
-                previous = results[result_index]
-                results[result_index] = previous.model_copy(update={"status": "matched"})
-                normalized_name = normalize_skill(competency.name)
-                if normalized_name in missing:
-                    missing.remove(normalized_name)
-                if normalized_name in learning:
-                    learning.remove(normalized_name)
-                if normalized_name not in matched:
-                    matched.append(normalized_name)
-                covered_weight += weights[competency.priority]
-                matched_aliases.update(self._competency_aliases(competency.name))
+            capped = unresolved[: max(self.config.semantic_fallback_max_prompts, 0)]
+            if capped:
+                prompts = [
+                    f"The candidate has practical knowledge or experience with {item.name}."
+                    for _, item in capped
+                ]
+                query_vectors = self._embed(st, prompts)
+                similarities = cosine_similarity(query_vectors, student_evidence_vectors)
+                for row, (result_index, _competency) in enumerate(capped):
+                    if float(similarities[row].max()) < COMPETENCY_SEMANTIC_MATCH_THRESHOLD:
+                        continue
+                    previous = results[result_index]
+                    results[result_index] = previous.model_copy(update={"status": "matched"})
 
-        results.sort(key=lambda item: (item.priority == "not_required", item.name.casefold()))
-        skill_percent = (covered_weight / total_weight * 100.0) if total_weight else 0.0
-        return _CompetencyAssessment(
+        assessment = _CompetencyAssessment(
             requirements=results,
-            matched=sorted(set(matched), key=str.casefold),
-            missing=sorted(set(missing), key=str.casefold),
-            learning=sorted(set(learning), key=str.casefold),
-            skill_match_percent=skill_percent,
-            matched_aliases=matched_aliases,
-            evaluated_count=sum(item.priority == "required" for item in competencies),
+            matched=[],
+            missing=[],
+            learning=[],
+            skill_match_percent=0.0,
+            matched_aliases=set(),
+            evaluated_count=0,
         )
+        self._refresh_assessment(st, assessment)
+        return assessment
 
     @staticmethod
     def _subject_aliases(subject: str) -> List[str]:
@@ -1276,7 +1962,7 @@ class CareerNLP:
             text, poor_threshold_percent=self.config.poor_grade_threshold_percent
         )
         text = clean_text(text)
-        skills = extract_skills(text, st.skill_extractor)
+        skills = self._without_negated_skills(text, extract_skills(text, st.skill_extractor))
         degrees = extract_degrees(text)
         emails = extract_emails(text)
         phones = extract_phones(text)
@@ -1460,7 +2146,7 @@ class CareerNLP:
         score = round(max(0.0, base_score - academic_penalty), 2)
 
         warnings: List[str] = []
-        if n_requirements == 0:
+        if n_requirements == 0 and not any(item.priority == "preferred" for item in competency_requirements):
             warnings.append(
                 "No known skills were recognised in the job description, and no broader competencies were "
                 "identified, so Skill Match is 0 and the score relies only on semantic and category signals."
@@ -1483,7 +2169,7 @@ class CareerNLP:
             competency_requirements=competency_requirements,
             matched_skills=matched,
             missing_weak_skills=missing,
-            recommended_learning=self._order_learning(st, assessment.learning),
+            recommended_learning=list(assessment.learning),
             confidence=confidence,
             score_breakdown=(
                 self._breakdown(skill_pct, sem_pct, category_pct, n_requirements, base_score, academic_penalty)
@@ -1632,7 +2318,7 @@ class CareerNLP:
             competency_requirements=competency_requirements,
             matched_skills=matched,
             missing_weak_skills=missing,
-            recommended_learning=self._order_learning(st, competency_assessment.learning),
+            recommended_learning=list(competency_assessment.learning),
             score_breakdown=(
                 self._breakdown(
                     skill_pct, sem_pct, category_pct, n_requirements, base_score, academic_penalty
@@ -1641,7 +2327,14 @@ class CareerNLP:
         )
         return rec, skill_pct
 
-    def recommend(self, student_text: str, top_k: int = 3, include_details: bool = False) -> RecommendResponse:
+    def recommend(
+        self,
+        student_text: str,
+        top_k: int = 3,
+        include_details: bool = False,
+        *,
+        full_ranking: bool = False,
+    ) -> RecommendResponse:
         t0 = time.perf_counter()
         self._check_text(student_text, "student_text")
         k = self._top_k(top_k, 3, 10)
@@ -1652,8 +2345,24 @@ class CareerNLP:
         evidence_sentences = self._student_evidence_sentences(student_text, profile.academic_records)
         semantic_profile = f"{clean_text(student_text)} {profile.profile_summary}"
         sem = self._cos_percent(self._embed(st, [semantic_profile]), st.index_vectors)
-        competency_assessments = [
-            self._assess_competencies(
+        category_proba = st.classifier.predict_proba(
+            st.classifier_vectorizer.transform([clean_text(student_text)])
+        )[0]
+        category_lookup = dict(zip(st.classifier.classes_, category_proba))
+        category = np.array(
+            [category_lookup.get(job_category, 0.0) * 100.0 for job_category in st.job_categories]
+        )
+        evidence_blob = "\n".join(evidence_sentences).lower()
+        canonical_student = {
+            skill
+            for skill in self._student_canonical_skills(student_text, profile.skills)
+            if self._student_mentions_competency(
+                skill, evidence_sentences, student_skills, evidence_blob
+            )
+        }
+        selected = self._select_candidates(st, canonical_student, sem, category, full_ranking)
+        competency_assessments: Dict[int, _CompetencyAssessment] = {
+            i: self._assess_competencies(
                 st,
                 st.job_descriptions[i],
                 list(student_skills),
@@ -1662,46 +2371,37 @@ class CareerNLP:
                 competency_candidates=st.job_competencies[i],
                 semantic_fallback=False,
             )
-            for i in range(len(st.job_ids))
-        ]
-        skill = np.array(
-            [assessment.skill_match_percent for assessment in competency_assessments],
-            dtype=np.float64,
+            for i in selected
+        }
+        semantic_evidence = self._semantic_evidence_sentences(evidence_sentences)
+        evidence_vectors = (
+            self._embed(st, semantic_evidence)
+            if st.backend == "sentence-transformers" and semantic_evidence else None
         )
-        category_proba = st.classifier.predict_proba(
-            st.classifier_vectorizer.transform([clean_text(student_text)])
-        )[0]
-        category_lookup = dict(zip(st.classifier.classes_, category_proba))
-        category = np.array(
-            [category_lookup.get(job_category, 0.0) * 100.0 for job_category in st.job_categories]
-        )
-        base_scores = np.round(
-            self.config.skill_weight * skill
-            + self.config.semantic_weight * sem
-            + self.config.category_weight * category,
-            2,
-        )
-        academic_penalties = np.zeros(len(st.job_ids), dtype=np.float64)
-        if profile.academic_records:
-            for i, (title, description) in enumerate(zip(st.job_titles, st.job_descriptions)):
+        self._apply_batch_semantic_fallback(st, competency_assessments, evidence_vectors)
+        scores: Dict[int, float] = {}
+        for i in selected:
+            skill_pct = competency_assessments[i].skill_match_percent
+            base_score = round(self._combine(skill_pct, float(sem[i]), float(category[i])), 2)
+            penalty = 0.0
+            if profile.academic_records:
                 adjustments = self._academic_adjustments(
                     st,
                     profile.academic_records,
-                    description,
+                    st.job_descriptions[i],
                     demonstrated_competencies=competency_assessments[i].matched_aliases,
                 )
-                academic_penalties[i] = min(100.0, sum(a.penalty_percent for a in adjustments))
-        scores = np.maximum(0.0, base_scores - academic_penalties)
-        order = np.argsort(-scores, kind="stable")
+                penalty = min(100.0, sum(item.penalty_percent for item in adjustments))
+            scores[i] = round(max(0.0, base_score - penalty), 2)
+        order = sorted(selected, key=lambda index: (-scores[index], index))
 
-        # alternatives: next-best jobs whose cleaned title differs from those already shown
+        # Drop near-identical listings. The same cleaned title can still appear
+        # when the category or the description/requirements are materially different.
         picked: List[int] = []
-        seen_titles = set()
-        for i in map(int, order):
-            title = clean_job_title(st.job_titles[i]).lower()
-            if title in seen_titles:
+        for i in order:
+            if any(self._is_near_duplicate(st, i, previous) for previous in picked):
                 continue
-            seen_titles.add(title); picked.append(i)
+            picked.append(i)
             if len(picked) == k:
                 break
 
@@ -1716,13 +2416,21 @@ class CareerNLP:
             if rank == 1:
                 top_skill_pct = skill_pct
 
-        top5 = [st.job_categories[int(i)] for i in order[:5]]
-        agreement = top5.count(st.job_categories[int(order[0])]) / len(top5)
-        second = float(scores[int(order[1])]) if len(order) > 1 else None
+        top_slice = order[:5]
+        top5 = [st.job_categories[i] for i in top_slice]
+        agreement = top5.count(st.job_categories[order[0]]) / len(top5)
+        second = scores[order[1]] if len(order) > 1 else None
         confidence = conf.recommend_confidence(
-            top_score=float(scores[int(order[0])]), second_score=second,
+            top_score=scores[order[0]], second_score=second,
             top_skill_match_percent=top_skill_pct, category_agreement=agreement,
             n_student_skills=len(student_skills), include_factors=include_details)
+        self.last_recommendation_stats = {
+            "jobs_indexed": len(st.job_ids),
+            "shortlist_size": len(selected),
+            "jobs_assessed": len(selected),
+            "full_ranking": bool(full_ranking or len(selected) == len(st.job_ids)),
+            "assessed_job_ids": [st.job_ids[i] for i in selected],
+        }
 
         warnings: List[str] = []
         if not student_skills:
@@ -1817,9 +2525,12 @@ class CareerNLP:
                 "academic_subject_penalty": self.config.academic_subject_penalty,
                 "academic_core_domain_penalty": self.config.academic_core_domain_penalty,
                 "preferred_requirement_weight": self.config.preferred_requirement_weight,
+                "generic_requirement_weight": self.config.generic_requirement_weight,
             },
             limits={"max_text_chars": self.config.max_text_chars, "max_cv_bytes": self.config.max_cv_bytes,
-                    "max_top_k": self.config.max_top_k},
+                    "max_top_k": self.config.max_top_k,
+                    "candidate_shortlist_size": self.config.candidate_shortlist_size,
+                    "retrieval_skill_slots": self.config.retrieval_skill_slots},
         )
 
     @staticmethod

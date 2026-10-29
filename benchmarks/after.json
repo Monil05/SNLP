@@ -1,0 +1,1669 @@
+{
+  "conditions": {
+    "backend": "sentence-transformers",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "jobs": 1167,
+    "top_k": 5,
+    "include_details": true,
+    "candidate_shortlist_size": 180,
+    "retrieval_skill_slots": 100,
+    "note": "Post-change two-stage recommend() on the final code. Embedding and competency caches were already on disk, so warmup_s is a process cold start with those caches. warm_startup_s is a second process under the same conditions. Full-corpus ranking is excluded from the latency stats."
+  },
+  "warmup_s": 30.6436,
+  "warm_startup_s": 32.0547,
+  "first_request_s": 0.5995,
+  "repeat_request_s": [
+    0.7974,
+    0.5603,
+    0.5443,
+    0.5764,
+    0.541,
+    0.5828,
+    0.5422
+  ],
+  "median_repeat_s": 0.5603,
+  "p95_repeat_s": 0.5828,
+  "jobs_assessed_per_request": 180,
+  "shortlist_size": 180,
+  "job_00219_data_profile": {
+    "skill_match_percent": 36.99,
+    "semantic_similarity_percent": 49.69,
+    "category_compatibility_percent": 10.12,
+    "base_match_score": 37.73,
+    "matched_skills": [
+      "python",
+      "sql"
+    ],
+    "missing_weak_skills": [
+      "etl"
+    ],
+    "recommended_learning": [
+      "etl",
+      "data analysis",
+      "data management",
+      "data visualization",
+      "data security",
+      "data warehousing",
+      "cloud technologies",
+      "test automation",
+      "communication",
+      "problem solving",
+      "adaptability",
+      "collaboration",
+      "customer focus",
+      "innovation"
+    ],
+    "priorities": [
+      {
+        "name": "adaptability",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "cloud technologies",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "collaboration",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "communication",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "customer focus",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "data analysis",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "data management",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "data security",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "data visualization",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "data warehousing",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "etl",
+        "priority": "required",
+        "status": "missing"
+      },
+      {
+        "name": "innovation",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "problem solving",
+        "priority": "preferred",
+        "status": "missing"
+      },
+      {
+        "name": "python",
+        "priority": "preferred",
+        "status": "matched"
+      },
+      {
+        "name": "sql",
+        "priority": "required",
+        "status": "matched"
+      },
+      {
+        "name": "test automation",
+        "priority": "preferred",
+        "status": "missing"
+      }
+    ],
+    "student_skills": [
+      "data reporting",
+      "data science",
+      "sql queries",
+      "reporting",
+      "python",
+      "sql"
+    ],
+    "priority_counts": {
+      "preferred": 14,
+      "required": 2
+    }
+  },
+  "profiles": {
+    "technical": {
+      "latency_s": 0.5995,
+      "jobs_assessed": 180,
+      "shortlist_size": 180,
+      "processing_ms": 597.9,
+      "confidence": {
+        "score": 0.39,
+        "level": "low",
+        "method": "evidence_heuristic_v1",
+        "calibrated": false,
+        "factors": {
+          "category_agreement_top5": 0.2,
+          "top_job_skill_coverage": 0.3401,
+          "profile_skill_evidence": 1.0,
+          "score_margin_to_second": 0.1853
+        }
+      },
+      "recommendations": [
+        {
+          "job_id": "job_00321",
+          "job_title": "information technology programmer",
+          "category": "INFORMATION-TECHNOLOGY",
+          "match_score": 39.67,
+          "base_match_score": 39.67,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "data analysis"
+          ],
+          "recommended_learning": [
+            "data analysis",
+            "excel",
+            "technical support",
+            "power bi",
+            "database management",
+            "c#",
+            "dashboard development",
+            "vba",
+            "report development",
+            "dax queries",
+            "training skills",
+            "communication",
+            "problem solving",
+            "attention to detail",
+            "critical thinking"
+          ],
+          "skill_match_percent": 34.01,
+          "semantic_similarity_percent": 52.68,
+          "category_compatibility_percent": 40.15,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00219",
+          "job_title": "data engineer - enterprise data and analytics, human resources stream",
+          "category": "HR",
+          "match_score": 36.89,
+          "base_match_score": 36.89,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "python",
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "etl"
+          ],
+          "recommended_learning": [
+            "etl",
+            "data analysis",
+            "data management",
+            "data visualization",
+            "data security",
+            "data warehousing",
+            "cloud technologies",
+            "test automation",
+            "communication",
+            "problem solving",
+            "adaptability",
+            "collaboration",
+            "customer focus",
+            "innovation"
+          ],
+          "skill_match_percent": 36.99,
+          "semantic_similarity_percent": 46.91,
+          "category_compatibility_percent": 9.23,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00790",
+          "job_title": "financial analyst, global functions finance",
+          "category": "FINANCE",
+          "match_score": 33.46,
+          "base_match_score": 33.46,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "financial planning and analysis (fp&a)"
+          ],
+          "recommended_learning": [
+            "financial planning and analysis (fp&a)",
+            "data analysis",
+            "strategic thinking",
+            "budgeting",
+            "analytical thinking",
+            "forecasting",
+            "influencing",
+            "ownership",
+            "automation",
+            "business modeling",
+            "data infrastructure",
+            "data manipulation",
+            "reporting solutions",
+            "variance analytics",
+            "communication",
+            "problem solving",
+            "adaptability",
+            "teamwork",
+            "collaboration"
+          ],
+          "skill_match_percent": 34.01,
+          "semantic_similarity_percent": 37.28,
+          "category_compatibility_percent": 19.64,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00822",
+          "job_title": "finance - fp&a analyst",
+          "category": "FINANCE",
+          "match_score": 29.43,
+          "base_match_score": 29.43,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "microsoft excel"
+          ],
+          "recommended_learning": [
+            "microsoft excel",
+            "project management",
+            "financial analysis",
+            "financial reporting",
+            "power bi",
+            "accounting principles",
+            "financial forecasting",
+            "stakeholder engagement",
+            "data interpretation",
+            "financial systems transformation",
+            "sec filings analysis",
+            "communication",
+            "collaboration",
+            "attention to detail",
+            "organizational skills"
+          ],
+          "skill_match_percent": 34.01,
+          "semantic_similarity_percent": 22.35,
+          "category_compatibility_percent": 19.64,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00757",
+          "job_title": "staff data engineer - people & finance tech",
+          "category": "FINANCE",
+          "match_score": 26.7,
+          "base_match_score": 26.7,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "git",
+            "java",
+            "python",
+            "rest",
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "big data",
+            "continuous improvement",
+            "dynatrace",
+            "elt",
+            "etl",
+            "gatling",
+            "kafka",
+            "nosql",
+            "postgres",
+            "psychological safety",
+            "scala",
+            "spark"
+          ],
+          "recommended_learning": [
+            "continuous improvement",
+            "etl",
+            "big data",
+            "nosql",
+            "spark",
+            "dynatrace",
+            "elt",
+            "gatling",
+            "kafka",
+            "postgres",
+            "psychological safety",
+            "scala",
+            "mentoring",
+            "power bi",
+            "azure",
+            "powershell",
+            "c#",
+            "hive",
+            "microstrategy",
+            "qlik",
+            "spring boot",
+            "ci/cd",
+            "docker",
+            "grafana",
+            "graphdb",
+            "graphql",
+            "kubernetes",
+            "communication",
+            "problem solving",
+            "adaptability",
+            "collaboration",
+            "leadership"
+          ],
+          "skill_match_percent": 18.49,
+          "semantic_similarity_percent": 48.47,
+          "category_compatibility_percent": 19.64,
+          "required_skills_detected": 16,
+          "confidence_not_on_job": null
+        }
+      ]
+    },
+    "data": {
+      "latency_s": 0.5464,
+      "jobs_assessed": 180,
+      "shortlist_size": 180,
+      "processing_ms": 543.8,
+      "confidence": {
+        "score": 0.39,
+        "level": "low",
+        "method": "evidence_heuristic_v1",
+        "calibrated": false,
+        "factors": {
+          "category_agreement_top5": 0.2,
+          "top_job_skill_coverage": 0.3401,
+          "profile_skill_evidence": 1.0,
+          "score_margin_to_second": 0.236
+        }
+      },
+      "recommendations": [
+        {
+          "job_id": "job_00321",
+          "job_title": "information technology programmer",
+          "category": "INFORMATION-TECHNOLOGY",
+          "match_score": 41.27,
+          "base_match_score": 41.27,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "data analysis"
+          ],
+          "recommended_learning": [
+            "data analysis",
+            "excel",
+            "technical support",
+            "power bi",
+            "database management",
+            "c#",
+            "dashboard development",
+            "vba",
+            "report development",
+            "dax queries",
+            "training skills",
+            "communication",
+            "problem solving",
+            "attention to detail",
+            "critical thinking"
+          ],
+          "skill_match_percent": 34.01,
+          "semantic_similarity_percent": 60.7,
+          "category_compatibility_percent": 34.54,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00219",
+          "job_title": "data engineer - enterprise data and analytics, human resources stream",
+          "category": "HR",
+          "match_score": 37.73,
+          "base_match_score": 37.73,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "python",
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "etl"
+          ],
+          "recommended_learning": [
+            "etl",
+            "data analysis",
+            "data management",
+            "data visualization",
+            "data security",
+            "data warehousing",
+            "cloud technologies",
+            "test automation",
+            "communication",
+            "problem solving",
+            "adaptability",
+            "collaboration",
+            "customer focus",
+            "innovation"
+          ],
+          "skill_match_percent": 36.99,
+          "semantic_similarity_percent": 49.69,
+          "category_compatibility_percent": 10.12,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00790",
+          "job_title": "financial analyst, global functions finance",
+          "category": "FINANCE",
+          "match_score": 35.34,
+          "base_match_score": 35.34,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "financial planning and analysis (fp&a)"
+          ],
+          "recommended_learning": [
+            "financial planning and analysis (fp&a)",
+            "data analysis",
+            "strategic thinking",
+            "budgeting",
+            "analytical thinking",
+            "forecasting",
+            "influencing",
+            "ownership",
+            "automation",
+            "business modeling",
+            "data infrastructure",
+            "data manipulation",
+            "reporting solutions",
+            "variance analytics",
+            "communication",
+            "problem solving",
+            "adaptability",
+            "teamwork",
+            "collaboration"
+          ],
+          "skill_match_percent": 34.01,
+          "semantic_similarity_percent": 42.28,
+          "category_compatibility_percent": 24.92,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00822",
+          "job_title": "finance - fp&a analyst",
+          "category": "FINANCE",
+          "match_score": 32.53,
+          "base_match_score": 32.53,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "microsoft excel"
+          ],
+          "recommended_learning": [
+            "microsoft excel",
+            "project management",
+            "financial analysis",
+            "financial reporting",
+            "power bi",
+            "accounting principles",
+            "financial forecasting",
+            "stakeholder engagement",
+            "data interpretation",
+            "financial systems transformation",
+            "sec filings analysis",
+            "communication",
+            "collaboration",
+            "attention to detail",
+            "organizational skills"
+          ],
+          "skill_match_percent": 34.01,
+          "semantic_similarity_percent": 31.9,
+          "category_compatibility_percent": 24.92,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00831",
+          "job_title": "data solutions analyst",
+          "category": "FINANCE",
+          "match_score": 23.53,
+          "base_match_score": 23.53,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "python",
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "azure",
+            "data modeling",
+            "data security",
+            "data warehousing",
+            "databricks",
+            "etl",
+            "microsoft 365 suite",
+            "tableau"
+          ],
+          "recommended_learning": [
+            "azure",
+            "tableau",
+            "data security",
+            "data warehousing",
+            "etl",
+            "data modeling",
+            "microsoft 365 suite",
+            "databricks",
+            "data analysis",
+            "power bi",
+            "communication",
+            "problem solving",
+            "adaptability",
+            "collaboration",
+            "attention to detail"
+          ],
+          "skill_match_percent": 15.5,
+          "semantic_similarity_percent": 41.77,
+          "category_compatibility_percent": 24.92,
+          "required_skills_detected": 9,
+          "confidence_not_on_job": null
+        }
+      ]
+    },
+    "transferable": {
+      "latency_s": 0.5882,
+      "jobs_assessed": 180,
+      "shortlist_size": 180,
+      "processing_ms": 586.4,
+      "confidence": {
+        "score": 0.39,
+        "level": "low",
+        "method": "evidence_heuristic_v1",
+        "calibrated": false,
+        "factors": {
+          "category_agreement_top5": 0.2,
+          "top_job_skill_coverage": 0.7129,
+          "profile_skill_evidence": 1.0,
+          "score_margin_to_second": 0.322
+        }
+      },
+      "recommendations": [
+        {
+          "job_id": "job_00696",
+          "job_title": "finance manager",
+          "category": "FINANCE",
+          "match_score": 61.56,
+          "base_match_score": 61.56,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "communication",
+            "microsoft excel",
+            "problem solving"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "data analysis",
+            "financial analysis",
+            "analytical thinking",
+            "accounting",
+            "financial modeling",
+            "forecasting",
+            "reporting",
+            "financial services",
+            "teamwork",
+            "attention to detail",
+            "innovation"
+          ],
+          "skill_match_percent": 71.29,
+          "semantic_similarity_percent": 53.52,
+          "category_compatibility_percent": 21.98,
+          "required_skills_detected": 1,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00486",
+          "job_title": "sales development representative",
+          "category": "SALES",
+          "match_score": 56.73,
+          "base_match_score": 56.73,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "communication",
+            "problem solving"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "relationship building",
+            "negotiation",
+            "business development",
+            "analytical skills",
+            "stress management",
+            "responsibility",
+            "internet research",
+            "adaptability",
+            "teamwork",
+            "time management",
+            "interpersonal skills",
+            "customer service",
+            "attention to detail",
+            "creativity"
+          ],
+          "skill_match_percent": 69.05,
+          "semantic_similarity_percent": 42.63,
+          "category_compatibility_percent": 17.17,
+          "required_skills_detected": 1,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00074",
+          "job_title": "human resources director",
+          "category": "HR",
+          "match_score": 51.58,
+          "base_match_score": 51.58,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "communication",
+            "microsoft excel",
+            "problem solving"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "project management",
+            "employee relations",
+            "performance management",
+            "confidentiality",
+            "change management",
+            "conflict resolution",
+            "benefits administration",
+            "relationship management",
+            "policy development",
+            "hr management",
+            "curiosity",
+            "organizational development",
+            "payroll processing",
+            "compensation management",
+            "trustworthiness",
+            "compliance management",
+            "hris management",
+            "employee engagement strategies",
+            "hr reporting and analytics",
+            "employee satisfaction surveys",
+            "workers' compensation management",
+            "coaching and development",
+            "diversity, equity, inclusion programs",
+            "hr technology implementation",
+            "adaptability",
+            "collaboration",
+            "leadership",
+            "innovation"
+          ],
+          "skill_match_percent": 70.75,
+          "semantic_similarity_percent": 21.42,
+          "category_compatibility_percent": 12.25,
+          "required_skills_detected": 1,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00529",
+          "job_title": "sales account manager",
+          "category": "SALES",
+          "match_score": 38.17,
+          "base_match_score": 38.17,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "communication",
+            "problem solving"
+          ],
+          "missing_weak_skills": [
+            "b2b sales"
+          ],
+          "recommended_learning": [
+            "b2b sales",
+            "relationship building",
+            "business development",
+            "networking",
+            "market research",
+            "crm software",
+            "sales presentations",
+            "customer satisfaction",
+            "sales process management",
+            "teamwork"
+          ],
+          "skill_match_percent": 38.1,
+          "semantic_similarity_percent": 46.11,
+          "category_compatibility_percent": 17.17,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_01114",
+          "job_title": "business development center representative",
+          "category": "BUSINESS-DEVELOPMENT",
+          "match_score": 37.46,
+          "base_match_score": 37.46,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "communication",
+            "problem solving"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "adaptability",
+            "teamwork",
+            "customer service"
+          ],
+          "skill_match_percent": 40.0,
+          "semantic_similarity_percent": 37.55,
+          "category_compatibility_percent": 21.18,
+          "required_skills_detected": 0,
+          "confidence_not_on_job": null
+        }
+      ]
+    },
+    "missing_essentials": {
+      "latency_s": 0.5269,
+      "jobs_assessed": 180,
+      "shortlist_size": 180,
+      "processing_ms": 524.2,
+      "confidence": {
+        "score": 0.39,
+        "level": "low",
+        "method": "evidence_heuristic_v1",
+        "calibrated": false,
+        "factors": {
+          "category_agreement_top5": 0.4,
+          "top_job_skill_coverage": 0.6905,
+          "profile_skill_evidence": 0.8,
+          "score_margin_to_second": 1.0
+        }
+      },
+      "recommendations": [
+        {
+          "job_id": "job_00486",
+          "job_title": "sales development representative",
+          "category": "SALES",
+          "match_score": 55.88,
+          "base_match_score": 55.88,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "adaptability",
+            "communication"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "relationship building",
+            "negotiation",
+            "business development",
+            "analytical skills",
+            "stress management",
+            "responsibility",
+            "internet research",
+            "problem solving",
+            "teamwork",
+            "time management",
+            "interpersonal skills",
+            "customer service",
+            "attention to detail",
+            "creativity"
+          ],
+          "skill_match_percent": 69.05,
+          "semantic_similarity_percent": 38.37,
+          "category_compatibility_percent": 20.18,
+          "required_skills_detected": 1,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00296",
+          "job_title": "information technology project coordinator",
+          "category": "INFORMATION-TECHNOLOGY",
+          "match_score": 36.42,
+          "base_match_score": 36.42,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "adaptability",
+            "communication"
+          ],
+          "missing_weak_skills": [
+            "software development methodologies"
+          ],
+          "recommended_learning": [
+            "software development methodologies",
+            "self-motivation",
+            "project management tools",
+            "technical documentation",
+            "analytical problem solving",
+            "applications development process",
+            "laboratory procedures",
+            "time management",
+            "interpersonal skills",
+            "organizational skills"
+          ],
+          "skill_match_percent": 36.05,
+          "semantic_similarity_percent": 39.47,
+          "category_compatibility_percent": 30.52,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_01114",
+          "job_title": "business development center representative",
+          "category": "BUSINESS-DEVELOPMENT",
+          "match_score": 32.62,
+          "base_match_score": 32.62,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "adaptability",
+            "communication"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "problem solving",
+            "teamwork",
+            "customer service"
+          ],
+          "skill_match_percent": 40.0,
+          "semantic_similarity_percent": 20.52,
+          "category_compatibility_percent": 18.79,
+          "required_skills_detected": 0,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00951",
+          "job_title": "business development coordinator",
+          "category": "BUSINESS-DEVELOPMENT",
+          "match_score": 32.32,
+          "base_match_score": 32.32,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "adaptability",
+            "communication",
+            "writing"
+          ],
+          "missing_weak_skills": [
+            "marketing"
+          ],
+          "recommended_learning": [
+            "marketing",
+            "project management",
+            "team collaboration",
+            "initiative",
+            "data management",
+            "proposal creation",
+            "brand compliance",
+            "client relations",
+            "problem solving",
+            "time management",
+            "attention to detail"
+          ],
+          "skill_match_percent": 37.28,
+          "semantic_similarity_percent": 25.74,
+          "category_compatibility_percent": 18.79,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00529",
+          "job_title": "sales account manager",
+          "category": "SALES",
+          "match_score": 30.27,
+          "base_match_score": 30.27,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "communication"
+          ],
+          "missing_weak_skills": [
+            "b2b sales"
+          ],
+          "recommended_learning": [
+            "b2b sales",
+            "relationship building",
+            "business development",
+            "networking",
+            "market research",
+            "crm software",
+            "sales presentations",
+            "customer satisfaction",
+            "sales process management",
+            "problem solving",
+            "teamwork"
+          ],
+          "skill_match_percent": 34.01,
+          "semantic_similarity_percent": 25.26,
+          "category_compatibility_percent": 20.18,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        }
+      ]
+    },
+    "multi_category": {
+      "latency_s": 0.5656,
+      "jobs_assessed": 180,
+      "shortlist_size": 180,
+      "processing_ms": 562.3,
+      "confidence": {
+        "score": 0.7415,
+        "level": "high",
+        "method": "evidence_heuristic_v1",
+        "calibrated": false,
+        "factors": {
+          "category_agreement_top5": 1.0,
+          "top_job_skill_coverage": 0.71,
+          "profile_skill_evidence": 1.0,
+          "score_margin_to_second": 0.07
+        }
+      },
+      "recommendations": [
+        {
+          "job_id": "job_00696",
+          "job_title": "finance manager",
+          "category": "FINANCE",
+          "match_score": 63.35,
+          "base_match_score": 63.35,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "microsoft excel",
+            "reporting"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "data analysis",
+            "financial analysis",
+            "analytical thinking",
+            "accounting",
+            "financial modeling",
+            "forecasting",
+            "financial services",
+            "communication",
+            "problem solving",
+            "teamwork",
+            "attention to detail",
+            "innovation"
+          ],
+          "skill_match_percent": 71.0,
+          "semantic_similarity_percent": 47.41,
+          "category_compatibility_percent": 58.11,
+          "required_skills_detected": 1,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00759",
+          "job_title": "volunteer: opportunity alert: finance coordinator needed for cyber defense & intelligence center",
+          "category": "FINANCE",
+          "match_score": 62.3,
+          "base_match_score": 62.3,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "excel",
+            "finance",
+            "financial reporting"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "financial analysis",
+            "accounting",
+            "gaap",
+            "financial software",
+            "grant accounting",
+            "communication",
+            "problem solving",
+            "teamwork",
+            "time management",
+            "interpersonal skills",
+            "attention to detail",
+            "organizational skills"
+          ],
+          "skill_match_percent": 74.83,
+          "semantic_similarity_percent": 34.6,
+          "category_compatibility_percent": 58.11,
+          "required_skills_detected": 1,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00822",
+          "job_title": "finance - fp&a analyst",
+          "category": "FINANCE",
+          "match_score": 62.27,
+          "base_match_score": 62.27,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "financial reporting",
+            "microsoft excel",
+            "power bi",
+            "sql"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "project management",
+            "financial analysis",
+            "accounting principles",
+            "financial forecasting",
+            "stakeholder engagement",
+            "data interpretation",
+            "financial systems transformation",
+            "sec filings analysis",
+            "communication",
+            "collaboration",
+            "attention to detail",
+            "organizational skills"
+          ],
+          "skill_match_percent": 72.79,
+          "semantic_similarity_percent": 39.28,
+          "category_compatibility_percent": 58.11,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00701",
+          "job_title": "finance and admin manager",
+          "category": "FINANCE",
+          "match_score": 58.97,
+          "base_match_score": 58.97,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "finance",
+            "microsoft excel"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "data analysis",
+            "analytical skills",
+            "budgeting",
+            "strategic planning",
+            "confidentiality",
+            "accounting",
+            "microsoft word",
+            "microsoft powerpoint",
+            "payroll management",
+            "independent work",
+            "microsoft outlook",
+            "quickbooks",
+            "adobe",
+            "bank reconciliation",
+            "client interaction",
+            "economics",
+            "communication",
+            "problem solving",
+            "adaptability",
+            "teamwork",
+            "organizational skills",
+            "presentation skills"
+          ],
+          "skill_match_percent": 69.43,
+          "semantic_similarity_percent": 34.87,
+          "category_compatibility_percent": 58.11,
+          "required_skills_detected": 1,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00828",
+          "job_title": "finance manager",
+          "category": "FINANCE",
+          "match_score": 58.1,
+          "base_match_score": 58.1,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "finance"
+          ],
+          "missing_weak_skills": [],
+          "recommended_learning": [
+            "data analysis",
+            "financial analysis",
+            "strategic thinking",
+            "performance management",
+            "accounting",
+            "forecasting",
+            "risk management",
+            "decision making",
+            "internal controls",
+            "business planning",
+            "operational excellence",
+            "communication",
+            "problem solving",
+            "adaptability",
+            "teamwork",
+            "collaboration",
+            "leadership"
+          ],
+          "skill_match_percent": 68.03,
+          "semantic_similarity_percent": 34.92,
+          "category_compatibility_percent": 58.11,
+          "required_skills_detected": 1,
+          "confidence_not_on_job": null
+        }
+      ]
+    },
+    "noisy": {
+      "latency_s": 0.8324,
+      "jobs_assessed": 180,
+      "shortlist_size": 180,
+      "processing_ms": 830.0,
+      "confidence": {
+        "score": 0.3277,
+        "level": "low",
+        "method": "evidence_heuristic_v1",
+        "calibrated": false,
+        "factors": {
+          "category_agreement_top5": 0.4,
+          "top_job_skill_coverage": 0.3401,
+          "profile_skill_evidence": 0.4,
+          "score_margin_to_second": 0.1133
+        }
+      },
+      "recommendations": [
+        {
+          "job_id": "job_00321",
+          "job_title": "information technology programmer",
+          "category": "INFORMATION-TECHNOLOGY",
+          "match_score": 36.87,
+          "base_match_score": 36.87,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "data analysis"
+          ],
+          "recommended_learning": [
+            "data analysis",
+            "excel",
+            "technical support",
+            "power bi",
+            "database management",
+            "c#",
+            "dashboard development",
+            "vba",
+            "report development",
+            "dax queries",
+            "training skills",
+            "communication",
+            "problem solving",
+            "attention to detail",
+            "critical thinking"
+          ],
+          "skill_match_percent": 34.01,
+          "semantic_similarity_percent": 47.09,
+          "category_compatibility_percent": 27.31,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00219",
+          "job_title": "data engineer - enterprise data and analytics, human resources stream",
+          "category": "HR",
+          "match_score": 35.17,
+          "base_match_score": 35.17,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "etl"
+          ],
+          "recommended_learning": [
+            "etl",
+            "data analysis",
+            "data management",
+            "python",
+            "data visualization",
+            "data security",
+            "data warehousing",
+            "cloud technologies",
+            "test automation",
+            "communication",
+            "problem solving",
+            "adaptability",
+            "collaboration",
+            "customer focus",
+            "innovation"
+          ],
+          "skill_match_percent": 34.01,
+          "semantic_similarity_percent": 46.82,
+          "category_compatibility_percent": 11.05,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00790",
+          "job_title": "financial analyst, global functions finance",
+          "category": "FINANCE",
+          "match_score": 33.44,
+          "base_match_score": 33.44,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql",
+            "teamwork"
+          ],
+          "missing_weak_skills": [
+            "financial planning and analysis (fp&a)"
+          ],
+          "recommended_learning": [
+            "financial planning and analysis (fp&a)",
+            "data analysis",
+            "strategic thinking",
+            "budgeting",
+            "analytical thinking",
+            "forecasting",
+            "influencing",
+            "ownership",
+            "automation",
+            "business modeling",
+            "data infrastructure",
+            "data manipulation",
+            "reporting solutions",
+            "variance analytics",
+            "communication",
+            "problem solving",
+            "adaptability",
+            "collaboration"
+          ],
+          "skill_match_percent": 35.65,
+          "semantic_similarity_percent": 32.68,
+          "category_compatibility_percent": 21.62,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00822",
+          "job_title": "finance - fp&a analyst",
+          "category": "FINANCE",
+          "match_score": 30.02,
+          "base_match_score": 30.02,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql"
+          ],
+          "missing_weak_skills": [
+            "microsoft excel"
+          ],
+          "recommended_learning": [
+            "microsoft excel",
+            "project management",
+            "financial analysis",
+            "financial reporting",
+            "power bi",
+            "accounting principles",
+            "financial forecasting",
+            "stakeholder engagement",
+            "data interpretation",
+            "financial systems transformation",
+            "sec filings analysis",
+            "communication",
+            "collaboration",
+            "attention to detail",
+            "organizational skills"
+          ],
+          "skill_match_percent": 34.01,
+          "semantic_similarity_percent": 23.8,
+          "category_compatibility_percent": 21.62,
+          "required_skills_detected": 2,
+          "confidence_not_on_job": null
+        },
+        {
+          "job_id": "job_00251",
+          "job_title": "information technology specialist 2 - 5138",
+          "category": "INFORMATION-TECHNOLOGY",
+          "match_score": 23.35,
+          "base_match_score": 23.35,
+          "academic_penalty_percent": 0.0,
+          "matched_skills": [
+            "sql",
+            "teamwork"
+          ],
+          "missing_weak_skills": [
+            "adhoc reporting",
+            "data analysis",
+            "database design",
+            "performance tuning",
+            "troubleshooting"
+          ],
+          "recommended_learning": [
+            "data analysis",
+            "troubleshooting",
+            "performance tuning",
+            "adhoc reporting",
+            "database design",
+            "communication",
+            "problem solving",
+            "adaptability"
+          ],
+          "skill_match_percent": 17.56,
+          "semantic_similarity_percent": 35.38,
+          "category_compatibility_percent": 27.31,
+          "required_skills_detected": 6,
+          "confidence_not_on_job": null
+        }
+      ]
+    }
+  },
+  "full_ranking_agreement": {
+    "technical": {
+      "fast_ids": [
+        "job_00321",
+        "job_00219",
+        "job_00790",
+        "job_00822",
+        "job_00757"
+      ],
+      "full_ids": [
+        "job_00321",
+        "job_00219",
+        "job_00790",
+        "job_00822",
+        "job_00757"
+      ],
+      "top1_agree": true,
+      "top5_overlap": 5,
+      "fast_scores": [
+        39.67,
+        36.89,
+        33.46,
+        29.43,
+        26.7
+      ],
+      "full_scores": [
+        39.67,
+        36.89,
+        33.46,
+        29.43,
+        26.7
+      ]
+    },
+    "data": {
+      "fast_ids": [
+        "job_00321",
+        "job_00219",
+        "job_00790",
+        "job_00822",
+        "job_00831"
+      ],
+      "full_ids": [
+        "job_00321",
+        "job_00219",
+        "job_00790",
+        "job_00822",
+        "job_00831"
+      ],
+      "top1_agree": true,
+      "top5_overlap": 5,
+      "fast_scores": [
+        41.27,
+        37.73,
+        35.34,
+        32.53,
+        23.53
+      ],
+      "full_scores": [
+        41.27,
+        37.73,
+        35.34,
+        32.53,
+        23.53
+      ]
+    },
+    "transferable": {
+      "fast_ids": [
+        "job_00696",
+        "job_00486",
+        "job_00074",
+        "job_00529",
+        "job_01114"
+      ],
+      "full_ids": [
+        "job_00696",
+        "job_00486",
+        "job_00074",
+        "job_00529",
+        "job_01114"
+      ],
+      "top1_agree": true,
+      "top5_overlap": 5,
+      "fast_scores": [
+        61.56,
+        56.73,
+        51.58,
+        38.17,
+        37.46
+      ],
+      "full_scores": [
+        61.56,
+        56.73,
+        51.58,
+        38.17,
+        37.46
+      ]
+    },
+    "missing_essentials": {
+      "fast_ids": [
+        "job_00486",
+        "job_00296",
+        "job_01114",
+        "job_00951",
+        "job_00529"
+      ],
+      "full_ids": [
+        "job_00486",
+        "job_00296",
+        "job_01114",
+        "job_00951",
+        "job_00529"
+      ],
+      "top1_agree": true,
+      "top5_overlap": 5,
+      "fast_scores": [
+        55.88,
+        36.42,
+        32.62,
+        32.32,
+        30.27
+      ],
+      "full_scores": [
+        55.88,
+        36.42,
+        32.62,
+        32.32,
+        30.27
+      ]
+    },
+    "multi_category": {
+      "fast_ids": [
+        "job_00696",
+        "job_00759",
+        "job_00822",
+        "job_00701",
+        "job_00828"
+      ],
+      "full_ids": [
+        "job_00696",
+        "job_00759",
+        "job_00822",
+        "job_00701",
+        "job_00828"
+      ],
+      "top1_agree": true,
+      "top5_overlap": 5,
+      "fast_scores": [
+        63.35,
+        62.3,
+        62.27,
+        58.97,
+        58.1
+      ],
+      "full_scores": [
+        63.35,
+        62.3,
+        62.27,
+        58.97,
+        58.1
+      ]
+    },
+    "noisy": {
+      "fast_ids": [
+        "job_00321",
+        "job_00219",
+        "job_00790",
+        "job_00822",
+        "job_00251"
+      ],
+      "full_ids": [
+        "job_00321",
+        "job_00219",
+        "job_00790",
+        "job_00822",
+        "job_00251"
+      ],
+      "top1_agree": true,
+      "top5_overlap": 5,
+      "fast_scores": [
+        36.87,
+        35.17,
+        33.44,
+        30.02,
+        23.35
+      ],
+      "full_scores": [
+        36.87,
+        35.17,
+        33.44,
+        30.02,
+        23.35
+      ]
+    }
+  },
+  "comparison_with_previous_ranker": {
+    "technical": {
+      "before_ids": [
+        "job_00293",
+        "job_00757",
+        "job_00897",
+        "job_00321",
+        "job_00219"
+      ],
+      "after_ids": [
+        "job_00321",
+        "job_00219",
+        "job_00790",
+        "job_00822",
+        "job_00757"
+      ],
+      "top1_same_as_old_ranker": false,
+      "top5_overlap_with_old_ranker": 3
+    },
+    "data": {
+      "before_ids": [
+        "job_00321",
+        "job_00219",
+        "job_00831",
+        "job_00372",
+        "job_00897"
+      ],
+      "after_ids": [
+        "job_00321",
+        "job_00219",
+        "job_00790",
+        "job_00822",
+        "job_00831"
+      ],
+      "top1_same_as_old_ranker": true,
+      "top5_overlap_with_old_ranker": 3
+    },
+    "transferable": {
+      "before_ids": [
+        "job_00730",
+        "job_01114",
+        "job_00649",
+        "job_01162",
+        "job_01138"
+      ],
+      "after_ids": [
+        "job_00696",
+        "job_00486",
+        "job_00074",
+        "job_00529",
+        "job_01114"
+      ],
+      "top1_same_as_old_ranker": false,
+      "top5_overlap_with_old_ranker": 1
+    },
+    "missing_essentials": {
+      "before_ids": [
+        "job_01114",
+        "job_00256",
+        "job_01083",
+        "job_00958",
+        "job_00264"
+      ],
+      "after_ids": [
+        "job_00486",
+        "job_00296",
+        "job_01114",
+        "job_00951",
+        "job_00529"
+      ],
+      "top1_same_as_old_ranker": false,
+      "top5_overlap_with_old_ranker": 1
+    },
+    "multi_category": {
+      "before_ids": [
+        "job_00831",
+        "job_00321",
+        "job_00759",
+        "job_00842",
+        "job_00822"
+      ],
+      "after_ids": [
+        "job_00696",
+        "job_00759",
+        "job_00822",
+        "job_00701",
+        "job_00828"
+      ],
+      "top1_same_as_old_ranker": false,
+      "top5_overlap_with_old_ranker": 2
+    },
+    "noisy": {
+      "before_ids": [
+        "job_00304",
+        "job_00251",
+        "job_00558",
+        "job_00617",
+        "job_00372"
+      ],
+      "after_ids": [
+        "job_00321",
+        "job_00219",
+        "job_00790",
+        "job_00822",
+        "job_00251"
+      ],
+      "top1_same_as_old_ranker": false,
+      "top5_overlap_with_old_ranker": 1
+    }
+  }
+}

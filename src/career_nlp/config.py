@@ -49,7 +49,42 @@ class AssetConfig:
     poor_grade_threshold_percent: float = 50.0
     academic_subject_penalty: float = 40.0
     academic_core_domain_penalty: float = 60.0
+    # A fully covered preferred tier is worth this much relative to a fully
+    # covered required tier. Individual preferred skills share that tier, so a
+    # long preferred list cannot outweigh a few essential requirements.
     preferred_requirement_weight: float = 0.35
+    # Soft and contextual competencies share a smaller tier. An explicit
+    # "required"/"must" statement still promotes one of them into the required tier.
+    generic_requirement_weight: float = 0.12
+    # Student-only recommend() scores this many retrieved jobs in detail.
+    candidate_shortlist_size: int = 180
+    # Slots reserved for jobs that share skills with the student, including
+    # generic skills when those are the profile's only evidence.
+    retrieval_skill_slots: int = 100
+    # Upper bound on paraphrase checks embedded for one recommendation request.
+    semantic_fallback_max_prompts: int = 48
+    generic_competencies: frozenset = field(default_factory=lambda: frozenset({
+        "communication",
+        "collaboration",
+        "adaptability",
+        "customer focus",
+        "customer service",
+        "problem solving",
+        "innovation",
+        "teamwork",
+        "team work",
+        "leadership",
+        "interpersonal",
+        "interpersonal skills",
+        "time management",
+        "attention to detail",
+        "critical thinking",
+        "flexibility",
+        "creativity",
+        "work ethic",
+        "presentation skills",
+        "organizational skills",
+    }))
 
     # --- limits / behaviour -------------------------------------------------
     default_top_k: int = 5
@@ -76,6 +111,18 @@ class AssetConfig:
             raise ValueError("academic_core_domain_penalty must be between 0 and 100")
         if not 0.0 <= self.preferred_requirement_weight <= 1.0:
             raise ValueError("preferred_requirement_weight must be between 0 and 1")
+        if not 0.0 <= self.generic_requirement_weight <= 1.0:
+            raise ValueError("generic_requirement_weight must be between 0 and 1")
+        if self.generic_requirement_weight > self.preferred_requirement_weight:
+            raise ValueError("generic_requirement_weight cannot exceed preferred_requirement_weight")
+        if self.candidate_shortlist_size < 1 or self.retrieval_skill_slots < 1:
+            raise ValueError("candidate_shortlist_size and retrieval_skill_slots must be >= 1")
+        if self.retrieval_skill_slots > self.candidate_shortlist_size:
+            raise ValueError("retrieval_skill_slots cannot exceed candidate_shortlist_size")
+        if self.semantic_fallback_max_prompts < 0:
+            raise ValueError("semantic_fallback_max_prompts must be >= 0")
+        if not isinstance(self.generic_competencies, frozenset):
+            object.__setattr__(self, "generic_competencies", frozenset(self.generic_competencies))
         if self.academic_core_domain_penalty < self.academic_subject_penalty:
             # Preserve existing configurations that override only the base
             # penalty. The core-domain adjustment cannot be weaker than it.
@@ -91,7 +138,9 @@ class AssetConfig:
         CAREER_NLP_JOBS_PATH, CAREER_NLP_CACHE_DIR, CAREER_NLP_MODEL_CACHE_DIR,
         CAREER_NLP_BACKEND, CAREER_NLP_EMBEDDING_MODEL, CAREER_NLP_WARMUP,
         CAREER_NLP_POOR_GRADE_THRESHOLD_PERCENT, CAREER_NLP_ACADEMIC_SUBJECT_PENALTY,
-        CAREER_NLP_ACADEMIC_CORE_DOMAIN_PENALTY, CAREER_NLP_PREFERRED_REQUIREMENT_WEIGHT
+        CAREER_NLP_ACADEMIC_CORE_DOMAIN_PENALTY, CAREER_NLP_PREFERRED_REQUIREMENT_WEIGHT,
+        CAREER_NLP_GENERIC_REQUIREMENT_WEIGHT, CAREER_NLP_CANDIDATE_SHORTLIST_SIZE,
+        CAREER_NLP_RETRIEVAL_SKILL_SLOTS, CAREER_NLP_SEMANTIC_FALLBACK_MAX_PROMPTS
         """
         base = cls()
         kwargs = {}
@@ -120,6 +169,18 @@ class AssetConfig:
         if os.environ.get("CAREER_NLP_PREFERRED_REQUIREMENT_WEIGHT"):
             kwargs["preferred_requirement_weight"] = float(
                 os.environ["CAREER_NLP_PREFERRED_REQUIREMENT_WEIGHT"]
+            )
+        if os.environ.get("CAREER_NLP_GENERIC_REQUIREMENT_WEIGHT"):
+            kwargs["generic_requirement_weight"] = float(
+                os.environ["CAREER_NLP_GENERIC_REQUIREMENT_WEIGHT"]
+            )
+        if os.environ.get("CAREER_NLP_CANDIDATE_SHORTLIST_SIZE"):
+            kwargs["candidate_shortlist_size"] = int(os.environ["CAREER_NLP_CANDIDATE_SHORTLIST_SIZE"])
+        if os.environ.get("CAREER_NLP_RETRIEVAL_SKILL_SLOTS"):
+            kwargs["retrieval_skill_slots"] = int(os.environ["CAREER_NLP_RETRIEVAL_SKILL_SLOTS"])
+        if os.environ.get("CAREER_NLP_SEMANTIC_FALLBACK_MAX_PROMPTS"):
+            kwargs["semantic_fallback_max_prompts"] = int(
+                os.environ["CAREER_NLP_SEMANTIC_FALLBACK_MAX_PROMPTS"]
             )
         kwargs["warmup_on_start"] = _env_bool("CAREER_NLP_WARMUP", base.warmup_on_start)
         return replace(base, **kwargs)

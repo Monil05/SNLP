@@ -71,7 +71,7 @@ The repository is not a Git working tree, so use normal file inspection rather
 than Git diff/status for change review.
 
 
-## Week 6 competency extraction update (asset 1.4.5)
+## Week 6 competency extraction update (asset 1.4.6)
 
 * Added structured competency results (`competency_requirements`) that separate skills from broader knowledge areas and classify each as required, preferred or not required, with matched/missing/not-evaluated status and JD evidence.
 * Generic cue patterns detect unfamiliar topics/skills from JD wording; there is no topic-specific list. Preferred requirements count at a configurable lower weight (`CAREER_NLP_PREFERRED_REQUIREMENT_WEIGHT`, default `0.35`). Optional items are surfaced as preferred rather than mandatory, and explicit non-requirements are excluded from match gaps.
@@ -120,7 +120,7 @@ than Git diff/status for change review.
 * Verified the exact sample profile and three JDs against the bundled 1,167-job corpus using offline LSA; the Business Intelligence Analyst ranked first.
 * All 97 Week 6 asset tests pass. The older Week 3 test suite requires `sentence-transformers`, which is unavailable in this execution environment.
 
-## Current Week 6 requirement classification and scoring cleanup (asset 1.4.5)
+## Current Week 6 requirement classification and scoring cleanup (asset 1.4.6)
 
 * Preferred competencies are not included in `missing_weak_skills`; they remain available in `competency_requirements` and `recommended_learning`.
 * `required_skills_detected` now counts required competencies only.

@@ -400,7 +400,7 @@
       "additionalProperties": false,
       "properties": {
         "asset_version": {
-          "default": "1.4.5",
+          "default": "1.4.6",
           "title": "Asset Version",
           "type": "string"
         },

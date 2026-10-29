@@ -73,7 +73,7 @@
   ],
   "entities_count": 12,
   "meta": {
-    "asset_version": "1.4.5",
+    "asset_version": "1.4.6",
     "schema_version": "1.0",
     "model": {
       "embedding_backend": "lsa",

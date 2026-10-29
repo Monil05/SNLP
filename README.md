@@ -177,7 +177,7 @@ pytest "base version/test/test_career_nlp.py"
 
 Full documentation: `WEEK6_ASSET_ENGINEERING.md`.
 
-## Current Week 6 functionality (asset version 1.4.5)
+## Current Week 6 functionality (asset version 1.4.6)
 
 The reusable asset extracts academic records from student text and exposes them through `/v1/extract`, `/v1/cv/analyze`, `/v1/match`, `/v1/analyze`, `/v1/recommend`, and `/v1/compare-jobs`. It recognises subject percentages, fractions such as `45/100`, letter grades, GPA/CGPA out of 4 or 10, and GPA without a stated scale (assumed out of 4 for values up to 4, and out of 10 for values greater than 4). Numeric values are normalised to a 0–100 scale when valid; out-of-range values are not scored. The default poor-grade threshold is 50%, configurable with `CAREER_NLP_POOR_GRADE_THRESHOLD_PERCENT`. Overall GPA is reported but is not mapped to a specific weakness.
 

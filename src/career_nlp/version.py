@@ -6,6 +6,6 @@ SCHEMA_VERSION - version of the structured input/output contract. Bumped only
                  optional fields does not change it.
 """
 
-ASSET_VERSION = "1.4.5"
+ASSET_VERSION = "1.4.6"
 SCHEMA_VERSION = "1.0"
 CONFIDENCE_METHOD = "evidence_heuristic_v1"

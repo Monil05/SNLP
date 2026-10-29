@@ -1025,6 +1025,7 @@ def test_api_health_info(client):
         "academic_subject_penalty": 40.0,
         "academic_core_domain_penalty": 60.0,
         "preferred_requirement_weight": 0.35,
+        "generic_requirement_weight": 0.12,
     } and "HR" in i["categories"]
 
 
