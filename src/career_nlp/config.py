@@ -63,6 +63,12 @@ class AssetConfig:
     retrieval_skill_slots: int = 100
     # Upper bound on paraphrase checks embedded for one recommendation request.
     semantic_fallback_max_prompts: int = 48
+    # Student-only results show this many JD-and-title gaps, and the same list
+    # is the learning recommendation. Fewer are returned when the job has fewer.
+    displayed_skill_gaps: int = 5
+    # Full competency and academic checks run on this many retrieved jobs.
+    # full_ranking=True still assesses the whole corpus.
+    recommendation_assess_pool: int = 40
     generic_competencies: frozenset = field(default_factory=lambda: frozenset({
         "communication",
         "collaboration",
@@ -121,6 +127,10 @@ class AssetConfig:
             raise ValueError("retrieval_skill_slots cannot exceed candidate_shortlist_size")
         if self.semantic_fallback_max_prompts < 0:
             raise ValueError("semantic_fallback_max_prompts must be >= 0")
+        if self.displayed_skill_gaps < 1:
+            raise ValueError("displayed_skill_gaps must be >= 1")
+        if self.recommendation_assess_pool < 1:
+            raise ValueError("recommendation_assess_pool must be >= 1")
         if not isinstance(self.generic_competencies, frozenset):
             object.__setattr__(self, "generic_competencies", frozenset(self.generic_competencies))
         if self.academic_core_domain_penalty < self.academic_subject_penalty:
@@ -140,7 +150,8 @@ class AssetConfig:
         CAREER_NLP_POOR_GRADE_THRESHOLD_PERCENT, CAREER_NLP_ACADEMIC_SUBJECT_PENALTY,
         CAREER_NLP_ACADEMIC_CORE_DOMAIN_PENALTY, CAREER_NLP_PREFERRED_REQUIREMENT_WEIGHT,
         CAREER_NLP_GENERIC_REQUIREMENT_WEIGHT, CAREER_NLP_CANDIDATE_SHORTLIST_SIZE,
-        CAREER_NLP_RETRIEVAL_SKILL_SLOTS, CAREER_NLP_SEMANTIC_FALLBACK_MAX_PROMPTS
+        CAREER_NLP_RETRIEVAL_SKILL_SLOTS, CAREER_NLP_SEMANTIC_FALLBACK_MAX_PROMPTS,
+        CAREER_NLP_DISPLAYED_SKILL_GAPS, CAREER_NLP_RECOMMENDATION_ASSESS_POOL
         """
         base = cls()
         kwargs = {}
@@ -181,6 +192,12 @@ class AssetConfig:
         if os.environ.get("CAREER_NLP_SEMANTIC_FALLBACK_MAX_PROMPTS"):
             kwargs["semantic_fallback_max_prompts"] = int(
                 os.environ["CAREER_NLP_SEMANTIC_FALLBACK_MAX_PROMPTS"]
+            )
+        if os.environ.get("CAREER_NLP_DISPLAYED_SKILL_GAPS"):
+            kwargs["displayed_skill_gaps"] = int(os.environ["CAREER_NLP_DISPLAYED_SKILL_GAPS"])
+        if os.environ.get("CAREER_NLP_RECOMMENDATION_ASSESS_POOL"):
+            kwargs["recommendation_assess_pool"] = int(
+                os.environ["CAREER_NLP_RECOMMENDATION_ASSESS_POOL"]
             )
         kwargs["warmup_on_start"] = _env_bool("CAREER_NLP_WARMUP", base.warmup_on_start)
         return replace(base, **kwargs)

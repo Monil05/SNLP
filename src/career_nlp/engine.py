@@ -184,6 +184,33 @@ _TRAILING_TOKEN_STOP = frozenset({
 _METADATA_EVIDENCE = (
     "Listed in the job skill metadata without an explicit requirement statement in the description."
 )
+# Prototypes for ranking a gap against the sentence that mentions it.
+# They describe requirement language, not a list of skill names.
+_GAP_REQUIREMENT_PROTOTYPE = (
+    "This skill is required, mandatory, and essential for the role."
+)
+_GAP_PASSING_PROTOTYPE = (
+    "This skill is only a passing incidental mention and is not required."
+)
+# Role and skill-kind descriptions for the displayed-gap filter. They are
+# compared with the embedder; they are not an exact skip-list of skill names.
+_GAP_TECH_FINANCE_ROLE = (
+    "engineering technology software programming data engineer developer "
+    "programmer finance accounting financial analysis"
+)
+_GAP_COMMERCIAL_ROLE = (
+    "sales marketing business development customer outreach"
+)
+_GAP_SOFT_SKILL = (
+    "workplace behavior such as communication teamwork leadership ownership "
+    "initiative critical thinking attention to detail strategic thinking"
+)
+_GAP_CONCRETE_SKILL = (
+    "a specific tool programming language platform method or finance practice "
+    "such as python sql etl budgeting accounting software"
+)
+_SOFT_GAP_SUPPRESS_CATEGORIES = frozenset({"INFORMATION-TECHNOLOGY", "FINANCE"})
+_SOFT_GAP_KEEP_CATEGORIES = frozenset({"SALES", "BUSINESS-DEVELOPMENT"})
 _STUDENT_NEGATIVE_RE = re.compile(
     r"\b(?:no|without|lacking|zero)\b(?:\s+\w+){0,3}\s*$|"
     r"\b(?:no|without|lack(?:ing)?(?:\s+of)?|zero)\s+(?:any\s+|prior\s+|previous\s+)?"
@@ -246,6 +273,14 @@ class _Competency:
 
 
 @dataclass
+class _GapCandidate:
+    name: str
+    key: str
+    evidence: str
+    penalty: float = 0.0
+
+
+@dataclass
 class _CompetencyAssessment:
     requirements: List[CompetencyRequirement]
     matched: List[str]
@@ -281,6 +316,7 @@ class _State:
     required_terms: List[frozenset] = field(default_factory=list)
     preferred_terms: List[frozenset] = field(default_factory=list)
     generic_terms: List[frozenset] = field(default_factory=list)
+    gap_vectors: Dict[str, np.ndarray] = field(default_factory=dict)
     warnings: List[str] = field(default_factory=list)
 
 
@@ -432,6 +468,7 @@ class CareerNLP:
         )
         state.job_competencies = self._load_or_extract_competencies(state)
         self._index_job_skills(state)
+        state.gap_vectors = self._load_or_build_gap_vectors(state)
         return state
 
     # ------------------------------------------------------------------
@@ -966,6 +1003,62 @@ class CareerNLP:
             digest.update(b"\1")
         return Path(self.config.cache_dir) / f"job_competencies_{digest.hexdigest()[:20]}.json"
 
+    def _gap_vector_cache_file(self, st: _State) -> Path:
+        competency_cache = self._competency_cache_file(st)
+        digest = competency_cache.stem.removeprefix("job_competencies_")
+        embedder = re.sub(
+            r"[^A-Za-z0-9._-]+",
+            "_",
+            f"{st.backend}_{st.embedder.name}_{st.embedder.dimensions}",
+        )
+        return competency_cache.with_name(f"gap_rank_{digest}_{embedder}.npz")
+
+    def _gap_rank_corpus(self, st: _State) -> List[str]:
+        texts = {
+            self._gap_rank_text(_GAP_REQUIREMENT_PROTOTYPE),
+            self._gap_rank_text(_GAP_PASSING_PROTOTYPE),
+            self._gap_rank_text(_GAP_TECH_FINANCE_ROLE),
+            self._gap_rank_text(_GAP_COMMERCIAL_ROLE),
+            self._gap_rank_text(_GAP_SOFT_SKILL),
+            self._gap_rank_text(_GAP_CONCRETE_SKILL),
+        }
+        for title, competencies in zip(st.job_titles, st.job_competencies):
+            texts.add(self._gap_rank_text(clean_job_title(title) or title))
+            for item in competencies:
+                texts.add(self._gap_rank_text(item.name))
+                if item.evidence and item.evidence != _METADATA_EVIDENCE:
+                    texts.add(self._gap_evidence_text(item.name, item.evidence))
+        texts.discard("")
+        return sorted(texts)
+
+    def _load_or_build_gap_vectors(self, st: _State) -> Dict[str, np.ndarray]:
+        """Embeddings for titles, skill names and short JD windows, built once."""
+        cache = self._gap_vector_cache_file(st)
+        if cache.exists():
+            try:
+                payload = np.load(cache, allow_pickle=False)
+                texts = [str(item) for item in payload["texts"].tolist()]
+                matrix = np.asarray(payload["vectors"], dtype=np.float32)
+                if len(texts) == len(matrix):
+                    return {text: matrix[index] for index, text in enumerate(texts)}
+            except Exception:
+                log.warning("Ignoring unreadable gap-rank cache %s", cache)
+        texts = self._gap_rank_corpus(st)
+        if not texts:
+            return {}
+        matrix = np.asarray(self._embed(st, texts), dtype=np.float32)
+        mapping = {text: matrix[index] for index, text in enumerate(texts)}
+        try:
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            np.savez_compressed(
+                cache,
+                texts=np.array(texts),
+                vectors=matrix,
+            )
+        except OSError:
+            log.warning("Could not write gap-rank cache %s (continuing without it)", cache)
+        return mapping
+
     def _index_job_skills(self, st: _State) -> None:
         postings: Dict[str, List[int]] = {}
         nongeneric: Dict[str, List[int]] = {}
@@ -1047,19 +1140,22 @@ class CareerNLP:
         sem: np.ndarray,
         category: np.ndarray,
         full_ranking: bool,
-    ) -> List[int]:
-        """Retrieve a shortlist without dropping jobs solely for a similarity cutoff."""
-        total = len(st.job_ids)
-        limit = total if full_ranking else min(self.config.candidate_shortlist_size, total)
-        if limit >= total:
-            return list(range(total))
+    ) -> Tuple[List[int], np.ndarray]:
+        """Retrieve a shortlist without dropping jobs solely for a similarity cutoff.
 
+        Also returns the cached hybrid retrieval score for every job, so the
+        expensive assessment stage can keep only the strongest listings.
+        """
+        total = len(st.job_ids)
         lexical = self._lexical_skill_percents(st, student_skills)
         retrieval = (
             self.config.skill_weight * lexical
             + self.config.semantic_weight * sem
             + self.config.category_weight * category
         )
+        limit = total if full_ranking else min(self.config.candidate_shortlist_size, total)
+        if limit >= total:
+            return list(range(total)), retrieval
         nongeneric_hits = np.zeros(total, dtype=np.int16)
         for skill in student_skills:
             if self._is_generic_name(skill):
@@ -1086,7 +1182,32 @@ class CareerNLP:
             chosen.add(index)
             if len(selected) >= limit:
                 break
-        return selected
+        return selected, retrieval
+
+    def _assessment_pool(
+        self,
+        st: _State,
+        shortlist: Sequence[int],
+        retrieval: np.ndarray,
+        full_ranking: bool,
+    ) -> List[int]:
+        """Jobs that receive a full competency and academic assessment.
+
+        ``full_ranking`` assesses the whole shortlist. Otherwise near-duplicate
+        listings are dropped and only ``recommendation_assess_pool`` jobs,
+        highest retrieval score first, are assessed.
+        """
+        if full_ranking or len(shortlist) <= self.config.recommendation_assess_pool:
+            return list(shortlist)
+        ordered = sorted(shortlist, key=lambda index: (-float(retrieval[index]), index))
+        pool: List[int] = []
+        for index in ordered:
+            if any(self._is_near_duplicate(st, index, previous) for previous in pool):
+                continue
+            pool.append(index)
+            if len(pool) >= self.config.recommendation_assess_pool:
+                break
+        return pool
 
     def _is_near_duplicate(self, st: _State, left: int, right: int) -> bool:
         """Collapse near-identical listings without merging different opportunities.
@@ -2280,6 +2401,220 @@ class CareerNLP:
     # ------------------------------------------------------------------
     # recommendation - JD not provided
     # ------------------------------------------------------------------
+    @staticmethod
+    def _gap_rank_text(value: str, max_words: int = 18) -> str:
+        """Short word tokens for gap ranking. Punctuation is not part of the meaning."""
+        text = re.sub(r"[^a-z0-9]+", " ", clean_text(value).lower())
+        words = [word for word in text.split() if word]
+        if max_words > 0:
+            words = words[:max_words]
+        return " ".join(words)
+
+    @classmethod
+    def _gap_evidence_text(cls, name: str, evidence: str, max_words: int = 18) -> str:
+        """Keep the words around the skill so a long JD sentence stays one short embedding."""
+        words = cls._gap_rank_text(evidence, max_words=0).split()
+        if not words:
+            return cls._gap_rank_text(name, max_words=max_words)
+        name_words = cls._gap_rank_text(name, max_words=0).split()
+        start = 0
+        if name_words:
+            width = len(name_words)
+            for index in range(len(words) - width + 1):
+                if words[index:index + width] == name_words:
+                    start = index
+                    break
+        window_start = max(0, start - 6)
+        return " ".join(words[window_start:window_start + max_words])
+
+    def _subject_clause(self, subject: str, job_text: str, job_title: str) -> str:
+        aliases = [alias for alias in self._subject_aliases(subject) if alias]
+        for sentence in self._requirement_sentences(job_text):
+            if any(
+                re.search(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", sentence, re.I)
+                for alias in aliases
+            ):
+                return sentence
+        if any(
+            re.search(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", job_title, re.I)
+            for alias in aliases
+        ):
+            return job_title
+        return subject
+
+    def _gap_candidates(
+        self,
+        job_title: str,
+        job_description: str,
+        assessment: _CompetencyAssessment,
+        adjustments: Sequence[AcademicAdjustment],
+    ) -> List[_GapCandidate]:
+        """Missing skills the JD or title mentions, plus penalised academic subjects."""
+        title = clean_job_title(job_title) or job_title
+        by_key: Dict[str, _GapCandidate] = {}
+        for item in assessment.requirements:
+            if item.status != "missing" or item.priority == "not_required":
+                continue
+            mentioned_in_jd = item.evidence != _METADATA_EVIDENCE
+            mentioned_in_title = self._has_substantive_mention(item.name, title)
+            if not mentioned_in_jd and not mentioned_in_title:
+                continue
+            key = normalize_skill(item.name)
+            if not key:
+                continue
+            by_key[key] = _GapCandidate(
+                name=item.name,
+                key=key,
+                evidence=item.evidence if mentioned_in_jd else title,
+            )
+        for adjustment in adjustments:
+            key = normalize_skill(adjustment.subject)
+            if not key:
+                continue
+            evidence = self._subject_clause(adjustment.subject, job_description, title)
+            existing = by_key.get(key)
+            if existing is None:
+                by_key[key] = _GapCandidate(
+                    name=adjustment.subject,
+                    key=key,
+                    evidence=evidence,
+                    penalty=adjustment.penalty_percent,
+                )
+                continue
+            existing.penalty = max(existing.penalty, adjustment.penalty_percent)
+            if not existing.evidence or existing.evidence == _METADATA_EVIDENCE:
+                existing.evidence = evidence
+        return list(by_key.values())
+
+    def _displayed_gaps_for_jobs(
+        self,
+        st: _State,
+        jobs: Sequence[Tuple[int, _CompetencyAssessment, Sequence[AcademicAdjustment]]],
+    ) -> Dict[int, List[str]]:
+        """About five gaps per returned job. Learning uses this same list.
+
+        Academic subjects that already reduced the score take the first slots.
+        The remaining slots are the gaps whose names are closest to the job
+        title and to a requirement-like JD sentence. Technical and finance
+        roles leave workplace-behavior gaps out of those slots.
+        """
+        limit = self.config.displayed_skill_gaps
+        prepared: List[Tuple[int, List[_GapCandidate], int, List[int], List[int]]] = []
+        texts: List[str] = []
+        positions: Dict[str, int] = {}
+
+        def add_text(value: str) -> int:
+            current = positions.get(value)
+            if current is None:
+                current = len(texts)
+                positions[value] = current
+                texts.append(value)
+            return current
+
+        add_text(self._gap_rank_text(_GAP_REQUIREMENT_PROTOTYPE))
+        add_text(self._gap_rank_text(_GAP_PASSING_PROTOTYPE))
+        tech_role_at = add_text(self._gap_rank_text(_GAP_TECH_FINANCE_ROLE))
+        commercial_role_at = add_text(self._gap_rank_text(_GAP_COMMERCIAL_ROLE))
+        soft_skill_at = add_text(self._gap_rank_text(_GAP_SOFT_SKILL))
+        concrete_skill_at = add_text(self._gap_rank_text(_GAP_CONCRETE_SKILL))
+        for index, assessment, adjustments in jobs:
+            candidates = self._gap_candidates(
+                st.job_titles[index], st.job_descriptions[index], assessment, adjustments,
+            )
+            title_at = add_text(self._gap_rank_text(clean_job_title(st.job_titles[index]) or st.job_titles[index]))
+            name_at: List[int] = []
+            evidence_at: List[int] = []
+            for candidate in candidates:
+                name_at.append(add_text(self._gap_rank_text(candidate.name)))
+                evidence_at.append(add_text(self._gap_evidence_text(candidate.name, candidate.evidence or candidate.name)))
+            prepared.append((index, candidates, title_at, name_at, evidence_at))
+        missing = [text for text in texts if text not in st.gap_vectors]
+        if missing:
+            encoded = self._embed(st, missing)
+            for text, vector in zip(missing, encoded):
+                st.gap_vectors[text] = np.asarray(vector, dtype=np.float32)
+        vectors = np.stack([st.gap_vectors[text] for text in texts])
+        requirement = vectors[0]
+        passing = vectors[1]
+        tech_role = vectors[tech_role_at]
+        commercial_role = vectors[commercial_role_at]
+        soft_skill = vectors[soft_skill_at]
+        concrete_skill = vectors[concrete_skill_at]
+        displayed: Dict[int, List[str]] = {}
+        for index, candidates, title_at, name_at, evidence_at in prepared:
+            title_vector = vectors[title_at]
+            suppress_soft = self._suppress_soft_skill_gaps(
+                st.job_categories[index], title_vector, tech_role, commercial_role,
+            )
+            importance: Dict[str, float] = {}
+            name_vectors: Dict[str, np.ndarray] = {}
+            for candidate, name_index, evidence_index in zip(candidates, name_at, evidence_at):
+                name_vector = vectors[name_index]
+                name_vectors[candidate.key] = name_vector
+                evidence_vector = vectors[evidence_index]
+                closeness = max(
+                    float(np.dot(name_vector, title_vector)),
+                    float(np.dot(name_vector, evidence_vector)),
+                )
+                requirement_margin = float(np.dot(evidence_vector, requirement) - np.dot(evidence_vector, passing))
+                importance[candidate.key] = closeness + requirement_margin
+            academic = sorted(
+                (candidate for candidate in candidates if candidate.penalty > 0),
+                key=lambda candidate: (-candidate.penalty, candidate.name.casefold()),
+            )
+            others = sorted(
+                (candidate for candidate in candidates if candidate.penalty <= 0),
+                key=lambda candidate: (-importance[candidate.key], candidate.name.casefold()),
+            )
+            chosen: List[str] = []
+            seen = set()
+            for candidate in list(academic) + others:
+                if candidate.key in seen:
+                    continue
+                if (
+                    suppress_soft
+                    and candidate.penalty <= 0
+                    and self._gap_is_soft(candidate.name, name_vectors[candidate.key], soft_skill, concrete_skill)
+                ):
+                    continue
+                chosen.append(candidate.name)
+                seen.add(candidate.key)
+                if len(chosen) >= limit:
+                    break
+            displayed[index] = chosen
+        return displayed
+
+    def _suppress_soft_skill_gaps(
+        self,
+        category: str,
+        title_vector: np.ndarray,
+        tech_vector: np.ndarray,
+        commercial_vector: np.ndarray,
+    ) -> bool:
+        """Technical and finance roles do not display workplace-behavior gaps.
+
+        Sales and business development keep them. Any other category, including
+        HR, follows whichever description the job title is closer to.
+        """
+        label = str(category or "").strip().upper()
+        if label in _SOFT_GAP_SUPPRESS_CATEGORIES:
+            return True
+        if label in _SOFT_GAP_KEEP_CATEGORIES:
+            return False
+        return float(np.dot(title_vector, tech_vector)) > float(np.dot(title_vector, commercial_vector))
+
+    def _gap_is_soft(
+        self,
+        name: str,
+        name_vector: np.ndarray,
+        soft_vector: np.ndarray,
+        concrete_vector: np.ndarray,
+    ) -> bool:
+        """True when a gap names workplace behavior rather than a concrete practice."""
+        if self._is_generic_name(name):
+            return True
+        return float(np.dot(name_vector, soft_vector)) > float(np.dot(name_vector, concrete_vector))
+
     def _job_record(
         self,
         st: _State,
@@ -2290,21 +2625,31 @@ class CareerNLP:
         academic_records: Sequence[AcademicRecord],
         details: bool,
         competency_assessment: _CompetencyAssessment,
+        adjustments: Optional[Sequence[AcademicAdjustment]] = None,
+        academic_penalty: Optional[float] = None,
+        displayed_gaps: Optional[Sequence[str]] = None,
     ) -> Tuple[RecommendedJob, float]:
         competency_requirements = competency_assessment.requirements
-        matched = competency_assessment.matched
-        missing = competency_assessment.missing
+        matched = list(competency_assessment.matched)
         skill_pct = competency_assessment.skill_match_percent
         matched_aliases = competency_assessment.matched_aliases
         n_requirements = competency_assessment.evaluated_count
         base_score = round(self._combine(skill_pct, sem_pct, category_pct), 2)
-        adjustments = self._academic_adjustments(
-            st,
-            academic_records,
-            st.job_descriptions[i],
-            demonstrated_competencies=matched_aliases,
-        )
-        academic_penalty = round(min(100.0, sum(a.penalty_percent for a in adjustments)), 2)
+        if adjustments is None:
+            adjustments = self._academic_adjustments(
+                st,
+                academic_records,
+                st.job_descriptions[i],
+                demonstrated_competencies=matched_aliases,
+            )
+        if academic_penalty is None:
+            academic_penalty = round(min(100.0, sum(a.penalty_percent for a in adjustments)), 2)
+        else:
+            academic_penalty = round(float(academic_penalty), 2)
+        if displayed_gaps is None:
+            displayed_gaps = list(competency_assessment.missing)
+        else:
+            displayed_gaps = list(displayed_gaps)
         score = round(max(0.0, base_score - academic_penalty), 2)
         rec = RecommendedJob(
             rank=rank,
@@ -2314,11 +2659,11 @@ class CareerNLP:
             match_score=score,
             base_match_score=base_score,
             academic_penalty_percent=academic_penalty,
-            academic_adjustments=adjustments,
+            academic_adjustments=list(adjustments),
             competency_requirements=competency_requirements,
             matched_skills=matched,
-            missing_weak_skills=missing,
-            recommended_learning=list(competency_assessment.learning),
+            missing_weak_skills=displayed_gaps,
+            recommended_learning=list(displayed_gaps),
             score_breakdown=(
                 self._breakdown(
                     skill_pct, sem_pct, category_pct, n_requirements, base_score, academic_penalty
@@ -2360,7 +2705,10 @@ class CareerNLP:
                 skill, evidence_sentences, student_skills, evidence_blob
             )
         }
-        selected = self._select_candidates(st, canonical_student, sem, category, full_ranking)
+        shortlist, retrieval = self._select_candidates(
+            st, canonical_student, sem, category, full_ranking,
+        )
+        selected = self._assessment_pool(st, shortlist, retrieval, full_ranking)
         competency_assessments: Dict[int, _CompetencyAssessment] = {
             i: self._assess_competencies(
                 st,
@@ -2380,10 +2728,11 @@ class CareerNLP:
         )
         self._apply_batch_semantic_fallback(st, competency_assessments, evidence_vectors)
         scores: Dict[int, float] = {}
+        penalties: Dict[int, Tuple[float, List[AcademicAdjustment]]] = {}
         for i in selected:
             skill_pct = competency_assessments[i].skill_match_percent
             base_score = round(self._combine(skill_pct, float(sem[i]), float(category[i])), 2)
-            penalty = 0.0
+            adjustments: List[AcademicAdjustment] = []
             if profile.academic_records:
                 adjustments = self._academic_adjustments(
                     st,
@@ -2391,7 +2740,8 @@ class CareerNLP:
                     st.job_descriptions[i],
                     demonstrated_competencies=competency_assessments[i].matched_aliases,
                 )
-                penalty = min(100.0, sum(item.penalty_percent for item in adjustments))
+            penalty = round(min(100.0, sum(item.penalty_percent for item in adjustments)), 2)
+            penalties[i] = (penalty, adjustments)
             scores[i] = round(max(0.0, base_score - penalty), 2)
         order = sorted(selected, key=lambda index: (-scores[index], index))
 
@@ -2405,12 +2755,19 @@ class CareerNLP:
             if len(picked) == k:
                 break
 
+        displayed_gaps = self._displayed_gaps_for_jobs(st, [
+            (i, competency_assessments[i], penalties[i][1]) for i in picked
+        ])
         records, top_skill_pct = [], 0.0
         for rank, i in enumerate(picked, start=1):
+            penalty, adjustments = penalties[i]
             rec, skill_pct = self._job_record(
                 st, i, rank, float(sem[i]), float(category[i]),
                 profile.academic_records, include_details,
                 competency_assessment=competency_assessments[i],
+                adjustments=adjustments,
+                academic_penalty=penalty,
+                displayed_gaps=displayed_gaps[i],
             )
             records.append(rec)
             if rank == 1:
@@ -2426,7 +2783,7 @@ class CareerNLP:
             n_student_skills=len(student_skills), include_factors=include_details)
         self.last_recommendation_stats = {
             "jobs_indexed": len(st.job_ids),
-            "shortlist_size": len(selected),
+            "shortlist_size": len(shortlist),
             "jobs_assessed": len(selected),
             "full_ranking": bool(full_ranking or len(selected) == len(st.job_ids)),
             "assessed_job_ids": [st.job_ids[i] for i in selected],
@@ -2530,7 +2887,9 @@ class CareerNLP:
             limits={"max_text_chars": self.config.max_text_chars, "max_cv_bytes": self.config.max_cv_bytes,
                     "max_top_k": self.config.max_top_k,
                     "candidate_shortlist_size": self.config.candidate_shortlist_size,
-                    "retrieval_skill_slots": self.config.retrieval_skill_slots},
+                    "retrieval_skill_slots": self.config.retrieval_skill_slots,
+                    "recommendation_assess_pool": self.config.recommendation_assess_pool,
+                    "displayed_skill_gaps": self.config.displayed_skill_gaps},
         )
 
     @staticmethod

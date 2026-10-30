@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "test"))
 
 from career_nlp import AssetConfig, CareerNLP, InputValidationError  # noqa: E402
-from career_nlp.text import parse_skills  # noqa: E402
+from career_nlp.text import normalize_skill, parse_skills  # noqa: E402
 
 from test_career_nlp import HashEmbedder, IT_JD, IT_STUDENT, _make_jobs  # noqa: E402
 
@@ -149,10 +149,11 @@ def test_metadata_skills_are_not_automatically_required(tmp_path):
     assert requirements["adaptability"].priority == "preferred"
     assert requirements["collaboration"].priority == "preferred"
     assert "communication" not in job.missing_weak_skills
-    assert "collaboration" not in job.missing_weak_skills
+    assert "adaptability" not in job.missing_weak_skills
     assert "etl" in job.missing_weak_skills
+    assert job.missing_weak_skills == job.recommended_learning
+    assert "adaptability" not in job.recommended_learning
     assert {"sql", "python"} <= set(job.matched_skills)
-    assert job.recommended_learning.index("etl") < job.recommended_learning.index("adaptability")
     # Missing ETL keeps the score modest, while unmatched soft skills cannot pull it to the old ~2/10 coverage.
     assert 35 <= job.score_breakdown.skill_match_percent <= 75
     assert job.match_score == pytest.approx(
@@ -323,15 +324,15 @@ def test_repeated_recommend_does_not_reencode_the_corpus(tmp_path):
     original = engine._state.embedder.encode
 
     def wrapped(texts):
-        calls.append(len(list(texts)))
+        calls.append(list(texts))
         return original(texts)
 
     engine._state.embedder.encode = wrapped
     engine.recommend(IT_STUDENT, top_k=3)
     engine.recommend(IT_STUDENT, top_k=3)
     assert calls
-    assert max(calls) < len(jobs)
-    assert sum(calls) < len(jobs)
+    descriptions = set(engine._state.job_descriptions)
+    assert not any(descriptions <= set(batch) for batch in calls)
 
 
 def test_compare_jobs_accepts_every_supported_count(nlp):
@@ -383,6 +384,8 @@ def test_recommend_response_shape_and_academic_penalty_still_apply(tmp_path):
     found = next(job for job in [result.recommended_job, *result.alternatives] if job.job_id == str(jobs.iloc[0]["job_id"]))
     assert found.academic_penalty_percent == 40.0
     assert found.match_score == pytest.approx(max(0.0, found.base_match_score - 40.0))
+    assert found.missing_weak_skills == found.recommended_learning
+    assert "physics" in {name.casefold() for name in found.missing_weak_skills}
     assert result.confidence.level in {"low", "medium", "high"}
     assert result.confidence.calibrated is False
     assert result.academic_records[0].subject == "Physics"
@@ -390,3 +393,297 @@ def test_recommend_response_shape_and_academic_penalty_still_apply(tmp_path):
     assert {"recommended_job", "alternatives", "confidence", "academic_records", "meta"} <= set(payload)
     assert "match_score" in payload["recommended_job"]
     assert parse_skills(jobs.iloc[0]["job_skill_set"])
+
+
+def test_recommend_shows_only_important_gaps_and_syncs_learning(tmp_path):
+    mentioned = ["python", "sql", "spark", "kafka", "airflow", "docker", "kubernetes", "tableau"]
+    jobs = pd.DataFrame([
+        {
+            "job_id": "role",
+            "category": "INFORMATION-TECHNOLOGY",
+            "job_title": "Python developer",
+            "job_description": (
+                "Python developer. Proficiency in Python is required and mandatory for the role. "
+                "SQL is required. Spark is required. Kafka is required. Airflow is required. "
+                "Docker is required. Kubernetes is required. Tableau is required. "
+                "The office newsletter has a passing incidental mention of excel."
+            ),
+            "job_skill_set": str(mentioned + ["excel", "payroll", "onboarding"]),
+        },
+        {
+            "job_id": "other",
+            "category": "FINANCE",
+            "job_title": "Accountant",
+            "job_description": "Financial reporting is required.",
+            "job_skill_set": "['financial reporting']",
+        },
+    ])
+    engine = _engine(jobs, cache_dir=tmp_path / "cache", displayed_skill_gaps=5)
+    result = engine.recommend("Skills: communication.", top_k=2, include_details=True)
+    job = result.recommended_job if result.recommended_job.job_id == "role" else result.alternatives[0]
+    names = [name.casefold() for name in job.missing_weak_skills]
+    assert job.missing_weak_skills == job.recommended_learning
+    assert len(names) <= 5
+    assert "python" in names
+    assert "payroll" not in names
+    assert "onboarding" not in names
+    assert job.score_breakdown.required_skills_detected > len(names)
+
+
+def test_title_requirement_outranks_incidental_mention(tmp_path):
+    jobs = pd.DataFrame([
+        {
+            "job_id": "role",
+            "category": "INFORMATION-TECHNOLOGY",
+            "job_title": "Python developer",
+            "job_description": (
+                "Proficiency in Python is required and mandatory for the role. "
+                "The office newsletter has a passing incidental mention of excel."
+            ),
+            "job_skill_set": "['python', 'excel']",
+        },
+        {
+            "job_id": "other",
+            "category": "FINANCE",
+            "job_title": "Accountant",
+            "job_description": "Financial reporting is required.",
+            "job_skill_set": "['financial reporting']",
+        },
+    ])
+    engine = _engine(jobs, cache_dir=tmp_path / "cache")
+    result = engine.recommend("Skills: communication.", top_k=2, include_details=True)
+    job = result.recommended_job if result.recommended_job.job_id == "role" else result.alternatives[0]
+    names = [name.casefold() for name in job.missing_weak_skills]
+    assert job.missing_weak_skills == job.recommended_learning
+    assert "python" in names and "excel" in names
+    assert names.index("python") < names.index("excel")
+
+
+def test_academic_penalty_subject_is_shown_as_a_gap(tmp_path):
+    jobs = pd.DataFrame([
+        {
+            "job_id": "physics",
+            "category": "INFORMATION-TECHNOLOGY",
+            "job_title": "Physics data analyst",
+            "job_description": (
+                "Data analyst requiring strong expertise in Physics. Python and SQL are required."
+            ),
+            "job_skill_set": "['python', 'sql']",
+        },
+        {
+            "job_id": "plain",
+            "category": "INFORMATION-TECHNOLOGY",
+            "job_title": "Business data analyst",
+            "job_description": (
+                "Data analyst using Python and SQL. Physics expertise is not required."
+            ),
+            "job_skill_set": "['python', 'sql']",
+        },
+        {
+            "job_id": "finance",
+            "category": "FINANCE",
+            "job_title": "Accountant",
+            "job_description": "Financial reporting is required.",
+            "job_skill_set": "['financial reporting']",
+        },
+    ])
+    engine = _engine(jobs, cache_dir=tmp_path / "cache")
+    result = engine.recommend(
+        "B.Tech Data Science. Skills: python, sql. Physics: 35%.",
+        top_k=3,
+        include_details=True,
+    )
+    ranked = [result.recommended_job, *result.alternatives]
+    physics = next(job for job in ranked if job.job_id == "physics")
+    plain = next(job for job in ranked if job.job_id == "plain")
+    assert physics.academic_penalty_percent > 0
+    assert physics.match_score == pytest.approx(
+        max(0.0, physics.base_match_score - physics.academic_penalty_percent),
+        abs=0.02,
+    )
+    assert physics.match_score < plain.match_score
+    assert physics.missing_weak_skills == physics.recommended_learning
+    assert "physics" in {name.casefold() for name in physics.missing_weak_skills}
+
+
+def _job_by_id(result, job_id):
+    ranked = [result.recommended_job, *result.alternatives]
+    return next(job for job in ranked if job.job_id == job_id)
+
+
+def test_technical_role_hides_soft_skill_gaps(tmp_path):
+    jobs = pd.DataFrame([
+        {
+            "job_id": "programmer",
+            "category": "INFORMATION-TECHNOLOGY",
+            "job_title": "Information technology programmer",
+            "job_description": (
+                "Python is required. Critical thinking is required. "
+                "Innovation is required. Attention to detail is required."
+            ),
+            "job_skill_set": "['python', 'critical thinking', 'innovation', 'attention to detail']",
+        },
+        {
+            "job_id": "other",
+            "category": "FINANCE",
+            "job_title": "Accountant",
+            "job_description": "Financial reporting is required.",
+            "job_skill_set": "['financial reporting']",
+        },
+    ])
+    engine = _engine(jobs, cache_dir=tmp_path / "cache")
+    result = engine.recommend("Skills: communication.", top_k=2, include_details=True)
+    job = _job_by_id(result, "programmer")
+    names = {name.casefold() for name in job.missing_weak_skills}
+    assert job.missing_weak_skills == job.recommended_learning
+    assert "python" in names
+    assert "critical thinking" not in names
+    assert "innovation" not in names
+    assert "attention to detail" not in names
+
+
+def test_finance_role_hides_behavior_gaps(tmp_path):
+    jobs = pd.DataFrame([
+        {
+            "job_id": "analyst",
+            "category": "FINANCE",
+            "job_title": "Financial analyst",
+            "job_description": (
+                "Budgeting is required. Ownership is required. Strategic thinking is required."
+            ),
+            "job_skill_set": "['budgeting', 'ownership', 'strategic thinking']",
+        },
+        {
+            "job_id": "other",
+            "category": "INFORMATION-TECHNOLOGY",
+            "job_title": "Software engineer",
+            "job_description": "Python is required.",
+            "job_skill_set": "['python']",
+        },
+    ])
+    engine = _engine(jobs, cache_dir=tmp_path / "cache")
+    result = engine.recommend("Skills: communication.", top_k=2, include_details=True)
+    job = _job_by_id(result, "analyst")
+    names = {name.casefold() for name in job.missing_weak_skills}
+    assert job.missing_weak_skills == job.recommended_learning
+    assert "budgeting" in names
+    assert "ownership" not in names
+    assert "strategic thinking" not in names
+
+
+def test_hr_data_engineer_hides_soft_skill_gaps(tmp_path):
+    jobs = pd.DataFrame([
+        {
+            "job_id": "engineer",
+            "category": "HR",
+            "job_title": "Data engineer",
+            "job_description": "Experience with ETL is required. Collaboration is required.",
+            "job_skill_set": "['etl', 'collaboration']",
+        },
+        {
+            "job_id": "other",
+            "category": "FINANCE",
+            "job_title": "Accountant",
+            "job_description": "Financial reporting is required.",
+            "job_skill_set": "['financial reporting']",
+        },
+    ])
+    engine = _engine(jobs, cache_dir=tmp_path / "cache")
+    result = engine.recommend("Skills: communication.", top_k=2, include_details=True)
+    job = _job_by_id(result, "engineer")
+    names = {name.casefold() for name in job.missing_weak_skills}
+    assert job.missing_weak_skills == job.recommended_learning
+    assert "etl" in names
+    assert "collaboration" not in names
+
+
+def test_sales_role_keeps_communication_gap(tmp_path):
+    jobs = pd.DataFrame([
+        {
+            "job_id": "seller",
+            "category": "SALES",
+            "job_title": "Sales representative",
+            "job_description": "Communication is required. Negotiation is required.",
+            "job_skill_set": "['communication', 'negotiation']",
+        },
+        {
+            "job_id": "other",
+            "category": "INFORMATION-TECHNOLOGY",
+            "job_title": "Software engineer",
+            "job_description": "Python is required.",
+            "job_skill_set": "['python']",
+        },
+    ])
+    engine = _engine(jobs, cache_dir=tmp_path / "cache")
+    result = engine.recommend("Skills: python.", top_k=2, include_details=True)
+    job = _job_by_id(result, "seller")
+    names = {name.casefold() for name in job.missing_weak_skills}
+    assert job.missing_weak_skills == job.recommended_learning
+    assert "communication" in names
+
+
+def test_matched_skills_stay_complete_and_score_uses_filtered_gaps(tmp_path):
+    matched = ["sql", "python", "excel", "spark", "kafka", "docker"]
+    hidden = ["communication", "critical thinking"]
+    shown_misses = ["tableau", "airflow", "kubernetes", "power bi"]
+    jobs = pd.DataFrame([
+        {
+            "job_id": "programmer",
+            "category": "INFORMATION-TECHNOLOGY",
+            "job_title": "Information technology programmer",
+            "job_description": (
+                "SQL is required. Python is required. Excel is required. "
+                "Spark is required. Kafka is required. Docker is required. "
+                "Tableau is required. Airflow is required. Kubernetes is required. "
+                "Power BI is required. Communication is required. Critical thinking is required."
+            ),
+            "job_skill_set": str(matched + shown_misses + hidden),
+        },
+        {
+            "job_id": "other",
+            "category": "FINANCE",
+            "job_title": "Accountant",
+            "job_description": "Financial reporting is required.",
+            "job_skill_set": "['financial reporting']",
+        },
+    ])
+    engine = _engine(jobs, cache_dir=tmp_path / "cache", displayed_skill_gaps=5)
+    result = engine.recommend(
+        "Skills: sql, python, excel, spark, kafka, docker.",
+        top_k=3,
+        include_details=True,
+    )
+    ranked = [result.recommended_job, *result.alternatives]
+    assert len(ranked) <= 3
+    job = _job_by_id(result, "programmer")
+    found = {name.casefold() for name in job.matched_skills}
+    gaps = {name.casefold() for name in job.missing_weak_skills}
+    assert found >= set(matched)
+    assert len(job.matched_skills) > 5
+    assert job.missing_weak_skills == job.recommended_learning
+    assert len(gaps) <= 5
+    assert found.isdisjoint(gaps)
+    assert "communication" not in gaps and "critical thinking" not in gaps
+    keep = {normalize_skill(name) for name in [*job.matched_skills, *job.missing_weak_skills]}
+    visible = [
+        item for item in job.competency_requirements
+        if item.priority != "not_required"
+        and item.status != "not_evaluated"
+        and normalize_skill(item.name) in keep
+    ]
+    visible_skill = engine._skill_match_percent(visible)
+    full_skill = engine._skill_match_percent(job.competency_requirements)
+    breakdown = job.score_breakdown
+    # Hidden misses stay in the score. Dropping them would raise the percentage.
+    assert breakdown.skill_match_percent == pytest.approx(full_skill, abs=0.02)
+    assert full_skill < visible_skill
+    assert job.match_score == pytest.approx(
+        max(
+            0.0,
+            0.63 * breakdown.skill_match_percent
+            + 0.27 * breakdown.semantic_similarity_percent
+            + 0.10 * breakdown.category_compatibility_percent
+            - job.academic_penalty_percent,
+        ),
+        abs=0.02,
+    )

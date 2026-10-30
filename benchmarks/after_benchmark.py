@@ -161,6 +161,8 @@ def main():
             "include_details": True,
             "candidate_shortlist_size": nlp.config.candidate_shortlist_size,
             "retrieval_skill_slots": nlp.config.retrieval_skill_slots,
+            "recommendation_assess_pool": nlp.config.recommendation_assess_pool,
+            "displayed_skill_gaps": nlp.config.displayed_skill_gaps,
             "note": "Post-change two-stage recommend() on the final code. Embedding and competency caches were already on disk, so warmup_s is a process cold start with those caches. warm_startup_s is a second process under the same conditions. Full-corpus ranking is excluded from the latency stats.",
         },
         "warmup_s": round(warmup_s, 4),

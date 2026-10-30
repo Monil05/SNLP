@@ -178,7 +178,7 @@ function collectSubmission() {
 
   if (mode === "recommend") {
     endpoint = "/api/v1/recommend";
-    request = { student_text: studentText, top_k: 5, include_details: true };
+    request = { student_text: studentText, top_k: 3, include_details: true };
   } else if (mode === "match") {
     endpoint = "/api/v1/match";
     request = { student_text: studentText, job_text: jobs[0].job_text, include_details: true };
