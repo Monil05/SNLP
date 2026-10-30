@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "description": "A job competency with its priority and evidence from the JD/profile.\n\n``kind`` separates practical skills from broader knowledge areas without\nrequiring a fixed vocabulary of subjects or technology names.",
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "skill",
+        "knowledge_area"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "priority": {
+      "enum": [
+        "required",
+        "preferred",
+        "not_required"
+      ],
+      "title": "Priority",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "matched",
+        "missing",
+        "not_evaluated"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "evidence": {
+      "title": "Evidence",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "kind",
+    "priority",
+    "status",
+    "evidence"
+  ],
+  "title": "CompetencyRequirement",
+  "type": "object"
+}

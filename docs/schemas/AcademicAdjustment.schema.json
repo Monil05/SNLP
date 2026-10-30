@@ -1,0 +1,74 @@
+{
+  "additionalProperties": false,
+  "description": "A score adjustment when a JD strongly requires a subject with poor grades.",
+  "properties": {
+    "subject": {
+      "title": "Subject",
+      "type": "string"
+    },
+    "grade": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Grade"
+    },
+    "score_percent": {
+      "anyOf": [
+        {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Score Percent"
+    },
+    "scale_max": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scale Max"
+    },
+    "domain_relevance_percent": {
+      "default": 0.0,
+      "description": "Estimated relevance of the weak subject to the role's core domain.",
+      "maximum": 100.0,
+      "minimum": 0.0,
+      "title": "Domain Relevance Percent",
+      "type": "number"
+    },
+    "penalty_percent": {
+      "maximum": 100.0,
+      "minimum": 0.0,
+      "title": "Penalty Percent",
+      "type": "number"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "subject",
+    "penalty_percent",
+    "reason"
+  ],
+  "title": "AcademicAdjustment",
+  "type": "object"
+}

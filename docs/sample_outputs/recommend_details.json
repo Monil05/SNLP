@@ -1,0 +1,274 @@
+{
+  "recommended_job": {
+    "rank": 1,
+    "job_id": "job_00321",
+    "job_title": "information technology programmer",
+    "category": "INFORMATION-TECHNOLOGY",
+    "match_score": 29.71,
+    "base_match_score": 29.71,
+    "academic_penalty_percent": 0.0,
+    "academic_adjustments": [],
+    "competency_requirements": [
+      {
+        "name": "attention to detail",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "c#",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "communication",
+        "kind": "skill",
+        "priority": "required",
+        "status": "matched",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "CREATING",
+        "kind": "skill",
+        "priority": "preferred",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "critical thinking",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "dashboard development",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "DASHBOARDS",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "data analysis",
+        "kind": "skill",
+        "priority": "required",
+        "status": "matched",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "database management",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "dax queries",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "DAX QUERIESABILITY",
+        "kind": "knowledge_area",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "DEPLOYING REPORTS",
+        "kind": "skill",
+        "priority": "preferred",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "excel",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "MAINTAINING POWER BIEXTENSIVE EXPERIENCE DEVELOPING",
+        "kind": "skill",
+        "priority": "preferred",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "power bi",
+        "kind": "skill",
+        "priority": "required",
+        "status": "matched",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "problem solving",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "report development",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "sql",
+        "kind": "skill",
+        "priority": "required",
+        "status": "matched",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "SQL (INCLUDING ABILITY",
+        "kind": "knowledge_area",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "SQL DATABASE",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PRIMARY RESPONSIBILITIES:CODE, TEST AND DOCUMENT ALL NEW OR MODIFIED BI AND REPORTING NEED, APPLICATIONS AND PROGRAMS.DEVELOP GRAPHS AND PORTAL INTERFACES.LEVERAGE SQL DATABASE TO DESIGN, DEVELOP, AND MAINTAIN SCALABLE REPORTS, DASHBOARDS, "
+      },
+      {
+        "name": "technical support",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      },
+      {
+        "name": "training skills",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "Curated job skill metadata."
+      },
+      {
+        "name": "vba",
+        "kind": "skill",
+        "priority": "required",
+        "status": "missing",
+        "evidence": "PROVIDE TECHNICAL SUPPORT AS NEEDED.KEEP CURRENT WITH BUSINESS INTELLIGENCE DATA TRENDS AND TECHNOLOGICAL INNOVATIONSQUALIFICATIONS:BACHELOR’S DEGREE REQUIRED WITH A PREFERENCE FOR DEGREES IN COMPUTER SCIENCE, MANAGEMENT INFORMATION SYSTEMS"
+      }
+    ],
+    "matched_skills": [
+      "communication",
+      "data analysis",
+      "power bi",
+      "sql"
+    ],
+    "missing_weak_skills": [
+      "attention to detail",
+      "c#",
+      "creating",
+      "critical thinking",
+      "dashboard development",
+      "dashboards",
+      "database management",
+      "dax queries",
+      "dax queriesability",
+      "deploying reports",
+      "excel",
+      "maintaining power biextensive experience developing",
+      "problem solving",
+      "report development",
+      "sql (including ability",
+      "sql database",
+      "technical support",
+      "training skills",
+      "vba"
+    ],
+    "recommended_learning": [
+      "problem solving",
+      "attention to detail",
+      "excel",
+      "critical thinking",
+      "technical support",
+      "database management",
+      "c#",
+      "dashboards",
+      "dashboard development",
+      "vba",
+      "report development",
+      "dax queries",
+      "training skills",
+      "creating",
+      "dax queriesability",
+      "deploying reports",
+      "maintaining power biextensive experience developing",
+      "sql (including ability",
+      "sql database"
+    ],
+    "score_breakdown": {
+      "skill_match_percent": 19.0,
+      "semantic_similarity_percent": 52.07,
+      "category_compatibility_percent": 36.76,
+      "skill_weight": 0.63,
+      "semantic_weight": 0.27,
+      "category_weight": 0.1,
+      "required_skills_detected": 23,
+      "base_match_score": 29.71,
+      "academic_penalty_percent": 0.0
+    }
+  },
+  "alternatives": [],
+  "confidence": {
+    "score": 0.5332,
+    "level": "medium",
+    "method": "evidence_heuristic_v1",
+    "calibrated": false,
+    "factors": {
+      "category_agreement_top5": 0.6,
+      "top_job_skill_coverage": 0.19,
+      "profile_skill_evidence": 1.0,
+      "score_margin_to_second": 0.2787
+    }
+  },
+  "academic_records": [],
+  "student_profile": {
+    "normalized_education": "B.Tech in Data Science",
+    "skills": [
+      "machine learning",
+      "data analysis",
+      "communication",
+      "data science",
+      "power bi",
+      "python",
+      "sql"
+    ],
+    "experience": "2 years",
+    "academic_records": [],
+    "profile_summary": "Education: B.Tech in Data Science. Skills: machine learning; data analysis; communication; data science; power bi; python; sql. Experience: 2 years."
+  },
+  "meta": {
+    "asset_version": "1.4.6",
+    "schema_version": "1.0",
+    "model": {
+      "embedding_backend": "lsa",
+      "embedding_model": "lsa-256",
+      "jobs_indexed": 1167
+    },
+    "processing_ms": 2547.3,
+    "warnings": []
+  }
+}

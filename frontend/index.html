@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8fa">
+  <title>CareerMatch</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="CareerMatch home">
+      <span class="brand-mark">CM</span>
+      <span class="brand-copy"><strong>CareerMatch</strong><small>Student–role matching</small></span>
+    </a>
+  </header>
+
+  <div class="app-shell">
+    <nav class="app-sidebar" aria-label="Main navigation">
+      <button class="nav-item active" type="button" data-view="careerView" aria-current="page">
+        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5M5.5 9v11h13V9M9.5 20v-6h5v6"/></svg></span><span>Career Match</span>
+      </button>
+      <button class="nav-item" type="button" data-view="searchView">
+        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></span><span>Search</span>
+      </button>
+      <button class="nav-item" type="button" data-view="statsView">
+        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 16v-4m4 4V8m4 8v-6"/></svg></span><span>Stats</span>
+      </button>
+    </nav>
+
+    <main id="top" class="page-shell">
+      <section id="careerView" class="app-view">
+    <section class="intro">
+      <p class="eyebrow">CAREER PLANNING</p>
+      <h1>Find roles that fit your profile.</h1>
+      <p class="intro-copy">Add a student profile to get started. You can leave job descriptions empty to discover suitable roles, add one to get a match score, or add several to compare them.</p>
+    </section>
+
+      <div class="career-workspace">
+    <form id="analysisForm" novalidate>
+      <section class="panel form-panel">
+        <div class="section-heading">
+          <div class="heading-number">1</div>
+          <div class="heading-copy">
+            <h2>Student profile</h2>
+            <p class="section-subtitle">Paste a CV, resume, or short description of the student's education, skills, projects, and experience. Grades can be included too.</p>
+          </div>
+          <button type="button" class="button button-quiet button-small" id="loadExampleButton">Load example</button>
+        </div>
+        <div class="document-upload-row">
+          <button type="button" class="button button-secondary button-small" id="studentUploadButton">Upload profile</button>
+          <input id="studentFileInput" class="document-file-input" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+          <span id="studentUploadStatus" class="document-upload-status" role="status" aria-live="polite">PDF or Word, up to 5 MB</span>
+        </div>
+        <label class="field" for="studentText">
+          <span>Student text <b class="required-mark">*</b></span>
+          <textarea id="studentText" rows="7" placeholder="B.Tech in Data Science. Skills: Python, SQL, pandas. Projects: Built reporting dashboards…" required></textarea>
+          <small class="field-hint">Only this field is required.</small>
+        </label>
+      </section>
+
+      <section class="panel form-panel jobs-panel">
+        <div class="section-heading">
+          <div class="heading-number">2</div>
+          <div class="heading-copy">
+            <h2>Job descriptions <span class="optional-tag">Optional</span></h2>
+            <p id="jobModeHint" class="section-subtitle">No jobs added. We'll recommend suitable roles from the job dataset.</p>
+          </div>
+          <button type="button" class="button button-secondary button-small" id="addJobButton"><span aria-hidden="true">＋</span> Add job</button>
+        </div>
+        <div id="jobsList" class="jobs-list"></div>
+        <div id="emptyJobsNote" class="empty-jobs-note">You don't need to paste a job description to get recommendations.</div>
+        <div class="jobs-footer">
+          <span id="jobCount">No job descriptions added</span>
+          <span>Up to 20 jobs</span>
+        </div>
+      </section>
+
+      <div class="run-row">
+        <button class="button button-primary run-button" id="runButton" type="submit">
+          <span id="runButtonLabel">Recommend jobs</span><span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <p id="formError" class="form-error" role="alert" hidden></p>
+    </form>
+
+    <section id="loadingState" class="panel loading-panel" hidden aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <div><strong id="loadingTitle">Working on it…</strong><p id="loadingDescription">The profile is being analysed.</p></div>
+    </section>
+
+    <section id="resultsSection" class="results-section" hidden aria-live="polite">
+      <div class="results-heading">
+        <div><p class="eyebrow">RESULTS</p><h2 id="resultsTitle">Recommended roles</h2><p id="resultsSummary" class="section-subtitle"></p></div>
+        <button type="button" class="button button-quiet button-small" id="clearResultsButton">Clear results</button>
+      </div>
+      <div id="resultsList" class="results-list"></div>
+    </section>
+      </div>
+
+      </section>
+
+      <section id="searchView" class="app-view" hidden>
+        <section class="intro">
+          <p class="eyebrow">GROUP 7 RESEARCH DISCOVERY</p>
+          <h1>Teacher Discovery</h1>
+          <p class="intro-copy">Search a topic to find teachers with related publications and supporting evidence.</p>
+        </section>
+        <section class="panel researcher-search-panel" aria-labelledby="researcherSearchTitle">
+          <div class="section-heading">
+            <div class="heading-number">S</div>
+            <div class="heading-copy">
+              <h2 id="researcherSearchTitle">Find teachers by topic <span class="optional-tag">Group 7</span></h2>
+              <p class="section-subtitle">Results include publication matches, ranking confidence, and relevant papers.</p>
+            </div>
+          </div>
+          <form id="researcherSearchForm" class="researcher-search-form">
+            <label class="field" for="researcherQuery">
+              <span>Research topic</span>
+              <input id="researcherQuery" type="text" maxlength="1000" placeholder="e.g. transformer architectures" required>
+            </label>
+            <div class="researcher-search-actions">
+              <button type="submit" class="button button-primary button-small" id="researcherSearchButton">Search</button>
+              <button type="button" class="button button-quiet button-small" id="clearResearcherSearchButton">Clear search</button>
+            </div>
+          </form>
+          <p id="researcherSearchStatus" class="researcher-search-status" role="status" aria-live="polite"></p>
+          <div id="researcherSearchResults" class="researcher-results"></div>
+        </section>
+      </section>
+
+      <section id="statsView" class="app-view" hidden>
+        <section class="intro">
+          <p class="eyebrow">MODEL EVALUATION</p>
+          <h1>Baseline vs Core Pipeline</h1>
+          <p class="intro-copy">Week 4 comparison on the same held-out evaluation set.</p>
+        </section>
+        <section class="stats-section" aria-labelledby="statsTitle">
+          <h2 id="statsTitle" class="visually-hidden">Baseline and core model metrics</h2>
+          <div id="statsGrid" class="stats-grid" hidden></div>
+          <p class="stats-method-note">Evaluation uses 16 synthetic student profiles and 234 held-out jobs. Expected job categories are proxy relevance labels, not human-rated ground truth.</p>
+          <p class="stats-source">Source: <code>test/week4_model_comparison.csv</code></p>
+        </section>
+      </section>
+
+  </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

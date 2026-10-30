@@ -1,0 +1,2 @@
+[console_scripts]
+career-nlp = career_nlp.cli:main

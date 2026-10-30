@@ -1,0 +1,170 @@
+{
+  "recommended_job": {
+    "rank": 1,
+    "job_id": "JD2",
+    "job_title": "General data analyst",
+    "match": {
+      "match_score": 81.38,
+      "base_match_score": 81.38,
+      "academic_penalty_percent": 0.0,
+      "academic_adjustments": [],
+      "academic_records": [
+        {
+          "subject": "Physics",
+          "scope": "subject",
+          "grade": "35%",
+          "score_percent": 35.0,
+          "is_poor": true,
+          "evidence": "Physics: 35%.",
+          "confidence": 0.94
+        }
+      ],
+      "competency_requirements": [
+        {
+          "name": "python",
+          "kind": "skill",
+          "priority": "required",
+          "status": "matched",
+          "evidence": "Data analyst using Python and SQL."
+        },
+        {
+          "name": "sql",
+          "kind": "skill",
+          "priority": "required",
+          "status": "matched",
+          "evidence": "Data analyst using Python and SQL."
+        }
+      ],
+      "matched_skills": [
+        "python",
+        "sql"
+      ],
+      "missing_weak_skills": [],
+      "recommended_learning": [],
+      "confidence": {
+        "score": 0.4899,
+        "level": "medium",
+        "method": "evidence_heuristic_v1",
+        "calibrated": false
+      },
+      "meta": {
+        "asset_version": "1.4.6",
+        "schema_version": "1.0",
+        "model": {
+          "embedding_backend": "lsa",
+          "embedding_model": "lsa-256",
+          "jobs_indexed": 1167
+        },
+        "processing_ms": 437.6,
+        "warnings": []
+      }
+    }
+  },
+  "alternatives": [
+    {
+      "rank": 2,
+      "job_id": "JD1",
+      "job_title": "Physics-focused analyst",
+      "match": {
+        "match_score": 19.88,
+        "base_match_score": 59.88,
+        "academic_penalty_percent": 40.0,
+        "academic_adjustments": [
+          {
+            "subject": "Physics",
+            "grade": "35%",
+            "score_percent": 35.0,
+            "domain_relevance_percent": 0.0,
+            "penalty_percent": 40.0,
+            "reason": "The JD strongly requires Physics, while the recorded score is 35%, below the 50% poor-performance threshold. Core-domain relevance is 0%; requirement evidence: explicit strong-expertise wording."
+          }
+        ],
+        "academic_records": [
+          {
+            "subject": "Physics",
+            "scope": "subject",
+            "grade": "35%",
+            "score_percent": 35.0,
+            "is_poor": true,
+            "evidence": "Physics: 35%.",
+            "confidence": 0.94
+          }
+        ],
+        "competency_requirements": [
+          {
+            "name": "Physics",
+            "kind": "knowledge_area",
+            "priority": "required",
+            "status": "missing",
+            "evidence": "Data analyst requiring strong expertise in Physics."
+          },
+          {
+            "name": "python",
+            "kind": "skill",
+            "priority": "required",
+            "status": "matched",
+            "evidence": "Python and SQL."
+          },
+          {
+            "name": "sql",
+            "kind": "skill",
+            "priority": "required",
+            "status": "matched",
+            "evidence": "Python and SQL."
+          }
+        ],
+        "matched_skills": [
+          "python",
+          "sql"
+        ],
+        "missing_weak_skills": [
+          "physics"
+        ],
+        "recommended_learning": [
+          "physics"
+        ],
+        "confidence": {
+          "score": 0.6,
+          "level": "medium",
+          "method": "evidence_heuristic_v1",
+          "calibrated": false
+        },
+        "meta": {
+          "asset_version": "1.4.6",
+          "schema_version": "1.0",
+          "model": {
+            "embedding_backend": "lsa",
+            "embedding_model": "lsa-256",
+            "jobs_indexed": 1167
+          },
+          "processing_ms": 432.1,
+          "warnings": [
+            "Academic adjustment applied for poor grades in required subject(s): Physics."
+          ]
+        }
+      }
+    }
+  ],
+  "academic_records": [
+    {
+      "subject": "Physics",
+      "scope": "subject",
+      "grade": "35%",
+      "score_percent": 35.0,
+      "is_poor": true,
+      "evidence": "Physics: 35%.",
+      "confidence": 0.94
+    }
+  ],
+  "meta": {
+    "asset_version": "1.4.6",
+    "schema_version": "1.0",
+    "model": {
+      "embedding_backend": "lsa",
+      "embedding_model": "lsa-256",
+      "jobs_indexed": 1167
+    },
+    "processing_ms": 437.7,
+    "warnings": []
+  }
+}

@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest-tmp*/
+data/sentence_transformer_model/
+data/career_nlp_cache/
+benchmarks/*.log

@@ -1,0 +1,44 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "job_id": {
+      "anyOf": [
+        {
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Job Id"
+    },
+    "job_title": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Job Title"
+    },
+    "job_text": {
+      "description": "Full text of one job description.",
+      "minLength": 1,
+      "title": "Job Text",
+      "type": "string"
+    }
+  },
+  "required": [
+    "job_text"
+  ],
+  "title": "JobDescriptionInput",
+  "type": "object"
+}
